@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顧客評價與訂單查詢</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="icon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- 引入彩帶特效庫 -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; transition: background 0.8s ease; }
+
+        /* 佈景 1: 霓虹電馭叛客 (Cyberpunk) */
+        .theme-cyberpunk {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+        }
+        .theme-cyberpunk .holo-shine {
+            background: linear-gradient(135deg, #ff007f 0%, #7928ca 25%, #4facfe 50%, #00f2fe 75%, #ff007f 100%);
+            background-size: 400% 400%;
+            animation: holoShift 6s ease infinite;
+        }
+
+        /* 佈景 2: 極光冰晶 (Aurora) */
+        .theme-aurora {
+            background: linear-gradient(135deg, #022335 0%, #064e3b 50%, #1e3a8a 100%);
+        }
+        .theme-aurora .holo-shine {
+            background: linear-gradient(135deg, #10b981 0%, #06b6d4 25%, #3b82f6 50%, #6366f1 75%, #10b981 100%);
+            background-size: 400% 400%;
+            animation: holoShift 6s ease infinite;
+        }
+
+        /* 佈景 3: 尊榮黑金 (Obsidian Gold) */
+        .theme-gold {
+            background: linear-gradient(135deg, #09090b 0%, #18181b 50%, #271c06 100%);
+        }
+        .theme-gold .holo-shine {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 25%, #fbbf24 50%, #b45309 75%, #f59e0b 100%);
+            background-size: 400% 400%;
+            animation: holoShift 6s ease infinite;
+        }
+
+        @keyframes holoShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 輪播牆動畫 */
+        @keyframes scrollWall {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-testimonial {
+            display: flex;
+            width: max-content;
+            animation: scrollWall 25s linear infinite;
+        }
+        .animate-testimonial:hover {
+            animation-play-state: paused;
+        }
+
+        /* 滿版大便震動動畫 */
+        @keyframes poopShake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            20% { transform: translate(-3px, 0px) rotate(-1deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            60% { transform: translate(-1px, 2px) rotate(0deg); }
+            80% { transform: translate(-3px, 1px) rotate(-1deg); }
+            100% { transform: translate(1px, -2px) rotate(1deg); }
+        }
+        .poop-alert-shake {
+            animation: poopShake 0.4s infinite;
+        }
+
+        /* 黑洞旋轉與吸入動畫 */
+        @keyframes blackHoleSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        .black-hole-anim {
+            animation: blackHoleSpin 3s linear infinite;
+        }
+
+        /* 背景粒子特效畫布 */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 隱藏卷軸但保持滑動 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* ===== ZAHSHOP 風格互動動畫升級 ===== */
+        html { scroll-behavior: smooth; }
+        body { overflow-x: hidden; }
+        body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: .22; background: radial-gradient(circle at var(--mx,50%) var(--my,20%), rgba(129,140,248,.22), transparent 28%); transition: opacity .4s ease; }
+        .content-wrapper { position: relative; z-index: 10; }
+        .content-wrapper > *, .content-wrapper { animation: pageRise .75s cubic-bezier(.16,1,.3,1) both; }
+        .content-wrapper > *:nth-child(2) { animation-delay: .12s; }
+        .content-wrapper > *:nth-child(3) { animation-delay: .22s; }
+        @keyframes pageRise { from { opacity:0; transform: translateY(28px) scale(.985); filter: blur(5px); } to { opacity:1; transform:none; filter:none; } }
+        .float-card { transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease; }
+        .float-card:hover { transform: translateY(-7px); box-shadow: 0 22px 55px rgba(0,0,0,.35); }
+        .shine-btn { position:relative; overflow:hidden; }
+        .shine-btn::after { content:''; position:absolute; top:-120%; left:-45%; width:35%; height:340%; transform:rotate(25deg); background:rgba(255,255,255,.22); transition:left .65s ease; pointer-events:none; }
+        .shine-btn:hover::after { left:125%; }
+        .click-pop { transition: transform .18s ease, filter .18s ease; }
+        .interactive-pop:hover { transform:translateY(-2px) scale(1.02); filter:brightness(1.08); }
+        .interactive-pop:active { transform:scale(.96); }
+        .reveal-on-scroll { opacity:0; transform:translateY(35px); transition:opacity .7s ease, transform .7s cubic-bezier(.16,1,.3,1); }
+        .reveal-on-scroll.revealed { opacity:1; transform:none; }
+        .glow-pulse { animation: glowPulse 2.2s ease-in-out infinite; }
+        @keyframes glowPulse { 0%,100% { box-shadow:0 0 0 rgba(99,102,241,0); } 50% { box-shadow:0 0 28px rgba(99,102,241,.28); } }
+        .search-loading { pointer-events:none; }
+        .search-loading .search-label { animation: searchDots 1s steps(4,end) infinite; }
+        @keyframes searchDots { 0%{opacity:.35}50%{opacity:1}100%{opacity:.35} }
+        .result-pop { animation: resultPop .55s cubic-bezier(.16,1,.3,1) both; }
+        @keyframes resultPop { from { opacity:0; transform:translateY(18px) scale(.97); } to { opacity:1; transform:none; } }
+        .success-ring { animation: successRing .65s cubic-bezier(.16,1,.3,1); }
+        @keyframes successRing { 0%{transform:scale(.6);opacity:0} 70%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
+        .shake-error { animation: shakeError .42s ease; }
+        @keyframes shakeError { 0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)} }
+        @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; transition-duration:.01ms !important; } }
+
+        /* ===== 高品質視覺升級套件 ===== */
+
+        /* 卡片邊框流光（左右主卡片） */
+        .aura-border { position: relative; isolation: isolate; }
+        .aura-border::before {
+            content: ''; position: absolute; inset: -1.5px; border-radius: inherit; z-index: -1;
+            background: conic-gradient(from var(--angle,0deg), transparent 0%, rgba(129,140,248,.55) 12%, transparent 24%, transparent 60%, rgba(236,72,153,.45) 72%, transparent 84%);
+            animation: auraSpin 7s linear infinite;
+            opacity: .85;
+        }
+        @keyframes auraSpin { to { --angle: 360deg; } }
+        @property --angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+
+        /* 標題入場光暈 */
+        .title-glow { text-shadow: 0 0 18px rgba(129,140,248,.35), 0 0 40px rgba(129,140,248,.12); }
+        .icon-badge-spin { animation: iconBadgeIdle 3.4s ease-in-out infinite; }
+        @keyframes iconBadgeIdle { 0%,100% { transform: rotate(-4deg) scale(1); } 50% { transform: rotate(4deg) scale(1.06); } }
+
+        /* 查詢按鈕載入態 */
+        .btn-loading { position: relative; color: transparent !important; pointer-events: none; }
+        .btn-loading::after {
+            content:''; position:absolute; inset:0; margin:auto; width:16px; height:16px;
+            border-radius:50%; border:2.5px solid rgba(255,255,255,.35); border-top-color:#fff;
+            animation: btnSpin .7s linear infinite;
+        }
+        @keyframes btnSpin { to { transform: rotate(360deg); } }
+
+        /* 結果卡片進場 */
+        .result-enter { animation: resultEnter .6s cubic-bezier(.16,1,.36,1) both; }
+        @keyframes resultEnter { from { opacity:0; transform: translateY(22px) scale(.96); filter: blur(6px); } to { opacity:1; transform:none; filter:none; } }
+
+        /* 進度條動態光點與流動填充 */
+        #progressBarFill { background: linear-gradient(90deg,#6366f1,#a855f7,#ec4899,#6366f1); background-size: 300% 100%; animation: progressFlow 2.4s linear infinite; box-shadow: 0 0 10px rgba(168,85,247,.6); }
+        @keyframes progressFlow { to { background-position: -300% 0; } }
+        .step-active-pulse { animation: stepActivePulse 1.6s ease-in-out infinite; }
+        @keyframes stepActivePulse { 0%,100% { box-shadow: 0 0 0 0 rgba(129,140,248,.55); } 50% { box-shadow: 0 0 0 8px rgba(129,140,248,0); } }
+        .step-final-burst { animation: stepFinalBurst .7s cubic-bezier(.34,1.56,.64,1); }
+        @keyframes stepFinalBurst { 0% { transform: scale(.6); } 55% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
+        /* 星星評分：跳動與光暈 */
+        .star-pop { animation: starPop .38s cubic-bezier(.34,1.56,.64,1); }
+        @keyframes starPop { 0% { transform: scale(.4) rotate(-25deg); } 60% { transform: scale(1.35) rotate(8deg); } 100% { transform: scale(1) rotate(0); } }
+        .star-glow-active { filter: drop-shadow(0 0 6px rgba(251,191,36,.85)); }
+
+        /* ===== 拉霸機升級 ===== */
+        #spinnerTrack .slot-card { transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s ease; position: relative; }
+        #spinnerTrack .slot-card::after { content:''; position:absolute; inset:0; border-radius:.75rem; background:linear-gradient(180deg, rgba(255,255,255,.14), transparent 45%); pointer-events:none; }
+        .slot-card-winner { animation: slotWinnerPulse 1s ease-in-out infinite; }
+        @keyframes slotWinnerPulse { 0%,100% { box-shadow: 0 0 20px rgba(250,204,21,.85), inset 0 0 12px rgba(250,204,21,.25); } 50% { box-shadow: 0 0 34px rgba(250,204,21,1), inset 0 0 18px rgba(250,204,21,.4); } }
+        .slot-frame-active { box-shadow: inset 0 0 0 2px rgba(250,204,21,.35), 0 0 24px rgba(250,204,21,.12); animation: slotFrameGlow 2s ease-in-out infinite; }
+        @keyframes slotFrameGlow { 0%,100% { box-shadow: inset 0 0 0 2px rgba(250,204,21,.25), 0 0 18px rgba(250,204,21,.08); } 50% { box-shadow: inset 0 0 0 2px rgba(250,204,21,.55), 0 0 30px rgba(250,204,21,.22); } }
+        .result-text-win { animation: resultTextWin .5s cubic-bezier(.34,1.56,.64,1); }
+        @keyframes resultTextWin { from { opacity:0; transform: translateY(8px) scale(.85); } to { opacity:1; transform:none; } }
+
+        /* ===== 幸運輪盤升級 ===== */
+        #rouletteWheel { box-shadow: 0 0 0 6px rgba(15,23,42,.9), 0 0 30px rgba(168,85,247,.45), inset 0 0 30px rgba(0,0,0,.55); }
+        .roulette-ring-glow { animation: rouletteRingGlow 2.2s ease-in-out infinite; }
+        @keyframes rouletteRingGlow { 0%,100% { box-shadow: 0 0 20px rgba(168,85,247,.35); } 50% { box-shadow: 0 0 42px rgba(236,72,153,.55); } }
+        .roulette-spinning { filter: drop-shadow(0 0 18px rgba(168,85,247,.6)); }
+        .pointer-bounce { animation: pointerBounce .5s ease-in-out infinite; }
+        @keyframes pointerBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+        .hub-pulse { animation: hubPulse 1.4s ease-in-out infinite; }
+        @keyframes hubPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+
+        /* ===== 刮刮樂升級 ===== */
+        .scratch-card-shell { box-shadow: 0 0 0 1px rgba(251,191,36,.5), 0 18px 50px -12px rgba(0,0,0,.7), 0 0 40px rgba(251,191,36,.15); transition: box-shadow .4s ease, transform .4s ease; }
+        .scratch-card-revealed { animation: scratchReveal .6s cubic-bezier(.16,1,.3,1); box-shadow: 0 0 0 2px rgba(250,204,21,.85), 0 18px 60px -10px rgba(0,0,0,.8), 0 0 60px rgba(250,204,21,.4) !important; }
+        @keyframes scratchReveal { 0% { transform: scale(.97); } 40% { transform: scale(1.035); } 100% { transform: scale(1); } }
+        .prize-icon-float { animation: prizeIconFloat 2.6s ease-in-out infinite; display:inline-block; }
+        @keyframes prizeIconFloat { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-6px) rotate(-4deg); } }
+        .scratch-status-ready { animation: scratchStatusPulse 1.8s ease-in-out infinite; }
+        @keyframes scratchStatusPulse { 0%,100% { opacity:.75; } 50% { opacity:1; } }
+
+        /* 黑洞召喚：吸入畫面感 */
+        .blackhole-suck-in { animation: blackholeSuckIn .5s cubic-bezier(.55,0,.85,1) both; }
+        @keyframes blackholeSuckIn { from { opacity:0; transform: scale(1.4) rotate(12deg); filter: blur(10px); } to { opacity:1; transform:none; filter:none; } }
+
+        /* 陷害噴發突襲入場 */
+        .prank-slam-in { animation: prankSlamIn .45s cubic-bezier(.36,1.4,.5,1) both; }
+        @keyframes prankSlamIn { 0% { opacity:0; transform: scale(2) rotate(-8deg); } 60% { opacity:1; transform: scale(.92) rotate(3deg); } 100% { transform: scale(1) rotate(0); } }
+
+        /* 頂部工具列選取態光暈 */
+        .theme-btn-active { box-shadow: 0 0 0 2px rgba(255,255,255,.55), 0 0 16px currentColor; }
+
+        /* ===================================================== */
+        /* ============  質感精修 Premium Polish v2  ============ */
+        /* ===================================================== */
+
+        /* 全域深度層次：以多層陰影取代單一扁平陰影，模擬真實光源 */
+        .float-card {
+            box-shadow:
+                0 1px 0 rgba(255,255,255,.05) inset,
+                0 -1px 0 rgba(0,0,0,.25) inset,
+                0 12px 30px -10px rgba(0,0,0,.55),
+                0 2px 8px rgba(0,0,0,.35);
+        }
+        .float-card:hover {
+            box-shadow:
+                0 1px 0 rgba(255,255,255,.08) inset,
+                0 -1px 0 rgba(0,0,0,.3) inset,
+                0 30px 70px -18px rgba(0,0,0,.65),
+                0 0 50px -12px rgba(99,102,241,.35);
+        }
+
+        /* 卡片指標式滑鼠傾斜（配合 JS 設定的 --tiltX/--tiltY） */
+        .tilt-card { transform: perspective(1100px) rotateX(var(--tiltY,0deg)) rotateY(var(--tiltX,0deg)) translateZ(0); transition: transform .12s ease-out; will-change: transform; }
+        .tilt-card:not(:hover) { transform: perspective(1100px) rotateX(0deg) rotateY(0deg); transition: transform .5s cubic-bezier(.16,1,.3,1); }
+
+        /* 標題字距與層次微調，更具精品感 */
+        h1.title-glow { letter-spacing: .01em; }
+        .eyebrow-chip { letter-spacing: .06em; }
+
+        /* 按鈕：立體漸層 + 內緣高光 + 落地陰影，取代扁平色塊 */
+        .premium-btn {
+            position: relative;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.28),
+                inset 0 -2px 6px rgba(0,0,0,.18),
+                0 10px 22px -8px var(--btn-shadow, rgba(79,70,229,.55));
+            transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, filter .25s ease;
+        }
+        .premium-btn:hover { transform: translateY(-2px); filter: brightness(1.05) saturate(1.08); }
+        .premium-btn:active { transform: translateY(0) scale(.98); }
+
+        /* 輸入框：聚焦時柔和光暈取代死板 ring */
+        input[type="text"] { transition: box-shadow .25s ease, border-color .25s ease, background .25s ease; }
+        input[type="text"]:focus { box-shadow: 0 0 0 3px rgba(99,102,241,.22), 0 0 22px rgba(99,102,241,.18); background: rgba(2,6,23,.9) !important; }
+
+        /* 玻璃分隔線取代死板 border-t，帶漸層淡出 */
+        .glass-divider { border-top: none !important; position: relative; }
+        .glass-divider::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background: linear-gradient(90deg, transparent, rgba(148,163,184,.4), transparent); }
+
+        /* 彈窗遮罩：加入暈影與中心柔光，取代純黑遮罩 */
+        #prankOverlay, #blackHoleOverlay { background: radial-gradient(circle at 50% 40%, rgba(30,20,10,.55), rgba(0,0,0,.94) 70%); }
+        #blackHoleOverlay { background: radial-gradient(circle at 50% 40%, rgba(88,28,135,.35), rgba(0,0,0,.96) 72%); }
+
+        /* 輪盤底部落地陰影，增加懸浮立體感 */
+        .wheel-floor-shadow { position:absolute; bottom:-14px; left:50%; transform:translateX(-50%); width:70%; height:14px; background:radial-gradient(ellipse at center, rgba(0,0,0,.55), transparent 72%); filter:blur(2px); z-index:0; }
+
+        /* 刮刮樂卡片：外緣柔光圈，取代死板純色 border */
+        .scratch-card-shell { position: relative; }
+        .scratch-card-shell::after { content:''; position:absolute; inset:-3px; border-radius: inherit; background: conic-gradient(from 0deg, #fde68a, #f59e0b, #fde68a, #f59e0b); z-index:-1; opacity:.55; filter: blur(2px); animation: auraSpin 8s linear infinite; }
+
+        /* 好評牆卡片：微立體漸層底 + hover 抬升 */
+        #testimonialWall > div, #liveTransactionList > div, #topSpenderList > div {
+            transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .25s ease;
+        }
+        #testimonialWall > div:hover { transform: translateY(-3px); border-color: rgba(129,140,248,.45); box-shadow: 0 10px 24px -8px rgba(0,0,0,.5); }
+        #liveTransactionList > div:hover, #topSpenderList > div:hover { transform: translateX(2px); border-color: rgba(99,102,241,.35); }
+
+        /* 數字/金額使用等寬對齊質感字距 */
+        #resPrice, .live-amount { font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+
+        /* 更精緻的滾動時陰影裁切（拉霸舞台） */
+        #spinnerTrack { mask-image: linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%); -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%); }
+
+        /* 圖示徽章統一柔光底 */
+        .icon-chip { box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), 0 4px 14px -6px rgba(0,0,0,.5); }
+    </style>
+</head>
+<body id="bodyRoot" class="theme-cyberpunk text-slate-100 min-h-screen flex flex-col items-center justify-between p-4 py-8">
+
+    <!-- 背景粒子畫布 -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- 💩 滿版惡意大便陷害突襲遮罩 (預設隱藏) -->
+    <div id="prankOverlay" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-2xl hidden flex items-center justify-center p-4">
+        <div class="prank-slam-in relative w-full max-w-lg bg-gradient-to-b from-amber-950 via-slate-950 to-slate-950 border-4 border-amber-500 rounded-3xl p-6 md:p-8 text-center shadow-[0_0_60px_rgba(245,158,11,0.5)] space-y-6 poop-alert-shake">
+            
+            <button onclick="closePrankOverlay()" class="absolute top-4 right-4 bg-red-600 hover:bg-red-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-black text-lg shadow-lg transition ring-2 ring-white/30">
+                ✕
+            </button>
+
+            <div class="space-y-2">
+                <div class="text-7xl animate-bounce mb-2">💩🦝💩</div>
+                <span class="text-xs bg-red-500/20 text-red-400 border border-red-500/50 px-3 py-1 rounded-full font-black uppercase tracking-widest">
+                    🚨 遭人惡意陷害警告
+                </span>
+                <h2 class="text-2xl font-black text-amber-400 mt-2">您的訂單被偷襲了！</h2>
+            </div>
+
+            <div class="bg-slate-900/90 border border-amber-500/40 p-5 rounded-2xl space-y-3 text-left">
+                <div class="flex justify-between text-xs text-slate-400">
+                    <span>受害訂單：<strong id="prankTargetId" class="text-white"></strong></span>
+                    <span class="text-red-400 font-bold">狀態：已被塞滿大便詛咒</span>
+                </div>
+                <div class="text-sm font-bold text-slate-200">
+                    惡毒兇手：<span id="prankSenderName" class="text-amber-300 text-base font-black"></span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed bg-slate-950 p-3 rounded-xl border border-slate-800">
+                    「嘿嘿！你已經中了全螢幕大便詛咒，就算破關也只能拿到滿滿的大便唷啾咪～」
+                </p>
+            </div>
+
+            <button onclick="closePrankOverlay()" class="w-full bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-white py-3.5 rounded-xl font-black text-sm shadow-xl transition tracking-wide">
+                我認了，關閉大便畫面 😭
+            </button>
+        </div>
+    </div>
+
+    <!-- 🌌 黑洞吞噬＆全螢幕盤子大便毀滅遮罩 (黑洞重抽結果) -->
+    <div id="blackHoleOverlay" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-3xl hidden flex items-center justify-center p-4">
+        <div id="blackHoleContentBox" class="blackhole-suck-in relative w-full max-w-lg bg-gradient-to-b from-purple-950 via-slate-950 to-slate-950 border-4 border-purple-500 rounded-3xl p-6 md:p-8 text-center shadow-[0_0_80px_rgba(168,85,247,0.6)] space-y-6">
+            
+            <button onclick="closeBlackHoleOverlay()" class="absolute top-4 right-4 bg-purple-600 hover:bg-purple-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-black text-lg shadow-lg transition">
+                ✕
+            </button>
+
+            <div class="space-y-2">
+                <div class="text-7xl black-hole-anim mb-2">🕳️✨</div>
+                <h2 id="bhTitle" class="text-2xl font-black text-purple-300">宇宙黑洞吞噬判定</h2>
+            </div>
+
+            <div id="bhResultContainer" class="bg-slate-900/90 border border-purple-500/40 p-6 rounded-2xl space-y-4">
+                <!-- 動態塞入重抽結果 -->
+            </div>
+
+            <button onclick="closeBlackHoleOverlay()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white py-3.5 rounded-xl font-black text-sm shadow-xl transition">
+                接受命運審判
+            </button>
+        </div>
+    </div>
+
+    <!-- 頂部功能控制列 -->
+    <div class="w-full max-w-5xl flex justify-between items-center mb-4 content-wrapper">
+        <div class="flex gap-1 bg-slate-900/80 backdrop-blur-md p-1 rounded-full border border-slate-700 shadow-lg">
+            <button onclick="setTheme('cyberpunk')" id="themeBtnCyber" title="電馭叛客" class="theme-btn-active w-7 h-7 rounded-full bg-purple-600 text-xs flex items-center justify-center transition">💜</button>
+            <button onclick="setTheme('aurora')" id="themeBtnAurora" title="極光冰晶" class="w-7 h-7 rounded-full bg-emerald-600 text-xs flex items-center justify-center transition opacity-60">💙</button>
+            <button onclick="setTheme('gold')" id="themeBtnGold" title="尊榮黑金" class="w-7 h-7 rounded-full bg-amber-500 text-xs flex items-center justify-center transition opacity-60">💛</button>
+        </div>
+
+        <div class="flex gap-1.5">
+            <button onclick="toggleVoice()" id="voiceToggleBtn" class="flex items-center gap-1 bg-slate-900/80 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-lg border border-slate-700 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition" title="甜妹語音導覽">
+                <i data-lucide="mic" class="w-3.5 h-3.5 text-pink-400" id="voiceIcon"></i>
+                <span id="voiceText">語音：開</span>
+            </button>
+            <button onclick="toggleBgm()" id="bgmToggleBtn" class="flex items-center gap-1 bg-slate-900/80 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-lg border border-slate-700 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition" title="背景音樂">
+                <i data-lucide="music" class="w-3.5 h-3.5 text-pink-400" id="bgmIcon"></i>
+                <span id="bgmText">BGM</span>
+            </button>
+            <button onclick="toggleAudio()" id="audioToggleBtn" class="flex items-center gap-1 bg-slate-900/80 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-lg border border-slate-700 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition" title="介面音效">
+                <i data-lucide="volume-2" class="w-3.5 h-3.5 text-indigo-400" id="audioIcon"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 🌐 主內容雙欄容器 -->
+    <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-6 my-auto content-wrapper">
+
+        <!-- 左側欄：查詢與抽獎核心互動 (佔 7 格) -->
+        <div class="aura-border tilt-card lg:col-span-7 bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-700/80 p-6 md:p-8 float-card glow-pulse space-y-6 text-slate-200 flex flex-col justify-between">
+            <div class="space-y-6">
+                <div class="text-center space-y-2">
+                    <div class="icon-badge-spin icon-chip bg-indigo-500/20 text-indigo-400 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto shadow-inner border border-indigo-500/30">
+                        <i data-lucide="star" class="w-6 h-6 fill-indigo-400"></i>
+                    </div>
+                    <h1 class="title-glow text-xl font-black text-white">展商城-顧客訂單查詢與評價</h1>
+                    <p class="text-xs text-slate-400">請輸入您的「訂單編號」(例如 OD-001) 來查看訂單進度</p>
+                    <a href="shop.html" class="premium-btn inline-flex items-center gap-2 mt-3 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium transition"><i data-lucide="shopping-cart" class="w-4 h-4"></i>立即下單</a>
+                </div>
+
+                <!-- 查詢表單 -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">訂單編號</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="searchOrderId" placeholder="例如: OD-001" class="flex-1 px-4 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase placeholder-slate-600">
+                            <button onclick="searchOrder()" class="shine-btn interactive-pop premium-btn bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition">查詢</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 查詢結果與互動區塊 -->
+                <div id="resultContainer" class="hidden result-enter space-y-5 pt-4 border-t border-slate-800">
+                    <div class="bg-slate-950/60 p-4 rounded-2xl space-y-2 border border-slate-800">
+                        <div class="flex justify-between text-xs text-slate-400">
+                            <span>買家: <strong id="resCustomer" class="text-white"></strong></span>
+                            <span id="resStatusBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold"></span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span id="resProduct" class="font-bold text-white text-base"></span>
+                            <span id="resPrice" class="text-indigo-400 font-bold"></span>
+                        </div>
+                    </div>
+
+                    <!-- 📊 視覺化訂單進度條 -->
+                    <div class="space-y-2 bg-slate-950/40 p-4 rounded-2xl border border-slate-800 shadow-sm">
+                        <div class="text-xs font-bold text-slate-300 mb-3 flex items-center gap-1.5">
+                            <i data-lucide="truck" class="w-4 h-4 text-indigo-400"></i> 訂單進度追蹤
+                        </div>
+                        <div class="relative flex justify-between max-w-xs mx-auto">
+                            <div class="absolute top-4 left-6 right-6 h-0.5 bg-slate-800 z-0"></div>
+                            <div id="progressBarFill" class="absolute top-4 left-6 h-0.5 bg-indigo-500 z-0 transition-all duration-500" style="width: 0%;"></div>
+
+                            <div class="relative z-10 flex flex-col items-center space-y-1">
+                                <div id="step1Icon" class="w-8 h-8 rounded-full bg-slate-800 text-slate-500 flex items-center justify-center text-xs font-bold transition-all">📦</div>
+                                <span id="step1Text" class="text-[10px] font-semibold text-slate-500">備貨中</span>
+                            </div>
+                            <div class="relative z-10 flex flex-col items-center space-y-1">
+                                <div id="step2Icon" class="w-8 h-8 rounded-full bg-slate-800 text-slate-500 flex items-center justify-center text-xs font-bold transition-all">🚀</div>
+                                <span id="step2Text" class="text-[10px] font-semibold text-slate-500">已出貨</span>
+                            </div>
+                            <div class="relative z-10 flex flex-col items-center space-y-1">
+                                <div id="step3Icon" class="w-8 h-8 rounded-full bg-slate-800 text-slate-500 flex items-center justify-center text-xs font-bold transition-all">✈️</div>
+                                <span id="step3Text" class="text-[10px] font-semibold text-slate-500">運送中</span>
+                            </div>
+                            <div class="relative z-10 flex flex-col items-center space-y-1">
+                                <div id="step4Icon" class="w-8 h-8 rounded-full bg-slate-800 text-slate-500 flex items-center justify-center text-xs font-bold transition-all">🎉</div>
+                                <span id="step4Text" class="text-[10px] font-semibold text-slate-500">已完成</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 未完成訂單提示 -->
+                    <div id="pendingOrderNotice" class="hidden text-center py-4 bg-sky-950/50 text-sky-200 text-xs font-bold rounded-xl border border-sky-800/80 space-y-1">
+                        <div class="flex items-center justify-center gap-1 text-sky-400 font-black">
+                            <i data-lucide="info" class="w-4 h-4"></i> 訂單尚未完成
+                        </div>
+                        <p class="text-[11px] text-sky-300 font-normal">商品送達並顯示「已完成」後，即可解鎖星級評價、盤子拉霸與幸運大輪盤！</p>
+                    </div>
+
+                    <!-- 評價表單 -->
+                    <div id="ratingSection" class="hidden space-y-3">
+                        <label class="block text-xs font-semibold text-slate-300">給予商店評分</label>
+                        <div class="flex justify-center gap-2 py-2" id="starSelector">
+                            <button type="button" onclick="setRating(1)" class="text-2xl text-slate-600 hover:text-amber-400 transition">★</button>
+                            <button type="button" onclick="setRating(2)" class="text-2xl text-slate-600 hover:text-amber-400 transition">★</button>
+                            <button type="button" onclick="setRating(3)" class="text-2xl text-slate-600 hover:text-amber-400 transition">★</button>
+                            <button type="button" onclick="setRating(4)" class="text-2xl text-slate-600 hover:text-amber-400 transition">★</button>
+                            <button type="button" onclick="setRating(5)" class="text-2xl text-slate-600 hover:text-amber-400 transition">★</button>
+                        </div>
+                        <button onclick="submitRating()" class="shine-btn interactive-pop premium-btn w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl text-sm font-bold transition" style="--btn-shadow: rgba(16,185,129,.5);">送出評價並解鎖盤子遊戲</button>
+                    </div>
+
+                    <div id="ratedNotice" class="hidden text-center py-3 bg-emerald-950/60 text-emerald-300 text-xs font-bold rounded-xl border border-emerald-800">
+                        感謝您的評價！您已獲得盤子抽獎與輪盤資格。
+                    </div>
+
+                    <!-- 防刷鎖定提示 -->
+                    <div id="lockedNotice" class="hidden text-center py-4 bg-amber-950/50 text-amber-200 text-xs font-bold rounded-xl border border-amber-800/80 space-y-1">
+                        <div class="flex items-center justify-center gap-1 text-amber-400 font-black">
+                            <i data-lucide="shield-alert" class="w-4 h-4"></i> 體驗次數已用盡
+                        </div>
+                        <p class="text-[11px] text-amber-300 font-normal">此訂單已經參與過所有盤子遊戲囉！每筆訂單僅限參加一次。</p>
+                    </div>
+
+                    <!-- 🪙 盤子抽獎橫向拉霸機區塊 -->
+                    <div id="slotMachineSection" class="hidden space-y-4 pt-4 border-t border-slate-800 text-center bg-slate-950 p-5 rounded-2xl text-white shadow-2xl border border-yellow-500/40">
+                        <div class="flex justify-between items-center px-1">
+                            <span class="text-xs font-black text-yellow-400 tracking-wider flex items-center gap-1">
+                                <i data-lucide="crown" class="w-3.5 h-3.5"></i> 第一關：盤子拉霸 (Plate Spinner)
+                            </span>
+                            <span class="text-[10px] bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 px-2 py-0.5 rounded-full font-bold">VIP 專屬</span>
+                        </div>
+
+                        <!-- 橫向滾動舞台 -->
+                        <div class="relative w-full bg-slate-900 border-2 border-yellow-500/60 rounded-2xl p-3 overflow-hidden shadow-inner">
+                            <div class="absolute top-1 left-1/2 -translate-x-1/2 z-20 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[12px] border-t-yellow-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"></div>
+                            <div id="spinnerTrack" class="flex gap-2.5 overflow-x-auto no-scrollbar py-2 px-1 scroll-smooth"></div>
+                        </div>
+
+                        <div id="slotResultText" class="text-xs font-bold text-yellow-300 min-h-[18px]"></div>
+
+                        <button id="spinBtn" onclick="startFruitSpinner()" class="shine-btn interactive-pop premium-btn w-full bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-950 py-3 rounded-xl text-xs font-black transition tracking-wide flex items-center justify-center gap-2" style="--btn-shadow: rgba(245,158,11,.55);">
+                            <i data-lucide="dices" class="w-4 h-4"></i> 開始盤子抽獎 🍽️💩🐱
+                        </button>
+                    </div>
+
+                    <!-- 🎡 瘋狂「吃大便／盤子」幸運大輪盤區塊 -->
+                    <div id="rouletteSection" class="hidden space-y-4 pt-4 border-t border-slate-800 text-center bg-slate-950/90 p-5 rounded-2xl text-white shadow-2xl border border-purple-500/40">
+                        <div class="flex justify-between items-center px-1">
+                            <span class="text-xs font-black text-purple-400 tracking-wider flex items-center gap-1">
+                                <i data-lucide="compass" class="w-3.5 h-3.5"></i> 第二關：瘋狂大便盤子幸運輪盤
+                            </span>
+                            <span class="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/40 px-2 py-0.5 rounded-full font-bold">加碼彩蛋</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">點擊下方按鈕轉動輪盤，看看命運之神今天賜給你什麼荒謬懲罰或大獎！</p>
+
+                        <!-- 輪盤外觀容器 -->
+                        <div class="relative w-52 h-52 mx-auto flex items-center justify-center">
+                            <div class="wheel-floor-shadow"></div>
+                            <!-- 頂端指針 -->
+                            <div class="absolute -top-3 z-30 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[18px] border-t-pink-500 drop-shadow-md pointer-bounce"></div>
+                            
+                            <!-- 轉動盤面 -->
+                            <div id="rouletteWheel" class="w-48 h-48 rounded-full border-4 border-purple-400/80 shadow-[0_0_25px_rgba(168,85,247,0.4)] relative overflow-hidden transition-all duration-[4000ms] cubic-bezier(0.15, 0.85, 0.15, 1) flex items-center justify-center bg-slate-900">
+                                <canvas id="wheelCanvas" width="192" height="192" class="absolute inset-0"></canvas>
+                                <div class="hub-pulse absolute z-20 w-10 h-10 bg-slate-950 rounded-full border-2 border-purple-400 flex items-center justify-center text-xs shadow-inner">🎯</div>
+                            </div>
+                        </div>
+
+                        <div id="rouletteResultText" class="text-xs font-bold text-purple-300 min-h-[18px]"></div>
+
+                        <button id="spinRouletteBtn" onclick="startRoulette()" class="shine-btn interactive-pop premium-btn w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white py-3 rounded-xl text-xs font-black transition tracking-wide flex items-center justify-center gap-2" style="--btn-shadow: rgba(168,85,247,.55);">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i> 轉動瘋狂命運輪盤 🎡✨
+                        </button>
+                    </div>
+
+                    <!-- 🪙 互動式手動刮刮樂區塊 -->
+                    <div id="scratchSection" class="hidden space-y-4 pt-4 border-t border-slate-800 text-center bg-slate-950/80 p-5 rounded-2xl text-white shadow-xl border border-slate-800">
+                        <div class="space-y-1">
+                            <span class="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-black uppercase tracking-widest">Lucky Scratch Prize</span>
+                            <h3 class="text-sm font-black">專屬獎項刮刮樂已解鎖</h3>
+                            <p class="text-[11px] text-slate-400">請用滑鼠或手指在下方銀漆區域來回刮動，看你抽到什麼好康！</p>
+                        </div>
+
+                        <div id="scratchCardShell" class="scratch-card-shell relative w-56 h-64 mx-auto rounded-2xl overflow-hidden border-4 border-amber-300/80">
+                            <div class="absolute inset-0 holo-shine flex flex-col items-center justify-between p-4 text-center text-white z-0">
+                                <div class="flex justify-between w-full items-center">
+                                    <span id="cardRarity" class="text-[10px] bg-black/60 px-2 py-0.5 rounded-full font-black text-amber-300 tracking-wider">PRIZE</span>
+                                    <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i>
+                                </div>
+                                <div class="space-y-1 my-auto">
+                                    <div class="text-3xl prize-icon-float" id="cardIcon">🧻</div>
+                                    <h4 id="cardTitle" class="text-sm font-black tracking-wide drop-shadow">神秘小禮物(衛生紙一張)</h4>
+                                    <p id="cardDesc" class="text-[10px] text-slate-100 font-medium drop-shadow-sm">絕對實用的尊爵級消耗品</p>
+                                </div>
+                                <span class="text-[9px] bg-black/40 px-2 py-0.5 rounded text-slate-200">商城限定抽獎</span>
+                            </div>
+                            <canvas id="scratchCanvas" width="224" height="256" class="absolute inset-0 z-10 cursor-crosshair"></canvas>
+                        </div>
+
+                        <div id="scratchStatusText" class="scratch-status-ready text-xs font-bold text-amber-300">👇 開始動手刮開銀漆吧！</div>
+
+                        <!-- 🕳️ 黑洞重抽按鈕 (對不滿意獎品的買家召喚) -->
+                        <div id="blackHoleButtonWrapper" class="pt-2">
+                            <button onclick="triggerBlackHoleReroll()" class="premium-btn w-full bg-gradient-to-r from-purple-900 via-indigo-900 to-black hover:from-purple-800 hover:to-slate-900 text-purple-200 border border-purple-500/60 py-3 rounded-xl text-xs font-black transition tracking-wide flex items-center justify-center gap-2" style="--btn-shadow: rgba(88,28,135,.6);">
+                                <i data-lucide="orbit" class="w-4 h-4 text-purple-400"></i> 召喚宇宙黑洞吞噬重抽 (黑洞命運豪賭) 🕳️✨
+                            </button>
+                        </div>
+
+                        <button id="downloadCardBtn" onclick="downloadCardImage()" class="hidden premium-btn w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2" style="--btn-shadow: rgba(245,158,11,.5);">
+                            <i data-lucide="download" class="w-4 h-4"></i> 下載我的中獎獎項截圖 (PNG)
+                        </button>
+                    </div>
+
+                    <!-- 🦝 陷害好友專區 -->
+                    <div id="prankSection" class="hidden space-y-3 pt-4 border-t border-slate-800 bg-slate-950/70 p-4 rounded-2xl border border-red-500/30">
+                        <div class="flex items-center gap-2 text-xs font-black text-red-400">
+                            <i data-lucide="skull" class="w-4 h-4"></i> 惡意陷害好友功能
+                        </div>
+                        <p class="text-[11px] text-slate-400">抽完獎後獲得陷害道具！輸入朋友的「訂單編號」，讓他的訂單一查詢就噴出滿版大便！</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="targetPrankId" placeholder="輸入好友訂單編號 (例如 OD-002)" class="flex-1 px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white uppercase placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-red-500">
+                            <button onclick="sendPrank()" class="shine-btn interactive-pop premium-btn bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition" style="--btn-shadow: rgba(220,38,38,.5);">發動陷害 💩</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右側欄：全站即時消費紀錄與尊爵榮譽盤子榜 (佔 5 格) -->
+        <div class="lg:col-span-5 flex flex-col space-y-6">
+
+            <!-- 🏆 尊爵榮譽盤子榜 (記錄誰抽中了什麼獎項) -->
+            <div class="tilt-card bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-yellow-500/40 p-6 float-card space-y-4 text-slate-200">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="icon-chip bg-yellow-500/20 text-yellow-400 w-8 h-8 rounded-xl flex items-center justify-center border border-yellow-500/30">
+                            <i data-lucide="award" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-black text-white">尊爵榮譽盤子榜</h3>
+                            <p class="text-[10px] text-slate-400">已完成訂單之抽獎中獎紀錄牆</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 px-2.5 py-0.5 rounded-full font-bold">Plate Winners</span>
+                </div>
+
+                <div id="topSpenderList" class="space-y-2.5 max-h-56 overflow-y-auto no-scrollbar pr-1">
+                    <div class="text-center py-4 text-xs text-slate-500">載入盤子榜中...</div>
+                </div>
+            </div>
+
+            <!-- 🧾 全站即時消費動態牆 -->
+            <div class="tilt-card bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-indigo-500/30 p-6 float-card space-y-4 text-slate-200 flex-1">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="icon-chip bg-indigo-500/20 text-indigo-400 w-8 h-8 rounded-xl flex items-center justify-center border border-indigo-500/30">
+                            <i data-lucide="receipt" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-black text-white">全站即時消費紀錄</h3>
+                            <p class="text-[10px] text-slate-400">已完成訂單之最新下單動態</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-0.5 rounded-full font-bold animate-pulse">Live Feed</span>
+                </div>
+
+                <div id="liveTransactionList" class="space-y-2.5 max-h-60 overflow-y-auto no-scrollbar pr-1">
+                    <div class="text-center py-4 text-xs text-slate-500">載入消費紀錄中...</div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ⭐ 真實買家好評實時輪播牆 -->
+    <div class="w-full max-w-5xl mt-6 space-y-2 overflow-hidden content-wrapper">
+        <div class="flex items-center justify-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-widest">
+            <i data-lucide="message-square-heart" class="w-4 h-4 text-indigo-400"></i> 買家真實好評牆
+        </div>
+        <div class="relative w-full overflow-hidden py-2">
+            <div class="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-slate-950 to-transparent z-10 pointer-events-none"></div>
+            <div class="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-slate-950 to-transparent z-10 pointer-events-none"></div>
+
+            <div id="testimonialWall" class="animate-testimonial flex gap-3">
+                <div class="bg-slate-900/80 backdrop-blur-md px-4 py-3 rounded-2xl shadow-sm border border-slate-800 text-xs text-slate-300 shrink-0 flex items-center gap-3">
+                    <span class="font-bold text-white">載入中...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // ===== 安全版互動動畫控制器 =====
+        // 不監聽整個頁面的 class 變化，避免干擾 Firebase / 評價流程。
+        (() => {
+            let lastMove = 0;
+            document.addEventListener('pointermove', (e) => {
+                const now = performance.now();
+                if (now - lastMove < 50) return;
+                lastMove = now;
+                document.documentElement.style.setProperty('--mx', `${(e.clientX / innerWidth) * 100}%`);
+                document.documentElement.style.setProperty('--my', `${(e.clientY / innerHeight) * 100}%`);
+            }, { passive: true });
+
+            document.addEventListener('click', (e) => {
+                const btn = e.target.closest('button, a');
+                if (!btn || btn.disabled) return;
+                btn.classList.remove('click-pop');
+                void btn.offsetWidth;
+                btn.classList.add('click-pop');
+                setTimeout(() => btn.classList.remove('click-pop'), 220);
+            }, { passive: true });
+
+            window.addEventListener('load', () => {
+                document.body.classList.add('page-loaded');
+            });
+
+            // 卡片指標式微傾斜，增加立體精品質感（僅桌面滑鼠環境）
+            const tiltEls = document.querySelectorAll('.tilt-card');
+            tiltEls.forEach(el => {
+                el.addEventListener('pointermove', (e) => {
+                    if (e.pointerType !== 'mouse') return;
+                    const rect = el.getBoundingClientRect();
+                    const px = (e.clientX - rect.left) / rect.width - 0.5;
+                    const py = (e.clientY - rect.top) / rect.height - 0.5;
+                    el.style.setProperty('--tiltX', `${px * 6}deg`);
+                    el.style.setProperty('--tiltY', `${-py * 6}deg`);
+                });
+                el.addEventListener('pointerleave', () => {
+                    el.style.setProperty('--tiltX', `0deg`);
+                    el.style.setProperty('--tiltY', `0deg`);
+                });
+            });
+        })();
+    </script>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBjpZ8i-lsWHjrn9wHAOqTFlxKKUWkdZyQ",
+            authDomain: "project-1584313366507677848.firebaseapp.com",
+            projectId: "project-1584313366507677848",
+            storageBucket: "project-1584313366507677848.firebasestorage.app",
+            messagingSenderId: "486873849194",
+            appId: "1:486873849194:web:3eb6181053f070bda05913",
+            measurementId: "G-NYQQKNLE50"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let currentSelectedDocId = null;
+        let currentOrderData = null;
+        let selectedRating = 5;
+        let isScratchedCompleted = false;
+        let soundEnabled = true;
+        let bgmEnabled = false;
+        let voiceEnabled = true;
+        let bgmInterval = null;
+        let currentWheelAngle = 0;
+
+        // 🎙️ 甜妹語音導覽合成器
+        function speakSweetVoice(text) {
+            if (!voiceEnabled || !('speechSynthesis' in window)) return;
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-TW';
+                utterance.pitch = 1.3;
+                utterance.rate = 1.05;
+
+                const voices = window.speechSynthesis.getVoices();
+                const sweetVoice = voices.find(v => v.lang.includes('zh') && (v.name.includes('Hsiao') || v.name.includes('Ya') || v.name.includes('Mei') || v.name.includes('Female') || v.name.includes('Microsoft'))) || voices.find(v => v.lang.includes('zh'));
+                
+                if (sweetVoice) utterance.voice = sweetVoice;
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {
+                console.log("語音播放失敗", e);
+            }
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+        }
+
+        window.toggleVoice = function() {
+            voiceEnabled = !voiceEnabled;
+            const icon = document.getElementById('voiceIcon');
+            const text = document.getElementById('voiceText');
+            if (voiceEnabled) {
+                icon.setAttribute('data-lucide', 'mic');
+                text.innerText = "語音：開";
+                speakSweetVoice("甜妹語音導覽已開啟！");
+            } else {
+                icon.setAttribute('data-lucide', 'mic-off');
+                text.innerText = "語音：關";
+                window.speechSynthesis.cancel();
+            }
+            lucide.createIcons();
+        };
+
+        // 🌌 背景浮動粒子動態效果
+        const bgCanvas = document.getElementById('bgCanvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        let particles = [];
+
+        function resizeBgCanvas() {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeBgCanvas);
+        resizeBgCanvas();
+
+        for (let i = 0; i < 70; i++) {
+            particles.push({
+                x: Math.random() * bgCanvas.width,
+                y: Math.random() * bgCanvas.height,
+                radius: Math.random() * 1.8 + 0.6,
+                speedX: (Math.random() - 0.5) * 0.35,
+                speedY: (Math.random() - 0.5) * 0.35,
+                alpha: Math.random() * 0.6 + 0.2,
+                twinklePhase: Math.random() * Math.PI * 2,
+                twinkleSpeed: 0.015 + Math.random() * 0.02
+            });
+        }
+
+        function animateBg() {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+            // 連線效果：靠近的粒子之間畫出淡淡連線，增加高級感
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 130) {
+                        bgCtx.beginPath();
+                        bgCtx.moveTo(particles[i].x, particles[i].y);
+                        bgCtx.lineTo(particles[j].x, particles[j].y);
+                        bgCtx.strokeStyle = `rgba(165, 180, 252, ${0.12 * (1 - dist / 130)})`;
+                        bgCtx.lineWidth = 0.6;
+                        bgCtx.stroke();
+                    }
+                }
+            }
+
+            particles.forEach(p => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.twinklePhase += p.twinkleSpeed;
+                if (p.x < 0) p.x = bgCanvas.width;
+                if (p.x > bgCanvas.width) p.x = 0;
+                if (p.y < 0) p.y = bgCanvas.height;
+                if (p.y > bgCanvas.height) p.y = 0;
+
+                const twinkle = 0.55 + Math.sin(p.twinklePhase) * 0.45;
+                bgCtx.beginPath();
+                bgCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                bgCtx.fillStyle = `rgba(255, 255, 255, ${p.alpha * twinkle})`;
+                bgCtx.shadowBlur = 6;
+                bgCtx.shadowColor = 'rgba(165, 180, 252, 0.55)';
+                bgCtx.fill();
+                bgCtx.shadowBlur = 0;
+            });
+            requestAnimationFrame(animateBg);
+        }
+        animateBg();
+
+        window.setTheme = function(themeName) {
+            playSound('click');
+            const body = document.getElementById('bodyRoot');
+            body.className = `text-slate-100 min-h-screen flex flex-col items-center justify-between p-4 py-8 theme-${themeName}`;
+            const themeBtns = { cyberpunk: document.getElementById('themeBtnCyber'), aurora: document.getElementById('themeBtnAurora'), gold: document.getElementById('themeBtnGold') };
+            Object.keys(themeBtns).forEach(key => {
+                const btn = themeBtns[key];
+                if (key === themeName) {
+                    btn.style.opacity = '1';
+                    btn.classList.add('theme-btn-active');
+                } else {
+                    btn.style.opacity = '0.6';
+                    btn.classList.remove('theme-btn-active');
+                }
+            });
+            speakSweetVoice("已切換風格");
+        };
+
+        // 🎵 音效與 BGM
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        window.toggleAudio = function() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('audioIcon');
+            icon.setAttribute('data-lucide', soundEnabled ? 'volume-2' : 'volume-x');
+            lucide.createIcons();
+        };
+
+        window.toggleBgm = function() {
+            bgmEnabled = !bgmEnabled;
+            const icon = document.getElementById('bgmIcon');
+            const text = document.getElementById('bgmText');
+            if (bgmEnabled) {
+                icon.setAttribute('data-lucide', 'music');
+                text.innerText = "BGM：播";
+                startBgmLoop();
+            } else {
+                icon.setAttribute('data-lucide', 'volume-x');
+                text.innerText = "BGM：停";
+                if (bgmInterval) clearInterval(bgmInterval);
+            }
+            lucide.createIcons();
+        };
+
+        function startBgmLoop() {
+            if (bgmInterval) clearInterval(bgmInterval);
+            const melody = [261.63, 329.63, 392.00, 523.25, 493.88, 392.00, 329.63, 293.66];
+            let noteIndex = 0;
+            bgmInterval = setInterval(() => {
+                if (!bgmEnabled) return;
+                try {
+                    const ctx = getAudioContext();
+                    const now = ctx.currentTime;
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(melody[noteIndex], now);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                    noteIndex = (noteIndex + 1) % melody.length;
+                } catch (e) {}
+            }, 500);
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                if (type === 'click') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(300, now + 0.08);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'tick') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(400 + Math.random() * 300, now);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'win') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+                    notes.forEach((freq, index) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.frequency.setValueAtTime(freq, now + index * 0.08);
+                        gain.gain.setValueAtTime(0.2, now + index * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.08 + 0.25);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(now + index * 0.08);
+                        osc.stop(now + index * 0.08 + 0.25);
+                    });
+                } else if (type === 'prank') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.exponentialRampToValueAtTime(80, now + 0.4);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                }
+            } catch (e) {}
+        }
+
+        const platePoopCats = [
+            { name: "黃金大便", rarity: "傳說大便", icon: "💩", bg: "bg-amber-950/80 border-amber-500", text: "text-amber-400" },
+            { name: "彩虹大便", rarity: "神話大便", icon: "🦄💩", bg: "bg-purple-950/80 border-purple-500", text: "text-purple-400" },
+            { name: "特級大便", rarity: "稀有大便", icon: "💩", bg: "bg-amber-900/60 border-amber-600", text: "text-amber-300" },
+            { name: "高級骨瓷盤", rarity: "傳說盤子", icon: "🍽️", bg: "bg-slate-800 border-slate-500", text: "text-slate-300" },
+            { name: "免洗紙盤", rarity: "普通盤子", icon: "🥣", bg: "bg-slate-900 border-slate-700", text: "text-slate-400" },
+            { name: "破掉的盤子", rarity: "破爛盤子", icon: "🏺", bg: "bg-red-950/80 border-red-500", text: "text-red-400" },
+            { name: "尊爵黃金盤", rarity: "神話盤子", icon: "✨🍽️", bg: "bg-yellow-950/80 border-yellow-500", text: "text-yellow-400" },
+            { name: "橘貓(橘子)", rarity: "神話貓咪", icon: "🐱", bg: "bg-orange-950/80 border-orange-500", text: "text-orange-400" },
+            { name: "黑貓(影之神)", rarity: "傳說貓咪", icon: "🐈‍⬛", bg: "bg-purple-950/80 border-purple-500", text: "text-purple-400" },
+            { name: "三花貓", rarity: "稀有貓咪", icon: "🐈", bg: "bg-pink-950/80 border-pink-500", text: "text-pink-400" },
+            { name: "呆萌白貓", rarity: "普通貓咪", icon: "🐱", bg: "bg-slate-900 border-slate-700", text: "text-slate-300" },
+            { name: "正在踩奶的貓", rarity: "可愛貓咪", icon: "🐾🐱", bg: "bg-indigo-950/80 border-indigo-500", text: "text-indigo-400" }
+        ];
+
+        const roulettePrizes = [
+            { text: "黃金大便", icon: "💩", color: "#b45309" },
+            { text: "破損紙盤", icon: "🏺", color: "#b91c1c" },
+            { text: "傲嬌貓皇", icon: "🐱", color: "#c2410c" },
+            { text: "尊爵盤子", icon: "🍽️", color: "#374151" },
+            { text: "高級衛生紙", icon: "🧻", color: "#047857" },
+            { text: "空氣折價券", icon: "🎟️", color: "#4338ca" },
+            { text: "彩虹大便", icon: "🦄💩", color: "#7e22ce" },
+            { text: "億萬富翁(夢裡)", icon: "💰", color: "#b45309" }
+        ];
+
+        const normalPrizePool = [
+            { rarity: "搞笑獎", icon: "🧻", title: "神秘小禮物(衛生紙一張)", desc: "絕對實用的尊爵級消耗品，擦眼淚擦汗兩用" },
+            { rarity: "幽默獎", icon: "🎟️", title: "獲得本商城9.999折優惠券", desc: "省下 0.01% 的驚人超大折扣！" },
+            { rarity: "小確幸", icon: "🪙", title: "折1元", desc: "可以直接折抵新台幣 1 元現金！" },
+            { rarity: "尊榮頭銜", icon: "🏆", title: "獲得「盤子」稱號", desc: "恭喜解鎖商城最高榮譽稀有尊榮頭銜！" }
+        ];
+
+        let currentCardData = normalPrizePool[0];
+
+        function renderHiddenSpinnerItems() {
+            const track = document.getElementById('spinnerTrack');
+            track.parentElement.classList.add('slot-frame-active');
+            let html = '';
+            for (let i = 0; i < 15; i++) {
+                html += `
+                    <div class="slot-card flex-shrink-0 w-20 h-24 rounded-xl border-2 border-slate-700 bg-slate-900 flex flex-col items-center justify-center p-1.5 opacity-60">
+                        <div class="text-2xl animate-pulse">❓</div>
+                        <div class="text-[11px] font-black mt-1 text-slate-400">???</div>
+                        <div class="text-[9px] font-bold text-slate-500 mt-0.5">未知獎品</div>
+                    </div>
+                `;
+            }
+            track.innerHTML = html;
+            drawWheelCanvas();
+        }
+
+        function drawWheelCanvas() {
+            const canvas = document.getElementById('wheelCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const radius = width / 2;
+            const sliceAngle = (Math.PI * 2) / roulettePrizes.length;
+
+            ctx.clearRect(0, 0, width, height);
+
+            roulettePrizes.forEach((prize, index) => {
+                const startAngle = index * sliceAngle - Math.PI / 2;
+                const endAngle = (index + 1) * sliceAngle - Math.PI / 2;
+
+                // 每片扇形使用放射狀漸層，中心亮、外緣暗，質感更立體
+                const grad = ctx.createRadialGradient(radius, radius, radius * 0.15, radius, radius, radius);
+                grad.addColorStop(0, lightenColor(prize.color, 28));
+                grad.addColorStop(1, prize.color);
+
+                ctx.beginPath();
+                ctx.moveTo(radius, radius);
+                ctx.arc(radius, radius, radius - 4, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = grad;
+                ctx.fill();
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = '#ffffff40';
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(radius, radius);
+                ctx.rotate(startAngle + sliceAngle / 2);
+                ctx.textAlign = 'right';
+                ctx.shadowColor = 'rgba(0,0,0,.65)';
+                ctx.shadowBlur = 3;
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 11px "Inter", sans-serif';
+                ctx.fillText(prize.icon + ' ' + prize.text, radius - 14, 4);
+                ctx.restore();
+            });
+
+            // 外圈光澤環與內圈玻璃高光，提升整體精緻度
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(radius, radius, radius - 2, 0, Math.PI * 2);
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(255,255,255,.5)';
+            ctx.stroke();
+            ctx.restore();
+
+            const glossGrad = ctx.createLinearGradient(0, 0, 0, height);
+            glossGrad.addColorStop(0, 'rgba(255,255,255,.22)');
+            glossGrad.addColorStop(0.5, 'rgba(255,255,255,0)');
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(radius, radius, radius - 4, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.fillStyle = glossGrad;
+            ctx.fillRect(0, 0, width, height / 1.6);
+            ctx.restore();
+        }
+
+        function lightenColor(hex, percent) {
+            try {
+                const num = parseInt(hex.replace('#', ''), 16);
+                let r = (num >> 16) + Math.round(2.55 * percent);
+                let g = ((num >> 8) & 0x00ff) + Math.round(2.55 * percent);
+                let b = (num & 0x0000ff) + Math.round(2.55 * percent);
+                r = Math.min(255, r); g = Math.min(255, g); b = Math.min(255, b);
+                return `rgb(${r}, ${g}, ${b})`;
+            } catch (e) { return hex; }
+        }
+
+        async function loadTestimonials() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "orders"));
+                let reviews = [];
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    if (data.rating && data.rating > 0) {
+                        reviews.push({
+                            customer: data.customer || "匿名買家",
+                            product: data.product || "精選商品",
+                            rating: data.rating
+                        });
+                    }
+                });
+
+                const wall = document.getElementById('testimonialWall');
+                if (reviews.length === 0) {
+                    wall.innerHTML = `<div class="bg-slate-900/80 px-4 py-3 rounded-2xl shadow-sm border border-slate-800 text-xs text-slate-400 shrink-0">目前尚無評價，快來成為第一位好評買家吧！</div>`;
+                    return;
+                }
+
+                let htmlContent = '';
+                const displayList = [...reviews, ...reviews, ...reviews];
+                displayList.forEach(item => {
+                    const stars = '★'.repeat(item.rating);
+                    htmlContent += `
+                        <div class="bg-slate-900/80 backdrop-blur-md px-4 py-3 rounded-2xl shadow-sm border border-slate-800 text-xs text-slate-300 shrink-0 flex items-center gap-3">
+                            <div class="w-8 h-8 bg-indigo-500/20 text-indigo-400 font-black rounded-xl flex items-center justify-center text-xs border border-indigo-500/30">
+                                ${item.customer.charAt(0)}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="font-bold text-white">${item.customer}</span>
+                                    <span class="text-amber-400 text-[10px]">${stars}</span>
+                                </div>
+                                <p class="text-[11px] text-slate-400">購買：${item.product}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                wall.innerHTML = htmlContent;
+            } catch (e) {
+                console.error("載入好評牆失敗", e);
+            }
+        }
+
+        async function loadRightSideData() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "orders"));
+                let transactions = [];
+                let winnerList = [];
+
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const status = data.status || "";
+                    
+                    const isCompleted = status.includes('完成') || status.includes('送達');
+                    if (!isCompleted) return;
+
+                    const customer = data.customer || "神秘買家";
+                    const price = Number(data.price) || 0;
+                    const product = data.product || "精選商品";
+
+                    transactions.push({ customer, product, price });
+
+                    if (data.hasPlayed && data.wonPrize) {
+                        winnerList.push({
+                            customer,
+                            wonPrize: data.wonPrize,
+                            wonIcon: data.wonIcon || "🎁"
+                        });
+                    }
+                });
+
+                const liveList = document.getElementById('liveTransactionList');
+                if (transactions.length === 0) {
+                    liveList.innerHTML = `<div class="text-center py-4 text-xs text-slate-500">目前尚無已完成的消費紀錄</div>`;
+                } else {
+                    let txHtml = '';
+                    transactions.forEach(tx => {
+                        txHtml += `
+                            <div class="flex items-center justify-between p-2.5 bg-slate-950/60 rounded-xl border border-slate-800 text-xs">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 bg-indigo-500/20 text-indigo-400 rounded-lg flex items-center justify-center font-black text-[11px] border border-indigo-500/30">
+                                        ${tx.customer.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-white">${tx.customer}</span>
+                                        <p class="text-[10px] text-slate-400 truncate max-w-[120px]">購買 ${tx.product}</p>
+                                    </div>
+                                </div>
+                                <span class="text-indigo-400 font-bold">+NT$${tx.price.toLocaleString()}</span>
+                            </div>
+                        `;
+                    });
+                    liveList.innerHTML = txHtml;
+                }
+
+                const spenderList = document.getElementById('topSpenderList');
+                if (winnerList.length === 0) {
+                    spenderList.innerHTML = `<div class="text-center py-4 text-xs text-slate-500">尚無人完成訂單並抽獎，快來搶頭香！</div>`;
+                } else {
+                    let spHtml = '';
+                    winnerList.forEach((item) => {
+                        spHtml += `
+                            <div class="flex items-center justify-between p-2.5 bg-slate-950/60 rounded-xl border border-slate-800 text-xs">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="w-7 h-7 rounded-lg font-black flex items-center justify-center text-base bg-yellow-500/20 border border-yellow-500/30">${item.wonIcon}</span>
+                                    <div>
+                                        <span class="font-bold text-white">${item.customer}</span>
+                                        <p class="text-[10px] text-yellow-300">抽中：${item.wonPrize}</p>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full font-bold border border-yellow-500/30">已中獎</span>
+                            </div>
+                        `;
+                    });
+                    spenderList.innerHTML = spHtml;
+                }
+
+            } catch (e) {
+                console.error("載入右側數據失敗", e);
+            }
+        }
+
+        loadTestimonials();
+        loadRightSideData();
+
+        function updateOrderStatusProgress(status) {
+            const fill = document.getElementById('progressBarFill');
+            const s1Icon = document.getElementById('step1Icon'), s1Text = document.getElementById('step1Text');
+            const s2Icon = document.getElementById('step2Icon'), s2Text = document.getElementById('step2Text');
+            const s3Icon = document.getElementById('step3Icon'), s3Text = document.getElementById('step3Text');
+            const s4Icon = document.getElementById('step4Icon'), s4Text = document.getElementById('step4Text');
+
+            const icons = [s1Icon, s2Icon, s3Icon, s4Icon];
+            const texts = [s1Text, s2Text, s3Text, s4Text];
+            
+            icons.forEach(el => el.className = "w-8 h-8 rounded-full bg-slate-800 text-slate-500 flex items-center justify-center text-xs font-bold transition-all border border-slate-700");
+            texts.forEach(el => el.className = "text-[10px] font-semibold text-slate-500");
+
+            let activeStep = 1;
+            if (status.includes('備貨')) activeStep = 1;
+            else if (status.includes('出貨')) activeStep = 2;
+            else if (status.includes('運送') || status.includes('配送')) activeStep = 3;
+            else if (status.includes('完成') || status.includes('已完成') || status.includes('送達')) activeStep = 4;
+
+            let widthPercent = activeStep === 1 ? 0 : activeStep === 2 ? 33 : activeStep === 3 ? 66 : 100;
+            fill.style.width = widthPercent + '%';
+
+            for (let i = 0; i < activeStep; i++) {
+                icons[i].className = "w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-md transition-all ring-4 ring-indigo-500/20";
+                texts[i].className = "text-[10px] font-bold text-indigo-400";
+            }
+            // 目前所在階段加上呼吸光暈；已抵達完成階段給予慶祝彈跳
+            const currentIdx = activeStep - 1;
+            if (activeStep === 4) {
+                icons[currentIdx].classList.add('step-final-burst');
+            } else {
+                icons[currentIdx].classList.add('step-active-pulse');
+            }
+            return activeStep === 4;
+        }
+
+        window.searchOrder = async function() {
+            playSound('click');
+            const queryId = document.getElementById('searchOrderId').value.trim().toUpperCase();
+            if (!queryId) {
+                const input = document.getElementById('searchOrderId');
+                input.classList.add('shake-error');
+                setTimeout(() => input.classList.remove('shake-error'), 450);
+                alert('請輸入訂單編號！');
+                return;
+            }
+
+            const searchBtn = document.querySelector('button[onclick="searchOrder()"]');
+            if (searchBtn) searchBtn.classList.add('btn-loading');
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "orders"));
+                let found = null;
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    if (data.id && data.id.toUpperCase() === queryId) {
+                        found = { docId: docSnap.id, ...data };
+                    }
+                });
+
+                if (!found) {
+                    if (searchBtn) searchBtn.classList.remove('btn-loading');
+                    alert('找不到此訂單編號！');
+                    speakSweetVoice("找不到這個訂單編號哦！");
+                    document.getElementById('resultContainer').classList.add('hidden');
+                    return;
+                }
+
+                currentSelectedDocId = found.docId;
+                currentOrderData = found;
+
+                // 🚨 檢查是否被陷害 (Prank)
+                if (found.prankedBy) {
+                    playSound('prank');
+                    document.getElementById('prankTargetId').innerText = found.id;
+                    document.getElementById('prankSenderName').innerText = found.prankedBy;
+                    document.getElementById('prankOverlay').classList.remove('hidden');
+                    speakSweetVoice(`警告！您的訂單遭到 ${found.prankedBy} 惡意陷害！`);
+                }
+
+                document.getElementById('resCustomer').innerText = found.customer;
+                document.getElementById('resProduct').innerText = found.product;
+                document.getElementById('resPrice').innerText = `NT$${Number(found.price).toLocaleString()}`;
+                
+                const statusBadge = document.getElementById('resStatusBadge');
+                statusBadge.innerText = found.status;
+                statusBadge.className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/25 text-indigo-300 border border-indigo-500/30";
+
+                const isCompleted = updateOrderStatusProgress(found.status);
+                speakSweetVoice(`查詢成功！買家 ${found.customer}，您的訂單目前狀態為：${found.status}。`);
+
+                const pendingOrderNotice = document.getElementById('pendingOrderNotice');
+                const ratingSec = document.getElementById('ratingSection');
+                const ratedNotice = document.getElementById('ratedNotice');
+                const slotSection = document.getElementById('slotMachineSection');
+                const rouletteSection = document.getElementById('rouletteSection');
+                const scratchSection = document.getElementById('scratchSection');
+                const lockedNotice = document.getElementById('lockedNotice');
+                const prankSection = document.getElementById('prankSection');
+
+                pendingOrderNotice.classList.add('hidden');
+                ratingSec.classList.add('hidden');
+                ratedNotice.classList.add('hidden');
+                slotSection.classList.add('hidden');
+                rouletteSection.classList.add('hidden');
+                scratchSection.classList.add('hidden');
+                lockedNotice.classList.add('hidden');
+                prankSection.classList.add('hidden');
+
+                if (!isCompleted) {
+                    pendingOrderNotice.classList.remove('hidden');
+                } else {
+                    if (found.hasPlayed) {
+                        lockedNotice.classList.remove('hidden');
+                        prankSection.classList.remove('hidden');
+                    } else if (found.rating && found.rating > 0) {
+                        ratedNotice.classList.remove('hidden');
+                        slotSection.classList.remove('hidden');
+                        document.getElementById('spinBtn').disabled = false;
+                        document.getElementById('spinBtn').innerHTML = `<i data-lucide="dices" class="w-4 h-4"></i> 開始盤子抽獎 🍽️💩🐱`;
+                        document.getElementById('slotResultText').innerHTML = "";
+                        renderHiddenSpinnerItems();
+                    } else {
+                        ratingSec.classList.remove('hidden');
+                        setRating(5);
+                    }
+                }
+
+                const resultBox = document.getElementById('resultContainer');
+                resultBox.classList.remove('hidden');
+                resultBox.classList.remove('result-enter'); void resultBox.offsetWidth; resultBox.classList.add('result-enter');
+                if (searchBtn) searchBtn.classList.remove('btn-loading');
+                lucide.createIcons();
+            } catch (e) {
+                if (searchBtn) searchBtn.classList.remove('btn-loading');
+                alert('查詢發生錯誤：' + e.message);
+            }
+        };
+
+        window.closePrankOverlay = function() {
+            playSound('click');
+            document.getElementById('prankOverlay').classList.add('hidden');
+        };
+
+        window.setRating = function(stars) {
+            playSound('click');
+            selectedRating = stars;
+            const buttons = document.querySelectorAll('#starSelector button');
+            buttons.forEach((btn, index) => {
+                btn.className = index < stars ? 'text-2xl text-amber-400 star-glow-active transition' : 'text-2xl text-slate-600 hover:text-amber-400 transition';
+                if (index < stars) {
+                    btn.classList.remove('star-pop'); void btn.offsetWidth; btn.classList.add('star-pop');
+                }
+            });
+        };
+
+        window.submitRating = async function() {
+            playSound('click');
+            if (!currentSelectedDocId) return;
+            try {
+                const orderRef = doc(db, "orders", currentSelectedDocId);
+                await updateDoc(orderRef, { rating: selectedRating });
+                
+                speakSweetVoice("謝謝您的五星好評！已為您解鎖盤子遊戲！");
+
+                document.getElementById('ratingSection').classList.add('hidden');
+                document.getElementById('ratedNotice').classList.remove('hidden');
+                document.getElementById('slotMachineSection').classList.remove('hidden');
+                
+                const spinBtn = document.getElementById('spinBtn');
+                spinBtn.disabled = false;
+                spinBtn.innerHTML = `<i data-lucide="dices" class="w-4 h-4"></i> 開始盤子抽獎 🍽️💩🐱`;
+                document.getElementById('slotResultText').innerHTML = "";
+                document.getElementById('rouletteSection').classList.add('hidden');
+                document.getElementById('scratchSection').classList.add('hidden');
+                renderHiddenSpinnerItems();
+
+                lucide.createIcons();
+                loadTestimonials();
+
+                try { confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 }, colors: ['#818cf8', '#c4b5fd', '#f472b6', '#fde68a'] }); } catch (e) {}
+
+            } catch (err) {
+                alert('送出評價失敗：' + err.message);
+            }
+        };
+
+        // 🍽️ 第一關：盤子拉霸抽獎動畫
+        window.startFruitSpinner = async function() {
+            playSound('click');
+            speakSweetVoice("第一關盤子拉霸轉動中！來看看你抽到什麼！");
+            const spinBtn = document.getElementById('spinBtn');
+            const resultText = document.getElementById('slotResultText');
+            const track = document.getElementById('spinnerTrack');
+
+            spinBtn.disabled = true;
+            resultText.innerText = "🌀 拉霸機高速滾동中...";
+
+            // 🐛 Bug 修正：若帶有 prankedBy 詛咒，拉霸強制出大便
+            let targetItem;
+            if (currentOrderData && currentOrderData.prankedBy) {
+                const poopList = platePoopCats.filter(item => item.name.includes('大便'));
+                targetItem = poopList[Math.floor(Math.random() * poopList.length)];
+            } else {
+                targetItem = platePoopCats[Math.floor(Math.random() * platePoopCats.length)];
+            }
+
+            const customList = [];
+            for (let i = 0; i < 28; i++) {
+                if (i === 18) {
+                    customList.push(targetItem);
+                } else {
+                    customList.push(platePoopCats[Math.floor(Math.random() * platePoopCats.length)]);
+                }
+            }
+
+            let html = '';
+            customList.forEach((item, idx) => {
+                html += `
+                    <div class="slot-card flex-shrink-0 w-20 h-24 rounded-xl border-2 flex flex-col items-center justify-center p-1.5 transition-all ${item.bg}" data-index="${idx}">
+                        <div class="text-2xl">${item.icon}</div>
+                        <div class="text-[11px] font-black mt-1 text-white truncate w-full text-center">${item.name}</div>
+                        <div class="text-[9px] font-bold ${item.text} mt-0.5">${item.rarity}</div>
+                    </div>
+                `;
+            });
+            track.innerHTML = html;
+
+            const cards = track.children;
+            let scrollStep = 0;
+            const maxSteps = 18;
+
+            const rollInterval = setInterval(() => {
+                playSound('tick');
+                if (scrollStep < maxSteps) {
+                    cards[scrollStep].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                    scrollStep++;
+                } else {
+                    clearInterval(rollInterval);
+                    cards[18].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                    cards[18].className = `slot-card slot-card-winner flex-shrink-0 w-20 h-24 rounded-xl border-2 flex flex-col items-center justify-center p-1.5 transition-all ${targetItem.bg} ring-4 ring-yellow-400 scale-105`;
+                    track.parentElement.classList.remove('slot-frame-active');
+
+                    resultText.innerHTML = `🌟 拉霸中獎：<span class="text-yellow-300 font-black">${targetItem.name} (${targetItem.icon})</span>！`;
+                    resultText.classList.remove('result-text-win'); void resultText.offsetWidth; resultText.classList.add('result-text-win');
+                    spinBtn.innerText = "第一關通關完成";
+                    playSound('win');
+
+                    speakSweetVoice(`拉霸完成！你抽中了 ${targetItem.name}！接著解鎖第二關瘋狂幸運大輪盤！`);
+
+                    setTimeout(() => {
+                        const rouletteSec = document.getElementById('rouletteSection');
+                        rouletteSec.classList.remove('hidden');
+                        rouletteSec.scrollIntoView({ behavior: 'smooth' });
+                        lucide.createIcons();
+                    }, 500);
+
+                    try { confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 }, colors: ['#fde047', '#f59e0b', '#fff7ed', '#fbbf24'] }); } catch (e) {}
+                }
+            }, 90);
+        };
+
+        // 🎡 第二關：幸運大輪盤旋轉動畫
+        window.startRoulette = function() {
+            playSound('click');
+            speakSweetVoice("幸運大輪盤開始旋轉！看看命運會把你轉到哪裡去！");
+            const btn = document.getElementById('spinRouletteBtn');
+            const wheel = document.getElementById('rouletteWheel');
+            const resultText = document.getElementById('rouletteResultText');
+
+            btn.disabled = true;
+            btn.classList.add('btn-loading');
+            wheel.classList.add('roulette-spinning');
+            resultText.innerText = "🎡 輪盤旋轉中... 神秘獎項決定中...";
+
+            // 🐛 Bug 修正：若帶有 prankedBy 詛咒，輪盤強制轉到黃金大便
+            let winningIndex;
+            if (currentOrderData && currentOrderData.prankedBy) {
+                winningIndex = roulettePrizes.findIndex(p => p.text.includes('大便'));
+                if (winningIndex === -1) winningIndex = 0;
+            } else {
+                winningIndex = Math.floor(Math.random() * roulettePrizes.length);
+            }
+
+            const sliceDegree = 360 / roulettePrizes.length;
+            const targetDegree = 1800 + (roulettePrizes.length - winningIndex) * sliceDegree - sliceDegree / 2;
+            currentWheelAngle += targetDegree;
+
+            wheel.style.transform = `rotate(${currentWheelAngle}deg)`;
+
+            let ticks = 0;
+            const tickInterval = setInterval(() => {
+                playSound('tick');
+                ticks++;
+                if (ticks > 25) clearInterval(tickInterval);
+            }, 150);
+
+            setTimeout(() => {
+                const wonPrize = roulettePrizes[winningIndex];
+                wheel.classList.remove('roulette-spinning');
+                btn.classList.remove('btn-loading');
+                resultText.innerHTML = `🎉 輪盤加碼大獎：<span class="text-purple-300 font-black">${wonPrize.icon} ${wonPrize.text}</span>！`;
+                resultText.classList.remove('result-text-win'); void resultText.offsetWidth; resultText.classList.add('result-text-win');
+                btn.innerText = "輪盤彩蛋完成";
+                playSound('win');
+                speakSweetVoice(`太神啦！輪盤加碼抽中了 ${wonPrize.text}！接著準備刮開你的最終大獎！`);
+
+                // 🐛 Bug 修正：若帶有詛咒，刮刮樂獎品強制設定為大便/衛生紙懲罰
+                if (currentOrderData && currentOrderData.prankedBy) {
+                    currentCardData = { rarity: "詛咒懲罰獎", icon: "💩", title: "惡意陷害大便一份", desc: "因為你被朋友陷害，全盤皆墨只能拿大便！" };
+                } else {
+                    currentCardData = normalPrizePool[Math.floor(Math.random() * normalPrizePool.length)];
+                }
+
+                document.getElementById('cardRarity').innerText = currentCardData.rarity;
+                document.getElementById('cardIcon').innerText = currentCardData.icon;
+                document.getElementById('cardTitle').innerText = currentCardData.title;
+                document.getElementById('cardDesc').innerText = currentCardData.desc;
+
+                try {
+                    if (currentSelectedDocId) {
+                        const orderRef = doc(db, "orders", currentSelectedDocId);
+                        updateDoc(orderRef, {
+                            hasPlayed: true,
+                            wonPrize: currentCardData.title,
+                            wonIcon: currentCardData.icon
+                        }).then(() => {
+                            loadRightSideData();
+                            document.getElementById('prankSection').classList.remove('hidden');
+                        });
+                    }
+                } catch (e) {}
+
+                setTimeout(() => {
+                    const scratchSec = document.getElementById('scratchSection');
+                    scratchSec.classList.remove('hidden');
+                    scratchSec.scrollIntoView({ behavior: 'smooth' });
+                    initScratchCanvas();
+                    lucide.createIcons();
+                }, 600);
+
+                try { confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, colors: ['#c084fc', '#f472b6', '#818cf8', '#fbcfe8'] }); } catch (e) {}
+            }, 4000);
+        };
+
+        // 🕳️ 宇宙黑洞吞噬重抽系統
+        window.triggerBlackHoleReroll = function() {
+            playSound('prank');
+            const overlay = document.getElementById('blackHoleOverlay');
+            const box = document.getElementById('bhResultContainer');
+            overlay.classList.remove('hidden');
+
+            // 隨機判定：有 15% 機率中尊爵神話大獎，85% 機率中大黑洞毀滅大便
+            const isSuccess = Math.random() < 0.15;
+
+            if (isSuccess) {
+                box.innerHTML = `
+                    <div class="text-6xl animate-bounce">✨🧻🎟️✨</div>
+                    <h3 class="text-xl font-black text-yellow-400">奇蹟發生！黑洞吐出神話大獎！</h3>
+                    <p class="text-xs text-slate-200 bg-slate-950 p-4 rounded-xl border border-yellow-500/50">
+                        恭喜你打破黑洞定律！獲得：<strong class="text-yellow-300 text-sm">衛生紙3張 + 0.001元折價券</strong>！
+                    </p>
+                `;
+                speakSweetVoice("奇蹟發生！黑洞吐出了尊爵神話大獎！");
+                try { confetti({ particleCount: 200, spread: 120, origin: { y: 0.5 }, colors: ['#fde047', '#fff7ed', '#fbbf24', '#facc15'] }); } catch (e) {}
+            } else {
+                box.innerHTML = `
+                    <div class="text-7xl poop-alert-shake">💩🏺💩</div>
+                    <h3 class="text-xl font-black text-red-400">黑洞崩潰！全螢幕大便降臨！</h3>
+                    <p class="text-xs text-slate-300 bg-slate-950 p-4 rounded-xl border border-red-500/50 leading-relaxed">
+                        黑洞嫌棄你的貪婪，將你的螢幕徹底吞噬！現在滿畫面都是<strong class="text-amber-400 font-bold">盤子與大便</strong>，黑洞已永久封印，再也不能重抽囉！
+                    </p>
+                `;
+                speakSweetVoice("黑洞崩潰！全螢幕大便將你吞噬！");
+            }
+
+            // 隱藏黑洞按鈕，防止再次召喚
+            document.getElementById('blackHoleButtonWrapper').classList.add('hidden');
+        };
+
+        window.closeBlackHoleOverlay = function() {
+            playSound('click');
+            document.getElementById('blackHoleOverlay').classList.add('hidden');
+        };
+
+        // 🦝 發動陷害好友
+        window.sendPrank = async function() {
+            playSound('click');
+            const targetId = document.getElementById('targetPrankId').value.trim().toUpperCase();
+            if (!targetId) {
+                alert('請輸入要陷害的好友訂單編號！');
+                return;
+            }
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "orders"));
+                let targetDocRef = null;
+                let targetFoundName = "";
+
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    if (data.id && data.id.toUpperCase() === targetId) {
+                        targetDocRef = doc(db, "orders", docSnap.id);
+                        targetFoundName = data.customer;
+                    }
+                });
+
+                if (!targetDocRef) {
+                    alert('找不到該好友的訂單編號，無法陷害！');
+                    return;
+                }
+
+                const senderName = currentOrderData ? currentOrderData.customer : "神祕好心人";
+                await updateDoc(targetDocRef, {
+                    prankedBy: senderName
+                });
+
+                alert(`成功陷害訂單 ${targetId}（買家：${targetFoundName}）！他下次一查就會獲得大便詛咒囉！💩`);
+                speakSweetVoice("陷害成功！你的朋友完蛋囉！");
+                document.getElementById('targetPrankId').value = "";
+            } catch (e) {
+                alert('陷害失敗：' + e.message);
+            }
+        };
+
+        function initScratchCanvas() {
+            const canvas = document.getElementById('scratchCanvas');
+            const ctx = canvas.getContext('2d');
+            isScratchedCompleted = false;
+            document.getElementById('downloadCardBtn').classList.add('hidden');
+            document.getElementById('scratchCardShell').classList.remove('scratch-card-revealed');
+            const statusEl0 = document.getElementById('scratchStatusText');
+            statusEl0.innerText = "👇 開始動手刮開銀漆吧！";
+            statusEl0.classList.add('scratch-status-ready');
+
+            ctx.globalCompositeOperation = 'source-over';
+
+            // 金屬箔漸層底色，取代單一灰色，質感更高級
+            const foilGrad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            foilGrad.addColorStop(0, '#94a3b8');
+            foilGrad.addColorStop(0.35, '#64748b');
+            foilGrad.addColorStop(0.65, '#475569');
+            foilGrad.addColorStop(1, '#94a3b8');
+            ctx.fillStyle = foilGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 細緻雜訊顆粒，增加金屬刮刮卡質感
+            ctx.fillStyle = '#334155';
+            for (let i = 0; i < 2200; i++) {
+                ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1.4, 1.4);
+            }
+            ctx.fillStyle = 'rgba(255,255,255,.35)';
+            for (let i = 0; i < 900; i++) {
+                ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1, 1);
+            }
+
+            // 斜向高光條紋，模擬光澤反射
+            ctx.save();
+            ctx.globalAlpha = 0.18;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 14;
+            for (let x = -canvas.height; x < canvas.width; x += 34) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x + canvas.height, canvas.height);
+                ctx.stroke();
+            }
+            ctx.restore();
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 16px "Inter", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.shadowColor = 'rgba(0,0,0,.4)';
+            ctx.shadowBlur = 4;
+            ctx.fillText('✨ 趣味獎項刮刮樂 ✨', canvas.width / 2, canvas.height / 2 - 10);
+            ctx.font = '12px "Inter", sans-serif';
+            ctx.fillText('(按住並滑動手指刮開)', canvas.width / 2, canvas.height / 2 + 15);
+            ctx.shadowBlur = 0;
+
+            let isDrawing = false;
+            let lastPos = null;
+            function scratch(x, y) {
+                ctx.globalCompositeOperation = 'destination-out';
+                // 若滑動速度快，補上路徑線段避免出現斷點鋸齒
+                if (lastPos) {
+                    ctx.lineWidth = 44;
+                    ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    ctx.moveTo(lastPos.x, lastPos.y);
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                }
+                ctx.beginPath();
+                ctx.arc(x, y, 22, 0, Math.PI * 2, false);
+                ctx.fill();
+                lastPos = { x, y };
+                checkScratchProgress();
+            }
+
+            function getPosition(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            }
+
+            canvas.onmousedown = (e) => { isDrawing = true; lastPos = null; const pos = getPosition(e); scratch(pos.x, pos.y); };
+            canvas.onmousemove = (e) => { if (!isDrawing) return; const pos = getPosition(e); scratch(pos.x, pos.y); };
+            window.onmouseup = () => { isDrawing = false; lastPos = null; };
+            canvas.ontouchstart = (e) => { isDrawing = true; lastPos = null; const pos = getPosition(e); scratch(pos.x, pos.y); e.preventDefault(); };
+            canvas.ontouchmove = (e) => { if (!isDrawing) return; const pos = getPosition(e); scratch(pos.x, pos.y); e.preventDefault(); };
+            canvas.ontouchend = () => { isDrawing = false; lastPos = null; };
+        }
+
+        function checkScratchProgress() {
+            if (isScratchedCompleted) return;
+            const canvas = document.getElementById('scratchCanvas');
+            const ctx = canvas.getContext('2d');
+            const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let transparentPixels = 0;
+            for (let i = 3; i < pixels.length; i += 16) {
+                if (pixels[i] === 0) transparentPixels++;
+            }
+            if (transparentPixels / (pixels.length / 16) > 0.35) {
+                isScratchedCompleted = true;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const statusEl = document.getElementById('scratchStatusText');
+                statusEl.innerHTML = "🎉 刮開成功！不滿意的話可以召喚下方黑洞重抽！";
+                statusEl.classList.remove('scratch-status-ready');
+                document.getElementById('scratchCardShell').classList.add('scratch-card-revealed');
+                document.getElementById('downloadCardBtn').classList.remove('hidden');
+                playSound('win');
+                speakSweetVoice("刮開成功！快看看是不是你想要的大獎吧！");
+                lucide.createIcons();
+                try { confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#fbbf24', '#f59e0b', '#fef3c7', '#fde68a'] }); } catch (e) {}
+            }
+        }
+
+        window.downloadCardImage = function() {
+            playSound('click');
+            const canvas = document.createElement('canvas');
+            canvas.width = 600; canvas.height = 800;
+            const ctx = canvas.getContext('2d');
+
+            const bgGrad = ctx.createLinearGradient(0, 0, 600, 800);
+            bgGrad.addColorStop(0, '#ff007f'); bgGrad.addColorStop(0.5, '#7928ca'); bgGrad.addColorStop(1, '#4facfe');
+            ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, 600, 800);
+
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+            ctx.beginPath(); ctx.roundRect(30, 30, 540, 740, 24); ctx.fill();
+            ctx.lineWidth = 6; ctx.strokeStyle = '#fde047'; ctx.stroke();
+
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+            ctx.beginPath(); ctx.roundRect(60, 65, 160, 45, 22); ctx.fill();
+
+            ctx.fillStyle = '#fde047';
+            ctx.font = 'bold 20px "Inter", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(currentCardData.rarity, 140, 95);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 80px sans-serif';
+            ctx.fillText(currentCardData.icon ? currentCardData.icon.replace(/[^^\p{Extended_Pictographic}]/gu, '') : '🎁', 300, 300);
+
+            ctx.font = 'bold 28px "Inter", sans-serif';
+            ctx.fillText(currentCardData.title, 300, 410);
+
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '18px "Inter", sans-serif';
+            ctx.fillText(currentCardData.desc, 300, 470);
+
+            const link = document.createElement('a');
+            link.download = `Shop_Prize_${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        };
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>
