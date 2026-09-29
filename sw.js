@@ -1,5 +1,5 @@
 // ZAH-SHOP Service Worker：網頁本體網路優先、靜態資源快取。Firebase 資料請求一律不攔截。
-const CACHE = 'zah-shop-v3';
+const CACHE = 'zah-shop-v4';
 const PRECACHE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 const CDN_HOSTS = ['cdn.tailwindcss.com', 'unpkg.com', 'cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'www.gstatic.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 
