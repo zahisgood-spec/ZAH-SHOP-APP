@@ -400,6 +400,16 @@ body.neo{background:#050814;background-image:radial-gradient(1200px 600px at 70%
 /* ===== 手機版（員工接單站）===== */
 @media(max-width:800px){
   html,body{-webkit-text-size-adjust:100%}
+#zah-bottom{display:none}
+@media(max-width:800px){
+  #zah-bottom{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;gap:.5rem;padding:.5rem .75rem calc(.5rem + env(safe-area-inset-bottom));background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid #e2e8f0;box-shadow:0 -10px 30px -18px rgba(15,23,42,.45)}
+  #zah-bottom a{flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.7rem .5rem;border-radius:.9rem;font-weight:800;font-size:14px;color:#fff;text-decoration:none;background:linear-gradient(135deg,#10b981,#047857)}
+  #zah-bottom a:nth-child(2){background:linear-gradient(135deg,#6366f1,#4338ca)}
+  #zah-bottom b{font-weight:400}
+}
+@media(max-width:800px){body{padding-bottom:calc(140px + env(safe-area-inset-bottom))!important}.lg,.conn{bottom:calc(70px + env(safe-area-inset-bottom))!important}}
+@media(max-width:800px){
+  html,body{-webkit-text-size-adjust:100%}
   input,select,textarea{font-size:16px!important}
   body{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
   body::before,body::after,.fl,.flr,.nb{display:none!important}
@@ -414,8 +424,8 @@ body.neo{background:#050814;background-image:radial-gradient(1200px 600px at 70%
   .go{padding:.75rem 1.1rem}
   .actb{padding:1rem}
   #toast{max-width:calc(100vw - 1.5rem);width:max-content;text-align:center}
-  .lg{bottom:calc(8px + env(safe-area-inset-bottom))!important}
-  .conn{bottom:calc(8px + env(safe-area-inset-bottom))!important}
+  .lg{bottom:calc(74px + env(safe-area-inset-bottom))!important}
+  .conn{bottom:calc(74px + env(safe-area-inset-bottom))!important}
   .h3i{height:auto!important;min-height:330px}
 }
 @media(max-width:420px){.lg{width:140px!important}.conn{padding:.4rem .7rem}.ptitle{font-size:1rem}.price{font-size:1.3rem}.stp .n{width:50px}}
@@ -837,6 +847,7 @@ document.addEventListener('click',async e=>{
 // 自動恢復登入（仍驗證帳號是否存在且未停用）
 try{const s=JSON.parse(localStorage.getItem('zahStaff')||'null');if(s&&s.exp>Date.now()){getDoc(doc(db,'staff',s.id)).then(x=>{if(x.exists()&&x.data().active!==false){me={id:s.id,name:s.name};enter()}else localStorage.removeItem('zahStaff')})}else if(s)localStorage.removeItem('zahStaff')}catch(e){}
 </script>
+<nav id="zah-bottom" aria-label="快捷"><a href="shop.html" target="_blank" rel="noopener"><b>🛒</b><span>開啟商城</span></a></nav>
 <script src="pwa.js" defer></script>
 </body>
 </html>
