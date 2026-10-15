@@ -118,6 +118,14 @@
     #successModal.flex > div { animation:modalPop .45s cubic-bezier(.34,1.35,.64,1) both; }
     #successModal.closing { animation:overlayOut .22s ease both; }
     #successModal.closing > div { animation:modalOut .22s ease both; }
+    #welcomeModal { z-index:95; }
+    #welcomeModal.flex { animation:overlayFade .3s ease both; }
+    #welcomeModal.flex > div { animation:modalPop .5s cubic-bezier(.34,1.35,.64,1) both; }
+    #welcomeModal.closing { animation:overlayOut .22s ease both; }
+    #welcomeModal.closing > div { animation:modalOut .22s ease both; }
+    #welcomeModal .wm-emoji { display:inline-block; animation:wmWave 1.6s ease-in-out .5s 2; transform-origin:70% 70%; }
+    @keyframes wmWave { 0%,100%{transform:rotate(0)} 20%{transform:rotate(16deg)} 40%{transform:rotate(-10deg)} 60%{transform:rotate(14deg)} 80%{transform:rotate(-6deg)} }
+    @media (prefers-reduced-motion: reduce) { #welcomeModal .wm-emoji { animation:none; } }
     @keyframes overlayFade { from{opacity:0} to{opacity:1} }
     @keyframes overlayOut { to{opacity:0} }
     @keyframes modalPop { from{opacity:0; transform:scale(.9) translateY(14px)} to{opacity:1; transform:none} }
@@ -144,25 +152,163 @@
 
     @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; transition-duration:.01ms !important; } .reveal{opacity:1;transform:none} }
   </style>
+<style id="zad-css">
+/* ===== 展商城 廣告影片區塊 ===== */
+.zad{position:relative;z-index:10;width:100%;margin:0 auto 1.5rem;opacity:0;transform:translateY(28px) scale(.98);transition:opacity .9s ease,transform .9s cubic-bezier(.16,1,.3,1)}
+.zad.in{opacity:1;transform:none}
+.zad.is-closed .zad-body{display:none}
+.zad-aura{position:absolute;inset:-18px;border-radius:2.2rem;background:radial-gradient(60% 70% at 25% 30%,rgba(34,211,238,.35),transparent 70%),radial-gradient(60% 70% at 80% 75%,rgba(217,70,239,.35),transparent 70%);filter:blur(28px);opacity:.55;pointer-events:none;animation:zadAura 7s ease-in-out infinite}
+@keyframes zadAura{0%,100%{opacity:.4;transform:scale(.98)}50%{opacity:.75;transform:scale(1.03)}}
+.zad-frame{position:relative;border-radius:1.6rem;padding:3px;overflow:hidden;isolation:isolate;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 26px 70px -22px rgba(99,102,241,.7),0 0 46px -12px rgba(34,211,238,.45)}
+.zad-frame::before,.zad-frame::after{content:'';position:absolute;left:50%;top:50%;width:230%;aspect-ratio:1;z-index:0;pointer-events:none;transform:translate(-50%,-50%) rotate(0deg)}
+.zad-frame::before{background:conic-gradient(from 0deg,#22d3ee,#6366f1,#d946ef,#f472b6,#fbbf24,#22d3ee);opacity:.75;animation:zadRot 9s linear infinite}
+.zad-frame::after{background:conic-gradient(from 0deg,transparent 0 62%,rgba(34,211,238,.0) 62%,#22d3ee 78%,#ffffff 88%,#f0abfc 94%,transparent 100%);animation:zadRot 3.6s linear infinite}
+@keyframes zadRot{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.zad-frame .zad-inner{position:relative;z-index:1}
+.zad-inner{border-radius:calc(1.6rem - 3px);background:linear-gradient(160deg,#0b1020 0%,#150f2e 60%,#1b0f33 100%);overflow:hidden;color:#e2e8f0;font-family:'Inter',system-ui,sans-serif}
+.zad-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.7rem 1rem}
+.zad-live{display:inline-flex;align-items:center;gap:.45rem;font-size:.68rem;font-weight:800;letter-spacing:.18em;color:#67e8f9}
+.zad-live i{width:7px;height:7px;border-radius:50%;background:#22d3ee;box-shadow:0 0 0 0 rgba(34,211,238,.7);animation:zadPing 1.8s infinite}
+@keyframes zadPing{70%{box-shadow:0 0 0 8px rgba(34,211,238,0)}100%{box-shadow:0 0 0 0 rgba(34,211,238,0)}}
+.zad-fold{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;font-size:.7rem;font-weight:700;padding:.3rem .7rem;border-radius:999px;cursor:pointer;transition:.2s}
+.zad-fold:hover{background:rgba(255,255,255,.14);color:#fff}
+.zad-body{display:grid;grid-template-columns:1fr}
+.zad-stage{position:relative;aspect-ratio:16/9;background:#05070f;cursor:pointer;overflow:hidden;isolation:isolate}
+.zad-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.zad-stage::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to top,rgba(5,7,15,.85) 0%,rgba(5,7,15,0) 38%),radial-gradient(120% 90% at 50% 50%,transparent 60%,rgba(5,7,15,.45) 100%)}
+.zad-big{position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);width:76px;height:76px;border-radius:50%;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,#22d3ee,#6366f1 55%,#d946ef);box-shadow:0 0 0 0 rgba(139,92,246,.6),0 14px 34px -8px rgba(99,102,241,.8);animation:zadPulse 2.2s infinite;transition:transform .25s,opacity .3s}
+.zad-big:hover{transform:translate(-50%,-50%) scale(1.1)}
+.zad-big svg{width:30px;height:30px;margin-left:3px}
+@keyframes zadPulse{70%{box-shadow:0 0 0 22px rgba(139,92,246,0),0 14px 34px -8px rgba(99,102,241,.8)}100%{box-shadow:0 0 0 0 rgba(139,92,246,0),0 14px 34px -8px rgba(99,102,241,.8)}}
+.zad.playing .zad-big{opacity:0;pointer-events:none}
+.zad-hint{position:absolute;z-index:3;top:.75rem;right:.75rem;display:none;align-items:center;gap:.4rem;font-size:.72rem;font-weight:700;color:#fff;padding:.4rem .75rem;border-radius:999px;background:rgba(15,23,42,.65);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);animation:zadBob 2s ease-in-out infinite;pointer-events:none}
+.zad.playing.muted .zad-hint{display:inline-flex}
+@keyframes zadBob{50%{transform:translateY(-3px)}}
+.zad-ctrl{position:absolute;z-index:3;left:0;right:0;bottom:0;display:flex;align-items:center;gap:.6rem;padding:.65rem .8rem;opacity:0;transform:translateY(6px);transition:.3s}
+.zad-stage:hover .zad-ctrl,.zad.paused .zad-ctrl,.zad-stage:focus-within .zad-ctrl{opacity:1;transform:none}
+@media (hover:none){.zad-ctrl{opacity:1;transform:none}}
+.zad-btn{width:34px;height:34px;flex:none;border-radius:50%;border:0;cursor:pointer;color:#fff;background:rgba(255,255,255,.14);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;transition:.2s}
+.zad-btn:hover{background:rgba(255,255,255,.3);transform:scale(1.08)}
+.zad-btn svg{width:16px;height:16px}
+.zad-bar{flex:1;height:5px;border-radius:99px;background:rgba(255,255,255,.2);cursor:pointer;position:relative}
+.zad-bar::before{content:'';position:absolute;inset:-9px 0}
+.zad-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#22d3ee,#a855f7,#f472b6);box-shadow:0 0 10px rgba(168,85,247,.8)}
+.zad-time{font-size:.68rem;font-weight:700;font-variant-numeric:tabular-nums;color:#e2e8f0;min-width:2.2rem;text-align:right}
+.zad .i-pause,.zad.playing .i-play{display:none}.zad.playing .i-pause{display:block}
+.zad .i-on,.zad.muted .i-on{display:none}.zad.muted .i-off{display:block}.zad .i-off{display:none}
+.zad-info{padding:1.1rem 1.25rem 1.3rem;display:flex;flex-direction:column;justify-content:center;gap:.55rem}
+.zad-kicker{font-size:.68rem;font-weight:800;letter-spacing:.2em;color:#a5b4fc}
+.zad-title{font-size:1.35rem;line-height:1.25;font-weight:900;background:linear-gradient(90deg,#67e8f9,#e0e7ff,#f0abfc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.zad-sub{font-size:.8rem;line-height:1.7;color:#94a3b8}
+.zad-cta{align-self:flex-start;margin-top:.35rem;display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.2rem;border-radius:.9rem;font-size:.85rem;font-weight:800;color:#fff;text-decoration:none;cursor:pointer;border:0;background:linear-gradient(135deg,#6366f1,#a855f7);box-shadow:0 10px 24px -10px rgba(168,85,247,.9);position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s}
+.zad-cta:hover{transform:translateY(-2px);box-shadow:0 16px 30px -10px rgba(168,85,247,1)}
+.zad-cta::after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);animation:zadShine 3.4s ease-in-out infinite}
+@keyframes zadShine{0%,60%{left:-60%}100%{left:140%}}
+@media (min-width:1024px){
+  .zad--wide .zad-body{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+  .zad--wide .zad-info{padding:1.5rem 1.75rem}
+  .zad--wide .zad-title{font-size:1.7rem}
+}
+@media (prefers-reduced-motion:reduce){.zad *,.zad{animation:none!important;transition:none!important}.zad{opacity:1;transform:none}}
+.zad-count{position:absolute;z-index:4;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;background:radial-gradient(70% 70% at 50% 50%,rgba(8,10,25,.55),rgba(5,7,15,.88));backdrop-filter:blur(3px);pointer-events:none}
+.zad.counting .zad-count{display:flex;animation:zadFade .35s ease both}
+@keyframes zadFade{from{opacity:0}to{opacity:1}}
+.zad.counting .zad-big,.zad.counting .zad-ctrl,.zad.counting .zad-hint{display:none!important}
+.zad-ring{position:relative;width:116px;height:116px;display:flex;align-items:center;justify-content:center}
+.zad-ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);overflow:visible}
+.zad-ring circle{fill:none;stroke-width:5;stroke-linecap:round}
+.zad-ring .bg{stroke:rgba(255,255,255,.12)}
+.zad-ring .fg{stroke:url(#zadGrad);stroke-dasharray:327;stroke-dashoffset:327;filter:drop-shadow(0 0 8px rgba(168,85,247,.9))}
+.zad-ring.tick .fg{animation:zadRing 1s linear forwards}
+@keyframes zadRing{from{stroke-dashoffset:327}to{stroke-dashoffset:0}}
+.zad-num{position:relative;font-size:3.4rem;font-weight:900;line-height:1;color:#fff;text-shadow:0 0 22px rgba(168,85,247,.95),0 0 44px rgba(34,211,238,.6)}
+.zad-ring.tick .zad-num{animation:zadPop 1s cubic-bezier(.16,1,.3,1)}
+@keyframes zadPop{0%{transform:scale(1.7);opacity:0}25%{transform:scale(1);opacity:1}85%{opacity:1}100%{transform:scale(.88);opacity:.5}}
+.zad-count-label{font-size:.78rem;font-weight:800;letter-spacing:.3em;color:#c7d2fe}
+.zad.ended .zad-big{animation:zadPulse 2.2s infinite}
+.zad.fresh:not(.counting) .zad-stage::after{opacity:0}
+.zad.fresh .zad-ctrl{display:none}
+.zad-video{background:#fff}
+</style>
+
+<style id="zah-tabs-css">
+  /* 🧭 分頁列 */
+  #zahTabs{position:sticky;top:.6rem;z-index:80;display:grid;grid-template-columns:repeat(4,1fr);gap:.25rem;padding:.35rem;margin:0 auto 1.25rem;max-width:34rem;
+    border-radius:1.1rem;background:rgba(255,255,255,.78);backdrop-filter:blur(18px) saturate(1.6);border:1px solid rgba(226,232,240,.9);box-shadow:0 14px 40px -18px rgba(15,23,42,.35)}
+  #zahTabs button{position:relative;display:flex;align-items:center;justify-content:center;gap:.3rem;padding:.7rem .3rem;border-radius:.8rem;font-size:.8rem;font-weight:800;color:#475569;background:transparent;border:0;cursor:pointer;transition:background .25s,color .25s,box-shadow .25s,transform .2s}
+  #zahTabs button:hover{background:rgba(99,102,241,.1);color:#4f46e5}
+  #zahTabs button:active{transform:scale(.97)}
+  #zahTabs button.on{color:#fff;background:linear-gradient(135deg,#4f46e5,#7c3aed);box-shadow:0 10px 20px -10px rgba(79,70,229,.7)}
+  .tab-dot{display:none;position:absolute;top:.45rem;right:.8rem;width:8px;height:8px;border-radius:50%;background:#f43f5e;box-shadow:0 0 0 2px #fff}
+  #zahTabs button.has-dot .tab-dot{display:block}
+  .tab-panel[hidden]{display:none!important}
+  .tab-panel{animation:tabIn .45s cubic-bezier(.16,1,.3,1) backwards}
+  @keyframes tabIn{from{opacity:0;transform:translateY(12px)}}
+  #tab-order > div.rounded-3xl, #myOrdersPanel{max-width:36rem;margin-inline:auto}
+  .fav-btn{position:absolute;right:.6rem;bottom:.6rem;z-index:3;width:34px;height:34px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;font-size:1rem;line-height:1;color:#cbd5e1;background:rgba(255,255,255,.92);box-shadow:0 6px 14px -6px rgba(15,23,42,.4);transition:transform .2s,color .2s}
+  .fav-btn:hover{transform:scale(1.12)}
+  .fav-btn.on{color:#f43f5e;animation:favPop .4s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes favPop{50%{transform:scale(1.35)}}
+  #orderForm #qty{background:#f8fafc!important;border-color:#e2e8f0!important}
+  #orderForm #qty:focus{background:#fff!important;border-color:#6366f1!important}
+  /* 🖼️ 品牌 Logo */
+  .brand-logo{margin:0 auto;width:min(220px,58vw);animation:brandFloat 4.2s ease-in-out infinite}
+  .brand-logo img{display:block;width:100%;height:auto;filter:drop-shadow(0 12px 18px rgba(30,27,75,.18))}
+</style>
+<script>try{var __s=JSON.parse(localStorage.getItem('zahSession'));document.documentElement.classList.add(__s&&__s.name?'has-session':'zah-locked');}catch(e){document.documentElement.classList.add('zah-locked');}</script>
 </head>
 
-<body class="min-h-screen bg-slate-100 text-slate-800">
+<body class="min-h-screen bg-slate-100 text-slate-800" data-tab="home">
+  <!-- 🔐 登入／註冊閘門：未登入時蓋住整個網站 -->
+  <div id="authGate" class="zg-gate" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <div class="zg-card zg-gate-card" style="--glow:1.3">
+      <span class="zg-spark" style="top:8%;left:12%;animation-delay:.1s">✦</span>
+      <span class="zg-spark" style="top:14%;left:86%;animation-delay:1.1s;font-size:.55rem">✦</span>
+      <span class="zg-spark" style="top:78%;left:90%;animation-delay:2s">✦</span>
+      <span class="zg-spark" style="top:88%;left:8%;animation-delay:.7s;font-size:.55rem">✦</span>
+      <div class="zg-brand zg-text">ZAH·SHOP　MEMBERS</div>
+      <div class="zg-crown" aria-hidden="true">👑</div>
+      <h2 id="authTitle" class="zg-join-title zg-text">歡迎來到展商城</h2>
+      <p id="authSub" class="zg-join-sub">請先登入或註冊會員，才能瀏覽與下單。</p>
+      <div id="authTabs" class="zg-seg" role="tablist">
+        <button type="button" data-mode="login" class="on">登入</button>
+        <button type="button" data-mode="register">註冊</button>
+      </div>
+      <form id="authForm" novalidate>
+        <input id="authName" maxlength="40" placeholder="帳號名稱（也是下單時的顧客名稱）" autocomplete="username" class="zg-input">
+        <input id="authPw" type="password" maxlength="64" placeholder="密碼" autocomplete="current-password" class="zg-input">
+        <input id="authPw2" type="password" maxlength="64" placeholder="再輸入一次密碼" autocomplete="new-password" class="zg-input" hidden>
+        <p id="authErr" class="zg-err" role="alert"></p>
+        <button id="authSubmit" type="submit" class="zg-btn w-full">登入</button>
+      </form>
+      <p class="zg-gate-foot">密碼經加密後儲存，連店家也看不到。<br>忘記密碼請聯絡店家，由店家為你重設。</p>
+    </div>
+  </div>
+
   <div id="scrollProgress"></div>
   <div id="spotlight" aria-hidden="true"></div>
   <div id="toastHost" class="fixed top-4 inset-x-0 z-[100] flex flex-col items-center gap-2 pointer-events-none px-4"></div>
 
-  <main class="min-h-screen flex items-center justify-center px-4 py-10">
+  <main class="min-h-screen flex items-start justify-center px-4 py-10">
     <section class="w-full max-w-xl">
 
       <!-- 標題 -->
       <div class="text-center mb-7 rise">
-        <div class="brand-badge mx-auto w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-200">
-          <i data-lucide="shopping-bag" class="w-6 h-6"></i>
-        </div>
-        <h1 class="title-shimmer mt-4 text-2xl font-extrabold">展商城</h1>
+        <h1 class="brand-logo"><img id="brandLogoImg" alt="展商城 ZAH-SHOP" width="440" height="316" decoding="async"></h1>
         <p class="mt-1 text-sm text-slate-500">顧客下單</p>
       </div>
 
+      <!-- 🧭 分頁列：主頁／商品區／下單區 -->
+      <nav id="zahTabs" role="tablist" aria-label="商城分頁">
+        <button type="button" role="tab" data-tab="home" class="on" aria-selected="true"><span>🏠</span>主頁</button>
+        <button type="button" role="tab" data-tab="products" aria-selected="false"><span>🛍️</span>商品區</button>
+        <button type="button" role="tab" data-tab="order" aria-selected="false"><span>🧾</span>下單區<i class="tab-dot"></i></button>
+        <button type="button" role="tab" data-tab="member" aria-selected="false"><span>👤</span>會員</button>
+      </nav>
+      <div id="zahTabsAnchor"></div>
+
+      <!-- ===== 🏠 主頁 ===== -->
+      <div id="tab-home" class="tab-panel" role="tabpanel">
       <!-- 🏠 首頁 Banner／公告／跑馬燈：由 index.html 的首頁設定同步 -->
       <div id="homepageContent" class="space-y-4 mb-6 hidden">
         <div id="homepageBanner" class="homepage-banner-wrap hidden">
@@ -184,23 +330,90 @@
         </div>
       </div>
 
-      <!-- 商品目錄 -->
-      <div class="mb-6">
-        <div class="flex items-end justify-between mb-3 px-1 reveal">
-          <div><h2 class="text-lg font-extrabold text-slate-900">熱門商品</h2><p class="text-xs text-slate-400 mt-1">選擇商品後會自動帶入下方訂單表格</p></div>
-        </div>
-        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-            <div class="h-32 skeleton"></div>
-            <div class="p-4 space-y-2"><div class="h-3 w-1/3 rounded skeleton"></div><div class="h-4 w-2/3 rounded skeleton"></div><div class="h-3 w-full rounded skeleton"></div><div class="h-9 w-full rounded-xl skeleton mt-3"></div></div>
+<!-- 🎬 展商城 15 秒廣告 -->
+<section class="zad fresh zad--stack" id="zahAd" aria-label="展商城 23 秒限時活動廣告">
+  <div class="zad-aura" aria-hidden="true"></div>
+  <div class="zad-frame"><div class="zad-inner">
+    <div class="zad-head">
+      <span class="zad-live"><i></i>NOW SHOWING</span>
+      <button type="button" class="zad-fold" id="zadFold" aria-expanded="true">收合</button>
+    </div>
+    <div class="zad-body">
+      <div class="zad-stage" id="zadStage">
+        <video class="zad-video" id="zadVideo" playsinline preload="metadata" poster="zah-ad3-poster.jpg">
+          <source src="zah-ad3.mp4" type="video/mp4">
+        </video>
+        <div class="zad-count" id="zadCount" aria-live="polite">
+          <div class="zad-ring" id="zadRing">
+            <svg viewBox="0 0 120 120"><defs><linearGradient id="zadGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset=".55" stop-color="#a855f7"/><stop offset="1" stop-color="#f472b6"/></linearGradient></defs><circle class="bg" cx="60" cy="60" r="52"/><circle class="fg" cx="60" cy="60" r="52"/></svg>
+            <span class="zad-num" id="zadNum">3</span>
           </div>
-          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-            <div class="h-32 skeleton"></div>
-            <div class="p-4 space-y-2"><div class="h-3 w-1/3 rounded skeleton"></div><div class="h-4 w-2/3 rounded skeleton"></div><div class="h-3 w-full rounded skeleton"></div><div class="h-9 w-full rounded-xl skeleton mt-3"></div></div>
+          <div class="zad-count-label">廣告即將開始</div>
+        </div>
+        <button type="button" class="zad-big" id="zadBig" aria-label="播放廣告">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="zad-hint">🔇 點一下開啟聲音</div>
+        <div class="zad-ctrl" id="zadCtrl">
+          <button type="button" class="zad-btn" id="zadPlay" aria-label="播放或暫停">
+            <svg class="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="i-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+          </button>
+          <div class="zad-bar" id="zadBar"><div class="zad-fill" id="zadFill"></div></div>
+          <span class="zad-time" id="zadTime">0:23</span>
+          <button type="button" class="zad-btn" id="zadMute" aria-label="開關聲音">
+            <svg class="i-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
+            <svg class="i-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor"/><path d="m22 9-6 6m0-6 6 6"/></svg>
+          </button>
+          <button type="button" class="zad-btn" id="zadFs" aria-label="全螢幕">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="zad-info">
+        <div class="zad-kicker">ZAH-SHOP · 23s</div>
+        <div class="zad-title">限時活動 · Robux 儲值</div>
+        <p class="zad-sub">10,000 Robux 遊戲贈禮 只要 NT$2,500，看完廣告直接下單。</p>
+        <a class="zad-cta" href="#products" onclick="event.preventDefault();zahTab('products')">立即選購 →</a>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+      <!-- 👋 主頁歡迎區 -->
+      <div class="shop-feature-panel mb-5 reveal">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+          <div>
+            <h2 class="font-extrabold text-slate-900">歡迎來到展商城</h2>
+            <p class="text-xs text-slate-400 mt-2">挑選商品 → 填寫資料 → 取得訂單編號，三步驟完成下單。</p>
+          </div>
+          <div class="flex gap-2 shrink-0">
+            <button type="button" onclick="zahTab('products')" class="premium-cta shine-sweep ripple-host px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold" style="--cta-shadow: rgba(79,70,229,.4);">🛍️ 逛商品區</button>
+            <button type="button" onclick="zahTab('order')" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">🧾 直接下單</button>
           </div>
         </div>
       </div>
 
+      <!-- 🔥 熱門商品排行榜 -->
+      <div id="popularProductsPanel" class="shop-feature-panel mb-5 hidden reveal">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h3 class="font-extrabold text-slate-900">🔥 熱門商品排行榜</h3>
+            <p class="text-xs text-slate-400 mt-1">依商品銷量資料排序</p>
+          </div>
+          <span class="text-[10px] px-2 py-1 rounded-full bg-rose-50 text-rose-600 font-bold">TOP 3</span>
+        </div>
+        <div id="popularProductsList" class="grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
+      </div>
+
+      </div>
+
+      <!-- ===== 🛍️ 商品區 ===== -->
+      <div id="tab-products" class="tab-panel" role="tabpanel" hidden>
+      <!-- 商品目錄 -->
+        <div class="flex items-end justify-between mb-3 px-1 reveal">
+          <div><h2 class="text-lg font-extrabold text-slate-900">商品區</h2><p class="text-xs text-slate-400 mt-1">點「立即購買」會自動帶入商品並前往下單區</p></div>
+        </div>
       <!-- 🛍️ 商城搜尋／分類 -->
       <div class="shop-feature-panel mb-5 reveal">
         <div class="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
@@ -219,22 +432,28 @@
           <div class="flex gap-2">
             <button id="shopSortHot" type="button" class="sort-btn sort-active px-4 py-3 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold hover:bg-rose-100">🔥 熱門</button>
             <button id="shopSortPrice" type="button" class="sort-btn px-4 py-3 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200">價格排序</button>
+            <button id="shopFavOnly" type="button" class="sort-btn px-4 py-3 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200">♥ 收藏</button>
           </div>
         </div>
       </div>
 
-      <!-- 🔥 熱門商品排行榜 -->
-      <div id="popularProductsPanel" class="shop-feature-panel mb-5 hidden reveal">
-        <div class="flex items-center justify-between mb-3">
-          <div>
-            <h3 class="font-extrabold text-slate-900">🔥 熱門商品排行榜</h3>
-            <p class="text-xs text-slate-400 mt-1">依商品銷量資料排序</p>
+      <div class="mb-6">
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+            <div class="h-32 skeleton"></div>
+            <div class="p-4 space-y-2"><div class="h-3 w-1/3 rounded skeleton"></div><div class="h-4 w-2/3 rounded skeleton"></div><div class="h-3 w-full rounded skeleton"></div><div class="h-9 w-full rounded-xl skeleton mt-3"></div></div>
           </div>
-          <span class="text-[10px] px-2 py-1 rounded-full bg-rose-50 text-rose-600 font-bold">TOP 3</span>
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+            <div class="h-32 skeleton"></div>
+            <div class="p-4 space-y-2"><div class="h-3 w-1/3 rounded skeleton"></div><div class="h-4 w-2/3 rounded skeleton"></div><div class="h-3 w-full rounded skeleton"></div><div class="h-9 w-full rounded-xl skeleton mt-3"></div></div>
+          </div>
         </div>
-        <div id="popularProductsList" class="grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
       </div>
 
+      </div>
+
+      <!-- ===== 🧾 下單區 ===== -->
+      <div id="tab-order" class="tab-panel" role="tabpanel" hidden>
       <!-- 下單表單 -->
       <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 reveal">
         <div class="flex items-center gap-3 pb-5 mb-6 border-b border-slate-100">
@@ -253,6 +472,7 @@
             <input id="customer" required maxlength="40"
               placeholder="請輸入您的名稱或暱稱"
               class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm outline-none transition focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+            <p id="memberDiscNote" class="hidden mt-2 text-xs font-bold"></p>
           </div>
 
           <div class="field">
@@ -268,6 +488,18 @@
               placeholder="請先從上方選擇商品，也可手動輸入"
               class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm outline-none transition focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
             <p id="selectedProductPrice" class="hidden mt-2 text-xs font-bold text-indigo-600"></p>
+            <p id="quoteHint" class="mt-2 text-xs font-bold text-violet-600">💬 手動輸入的商品沒有固定價格，送出後會由老闆先報價，報價完成才會處理訂單。</p>
+            <button type="button" onclick="zahTab('products')" class="mt-2 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition">🛍️ 到商品區挑選商品 →</button>
+          </div>
+
+          <div class="field">
+            <label class="block text-sm font-semibold text-slate-700 mb-2">數量</label>
+            <div class="flex items-center gap-3">
+              <button type="button" id="qtyMinus" aria-label="減少數量" class="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 text-lg font-black text-slate-600 transition">−</button>
+              <input id="qty" type="number" inputmode="numeric" min="1" max="99" value="1" class="w-20 text-center rounded-xl border px-3 py-3 text-sm font-bold outline-none focus:ring-4 focus:ring-indigo-500/10">
+              <button type="button" id="qtyPlus" aria-label="增加數量" class="w-11 h-11 rounded-xl bg-slate-100 hover:bg-slate-200 text-lg font-black text-slate-600 transition">＋</button>
+            </div>
+            <p id="orderTotal" class="hidden mt-3 text-sm font-extrabold text-slate-900"></p>
           </div>
 
           <div class="field">
@@ -284,6 +516,21 @@
               class="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm outline-none transition focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"></textarea>
           </div>
 
+          <div class="field">
+            <label class="block text-sm font-semibold text-slate-700 mb-2">優惠券代碼 <span class="font-normal text-slate-400">（可選）</span></label>
+            <div class="flex gap-2">
+              <input id="couponCode" maxlength="30" placeholder="輸入優惠券代碼" autocomplete="off" class="flex-1 min-w-0 uppercase rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm outline-none transition focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10">
+              <button type="button" id="couponApply" class="shrink-0 px-5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition">套用</button>
+            </div>
+            <p id="couponMsg" class="hidden mt-2 text-xs font-bold"></p>
+          </div>
+
+          <label class="flex items-center gap-2 text-xs text-slate-500 cursor-pointer select-none">
+            <input type="checkbox" id="rememberMe" checked class="w-4 h-4 accent-indigo-600"> 記住顧客名稱與遊戲 UID，下次自動填入
+          </label>
+
+          <p id="orderQuotaNote" class="hidden text-xs font-bold text-center"></p>
+
           <button id="submitBtn" type="submit"
             class="premium-cta shine-sweep ripple-host w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white py-3.5 font-bold text-sm transition disabled:opacity-50 disabled:cursor-not-allowed" style="--cta-shadow: rgba(79,70,229,.5);">
             送出訂單
@@ -291,11 +538,66 @@
         </form>
       </div>
 
+      <div id="myOrdersPanel" class="shop-feature-panel mt-5 hidden">
+        <h3 class="font-extrabold text-slate-900">🧾 我的最近訂單</h3>
+        <p class="text-xs text-slate-400 mt-1">儲存在這個瀏覽器，狀態即時更新，點一下可查看詳情。</p>
+        <div id="myOrdersList" class="mt-3 space-y-2"></div>
+      </div>
+
       <p class="text-center text-xs text-slate-400 mt-5 reveal">
         訂單送出後請保存訂單編號，之後可至顧客查詢頁查看進度。
       </p>
+      </div>
+      <!-- ===== 👤 會員中心 ===== -->
+      <div id="tab-member" class="tab-panel" role="tabpanel" hidden><div id="memberRoot" class="max-w-2xl mx-auto space-y-4"></div>
+        <div id="acctSecurity" class="zg-panel max-w-2xl mx-auto mt-4 hidden" style="position:relative;z-index:1">
+          <h3 class="zg-h">🔐 帳號安全</h3>
+          <p class="zg-note" style="margin:0 0 .8rem">目前登入帳號：<b id="acctName"></b>。密碼經加密儲存，店家無法查看；忘記密碼請聯絡店家重設。</p>
+          <form id="renameForm" class="grid gap-2" novalidate style="padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid rgba(212,169,53,.3)">
+            <label for="renameInput" class="text-xs font-bold" style="color:#6b4a0e">✏️ 修改名稱 <span id="renameInfo" class="font-normal" style="color:#9a7a3a"></span></label>
+            <input id="renameInput" maxlength="40" placeholder="新的名稱（訂單與會員等級會一起帶過去）" autocomplete="off" class="zg-input-l">
+            <p id="renameMsg" class="zg-err" style="color:#b4741a" role="alert"></p>
+            <button type="submit" class="zg-ghost">更改名稱</button>
+          </form>
+          <form id="pwChangeForm" class="grid gap-2" novalidate>
+            <input id="pwOld" type="password" maxlength="64" placeholder="目前的密碼" autocomplete="current-password" class="zg-input-l">
+            <input id="pwNew" type="password" maxlength="64" placeholder="新密碼（至少 6 個字元）" autocomplete="new-password" class="zg-input-l">
+            <input id="pwNew2" type="password" maxlength="64" placeholder="再輸入一次新密碼" autocomplete="new-password" class="zg-input-l">
+            <p id="pwMsg" class="zg-err" style="color:#b4741a" role="alert"></p>
+            <div class="grid grid-cols-2 gap-2"><button type="submit" class="zg-btn">更新密碼</button><button type="button" id="logoutBtn" class="zg-ghost">登出</button></div>
+          </form>
+        </div></div>
     </section>
   </main>
+
+  <!-- 🎉 下單後歡迎畫面（黃金尊榮版，顯示在會員分頁上） -->
+  <div id="welcomeModal" class="fixed inset-0 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+    <div class="zg-wm w-full max-w-sm text-center">
+      <div class="zg-wm-hero" style="border-radius:1.8rem 1.8rem 0 0">
+        <div class="zg-rays" aria-hidden="true"></div>
+        <span class="zg-spark" style="top:16%;left:14%;animation-delay:.1s" aria-hidden="true">✦</span>
+        <span class="zg-spark" style="top:24%;left:84%;animation-delay:1s;font-size:.55rem" aria-hidden="true">✦</span>
+        <span class="zg-spark" style="top:62%;left:8%;animation-delay:1.8s;font-size:.55rem" aria-hidden="true">✦</span>
+        <span class="zg-spark" style="top:70%;left:90%;animation-delay:.6s" aria-hidden="true">✦</span>
+        <div class="zg-wm-crown" aria-hidden="true">👑</div>
+        <div class="zg-brand zg-text">WELCOME　TO　ZAH·SHOP</div>
+        <h2 id="welcomeTitle" class="zg-text zg-wm-title">歡迎！</h2>
+        <p id="welcomeSub" class="zg-wm-sub"></p>
+      </div>
+      <div class="zg-wm-body">
+        <p class="zg-wm-ok">✅ 訂單已建立成功，請保存訂單編號</p>
+        <div id="welcomeOrderId" class="zg-wm-id"></div>
+        <div id="welcomeProduct" class="zg-wm-prod"></div>
+        <div id="welcomePrice" class="zg-wm-price"></div>
+        <div id="welcomeNote" class="zg-wm-note"></div>
+        <div class="grid grid-cols-2 gap-3 mt-5">
+          <button type="button" onclick="copyOrder()" class="zg-ghost">複製編號</button>
+          <a id="welcomeRateLink" href="rate.html" class="zg-ghost flex items-center justify-center">前往查單</a>
+        </div>
+        <button id="welcomeGo" type="button" onclick="closeWelcome()" class="zg-btn w-full mt-3">進入會員中心 →</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 成功視窗 -->
   <div id="successModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
@@ -330,6 +632,490 @@
       </button>
     </div>
   </div>
+
+<!-- 🖼️ Logo／網站圖示（切成短字串再組合，避免超長字串拖慢 Tailwind CDN 的掃描） -->
+<script id="zah-logo-js">
+(() => {
+  const L = [
+  "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"
+  ].join("");
+  const I = [
+  "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",
+  "AABJRU5ErkJggg=="
+  ].join("");
+  const img = document.getElementById("brandLogoImg");
+  if (img) img.src = "data:image/png;base64," + L;
+  const lk = document.createElement("link");
+  lk.rel = "icon"; lk.type = "image/png"; lk.href = "data:image/png;base64," + I;
+  document.head.appendChild(lk);
+})();
+</script>
+
+<!-- 👑 黃金尊榮主題：會員頁＋歡迎畫面 -->
+<style id="zah-gold-css">
+  :root {
+    --zg-gold: linear-gradient(135deg,#fbeab0 0%,#e8c564 22%,#b98a2e 48%,#f4dc8e 72%,#a8751c 100%);
+    --zg-gold-wide: linear-gradient(100deg,#a8751c 0%,#f4dc8e 16%,#fff6cf 26%,#e8c564 38%,#b98a2e 56%,#f4dc8e 76%,#a8751c 100%);
+  }
+  .zg-text { background:var(--zg-gold-wide); background-size:220% 100%; -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent; animation:zgShine 5s linear infinite; }
+  @keyframes zgShine { to { background-position:-220% 0; } }
+  @keyframes zgSpin { to { transform:rotate(360deg); } }
+  @keyframes zgFloat { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+  @keyframes zgTwinkle { 0%,100%{ opacity:0; transform:scale(.4) rotate(0); } 50%{ opacity:1; transform:scale(1.15) rotate(25deg); } }
+  @keyframes zgSweep { 0%,55%{ left:-45%; } 100%{ left:130%; } }
+  @keyframes zgBar { 0%{ transform:translateX(-120%); } 100%{ transform:translateX(320%); } }
+
+  /* 會員分頁頁籤：選中時變金色 */
+  #zahTabs button[data-tab="member"].on { background:linear-gradient(135deg,#f4dc8e,#c99a35 55%,#a8751c); color:#2a1a04; box-shadow:0 10px 20px -10px rgba(184,138,46,.95); }
+  #tab-member { position:relative; }
+  #tab-member::before { content:''; position:absolute; left:50%; top:-1.5rem; width:34rem; max-width:120%; height:26rem; transform:translateX(-50%); background:radial-gradient(closest-side,rgba(232,197,100,.28),transparent); pointer-events:none; z-index:0; }
+  #memberRoot { position:relative; z-index:1; }
+
+  /* ---- 黑金會員卡 ---- */
+  .zg-card { position:relative; overflow:hidden; isolation:isolate; border-radius:1.7rem; padding:1.5rem 1.35rem 1.3rem; color:#f7e9bf;
+    background:
+      repeating-linear-gradient(135deg,rgba(255,226,150,.035) 0 2px,transparent 2px 8px),
+      radial-gradient(120% 90% at 100% 0%,rgba(244,220,142,.24),transparent 55%),
+      radial-gradient(90% 80% at 0% 100%,rgba(184,138,46,.28),transparent 60%),
+      linear-gradient(145deg,#0b0804 0%,#1d1409 45%,#2d1f0a 100%);
+    box-shadow:0 30px 60px -26px rgba(120,80,10,.7), 0 0 0 1px rgba(255,236,170,.08) inset, 0 0 calc(34px * var(--glow,1)) -6px rgba(232,197,100,calc(.5 * var(--glow,1))); }
+  .zg-card::before, .zg-wm::before { content:''; position:absolute; inset:0; border-radius:inherit; padding:1.5px; background:var(--zg-gold); -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; z-index:5; }
+  .zg-card::after { content:''; position:absolute; top:-60%; left:-45%; width:34%; height:220%; transform:rotate(20deg); background:linear-gradient(90deg,transparent,rgba(255,244,200,.26),transparent); animation:zgSweep 6.5s ease-in-out infinite; pointer-events:none; z-index:1; }
+  .zg-spark { position:absolute; z-index:2; color:#fff1b8; font-size:.72rem; opacity:0; animation:zgTwinkle 3.2s ease-in-out infinite; pointer-events:none; text-shadow:0 0 8px rgba(255,236,170,.95); }
+  .zg-top { position:relative; z-index:3; display:flex; align-items:center; justify-content:space-between; }
+  .zg-brand { font-size:.62rem; font-weight:800; letter-spacing:.38em; }
+  .zg-switch { font-size:.7rem; font-weight:700; color:rgba(247,233,191,.7); border:1px solid rgba(212,169,53,.4); background:rgba(255,236,170,.05); padding:.22rem .7rem; border-radius:9999px; cursor:pointer; transition:all .25s ease; }
+  .zg-switch:hover { color:#fff3c4; border-color:#e8c564; background:rgba(255,236,170,.12); }
+  .zg-id { position:relative; z-index:3; display:flex; align-items:center; gap:1rem; margin-top:1.15rem; }
+  .zg-crest { position:relative; flex:none; width:4.4rem; height:4.4rem; border-radius:50%; display:grid; place-items:center; font-size:2rem;
+    background:radial-gradient(circle at 30% 25%,#34240a,#0d0903);
+    box-shadow:0 0 0 2px #d4a935, 0 0 0 5px rgba(212,169,53,.22), 0 12px 24px -8px rgba(0,0,0,.75), 0 0 24px rgba(232,197,100,.4); }
+  .zg-crest::before { content:''; position:absolute; inset:-8px; border-radius:50%; background:conic-gradient(from 0deg,transparent 0 55%,rgba(255,240,180,.95)); -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 2px)); mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 2px)); animation:zgSpin 4s linear infinite; }
+  .zg-who { min-width:0; flex:1; }
+  .zg-name { font-size:1.5rem; font-weight:900; line-height:1.15; letter-spacing:.02em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .zg-tier { display:inline-flex; align-items:center; gap:.35rem; margin-top:.45rem; font-size:.68rem; font-weight:900; letter-spacing:.1em; padding:.3rem .8rem; border-radius:9999px; color:#2a1a04; background:var(--zg-gold); box-shadow:0 8px 16px -8px rgba(232,197,100,.8); }
+  .zg-badges { position:relative; z-index:3; margin-top:1rem; font-size:1.3rem; letter-spacing:.35em; filter:drop-shadow(0 2px 6px rgba(0,0,0,.5)); }
+  .zg-bar { position:relative; z-index:3; margin-top:1.25rem; height:.6rem; border-radius:9999px; overflow:hidden; background:rgba(255,236,170,.1); box-shadow:inset 0 1px 3px rgba(0,0,0,.65); }
+  .zg-bar > i { position:relative; display:block; height:100%; border-radius:inherit; overflow:hidden; background:linear-gradient(90deg,#a8751c,#f4dc8e,#e8c564); box-shadow:0 0 14px rgba(244,220,142,.75); transition:width .9s cubic-bezier(.16,1,.3,1); }
+  .zg-bar > i::after { content:''; position:absolute; inset:0 auto 0 0; width:35%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent); animation:zgBar 2.4s ease-in-out infinite; }
+  .zg-xp { position:relative; z-index:3; margin-top:.5rem; font-size:.72rem; color:rgba(247,233,191,.82); }
+  .zg-stats { position:relative; z-index:3; display:grid; grid-template-columns:repeat(3,1fr); gap:.55rem; margin-top:1.1rem; }
+  .zg-stat { text-align:center; padding:.7rem .2rem; border-radius:1rem; background:linear-gradient(180deg,rgba(255,236,170,.1),rgba(255,236,170,.03)); border:1px solid rgba(212,169,53,.3); }
+  .zg-stat b { display:block; font-size:1.05rem; font-weight:900; background:var(--zg-gold); -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent; }
+  .zg-stat span { font-size:.6rem; letter-spacing:.14em; color:rgba(247,233,191,.65); }
+  .zg-pending { position:relative; z-index:3; margin-top:.9rem; font-size:.7rem; color:rgba(247,233,191,.85); }
+
+  /* ---- 未加入：邀請卡 ---- */
+  .zg-join { text-align:center; padding:1.6rem 1.4rem 1.8rem; }
+  .zg-join .zg-brand { position:relative; z-index:3; }
+  .zg-crown { position:relative; z-index:3; margin-top:.9rem; font-size:3.2rem; filter:drop-shadow(0 0 16px rgba(244,220,142,.8)); animation:zgFloat 3s ease-in-out infinite; }
+  .zg-join-title { position:relative; z-index:3; margin-top:.4rem; font-size:1.4rem; font-weight:900; letter-spacing:.04em; }
+  .zg-join-sub { position:relative; z-index:3; margin:.6rem auto 0; max-width:22rem; font-size:.78rem; line-height:1.6; color:rgba(247,233,191,.75); }
+  .zg-join-row { position:relative; z-index:3; display:flex; gap:.6rem; margin-top:1.2rem; }
+  .zg-input { flex:1; min-width:0; border-radius:.9rem; border:1px solid rgba(212,169,53,.45); background:rgba(255,236,170,.07); color:#fff3c4; padding:.8rem 1rem; font-size:.9rem; outline:none; transition:all .25s ease; }
+  .zg-input::placeholder { color:rgba(247,233,191,.4); }
+  .zg-input:focus { border-color:#f4dc8e; background:rgba(255,236,170,.12); box-shadow:0 0 0 4px rgba(232,197,100,.18); }
+
+  /* ---- 金色按鈕 ---- */
+  .zg-btn { position:relative; overflow:hidden; border:0; cursor:pointer; font-weight:900; letter-spacing:.08em; color:#2a1a04; background:var(--zg-gold); padding:.8rem 1.4rem; border-radius:.95rem; box-shadow:0 14px 26px -12px rgba(212,169,53,.9); transition:transform .25s ease, box-shadow .25s ease; }
+  .zg-btn:hover { transform:translateY(-1px); box-shadow:0 18px 30px -12px rgba(212,169,53,1); }
+  .zg-btn:active { transform:scale(.98); }
+  .zg-btn::after { content:''; position:absolute; top:0; left:-60%; width:40%; height:100%; transform:skewX(-20deg); background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent); transition:left .7s ease; }
+  .zg-btn:hover::after { left:130%; }
+  .zg-ghost { border:1px solid rgba(184,138,46,.55); background:#fffdf7; color:#6b4a0e; font-size:.85rem; font-weight:800; padding:.8rem 0; border-radius:.95rem; cursor:pointer; transition:all .25s ease; }
+  .zg-ghost:hover { background:#fff3c9; border-color:#b98a2e; }
+
+  /* ---- 象牙金面板 ---- */
+  .zg-panel { position:relative; border-radius:1.4rem; padding:1.15rem 1.1rem; background:linear-gradient(180deg,#fffdf7,#fff6e0); border:1px solid rgba(212,169,53,.42); box-shadow:0 16px 34px -22px rgba(150,100,10,.55), 0 1px 0 #fff inset; }
+  .zg-h { display:flex; align-items:center; gap:.7rem; margin-bottom:.95rem; font-size:.95rem; font-weight:900; letter-spacing:.05em; color:#3b2808; }
+  .zg-h::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,rgba(184,138,46,.65),transparent); }
+  .zg-note { margin-top:.7rem; font-size:.66rem; color:#9a7a3a; }
+  .zg-perks { display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem; }
+  .zg-perk { text-align:center; border-radius:.95rem; padding:.65rem .25rem; background:#fff; border:1px solid rgba(212,169,53,.3); color:#7a5c1e; transition:transform .25s ease; }
+  .zg-perk .e { font-size:1.35rem; }
+  .zg-perk .n { font-size:.74rem; font-weight:900; color:#3b2808; }
+  .zg-perk .x { font-size:.6rem; color:#a8895a; }
+  .zg-perk .d { margin-top:.2rem; font-size:.66rem; font-weight:900; color:#b4741a; }
+  .zg-perk .t { font-size:.6rem; color:#8a6d33; }
+  .zg-perk.on { transform:translateY(-3px); background:var(--zg-gold); border-color:#b98a2e; box-shadow:0 14px 24px -12px rgba(184,138,46,.95); }
+  .zg-perk.on .n, .zg-perk.on .d, .zg-perk.on .x, .zg-perk.on .t { color:#2a1a04; }
+  .zg-perk.dim { opacity:.55; filter:grayscale(.5); }
+  .zg-mile { display:flex; align-items:center; gap:.8rem; padding:.75rem; border-radius:1rem; background:#fff; border:1px solid rgba(212,169,53,.25); }
+  .zg-mile + .zg-mile { margin-top:.5rem; }
+  .zg-mile .e { font-size:1.7rem; }
+  .zg-mile .m { min-width:0; flex:1; }
+  .zg-mile .m b { display:block; font-size:.85rem; color:#3b2808; }
+  .zg-mile .m span { font-size:.7rem; color:#9a7a3a; }
+  .zg-mile .s { font-size:.7rem; font-weight:900; color:#a8895a; white-space:nowrap; }
+  .zg-mile.on { background:linear-gradient(135deg,#fff3c9,#fde6a0); border-color:#d4a935; box-shadow:0 12px 22px -14px rgba(184,138,46,.9); }
+  .zg-mile.on .s { color:#8a5a06; }
+  .zg-mile.off { opacity:.65; }
+  .zg-mile.off .e { filter:grayscale(1); }
+  .zg-tl { list-style:none; margin:0; padding:0; }
+  .zg-tl li { display:flex; gap:.75rem; }
+  .zg-tl li + li { margin-top:.75rem; }
+  .zg-dot { flex:none; width:2rem; height:2rem; border-radius:50%; display:grid; place-items:center; background:#fff3d0; border:1px solid rgba(212,169,53,.4); }
+  .zg-tl .hl .zg-dot { background:var(--zg-gold); border-color:#b98a2e; box-shadow:0 6px 14px -6px rgba(184,138,46,.9); }
+  .zg-tl .b { min-width:0; flex:1; padding-bottom:.75rem; border-bottom:1px solid rgba(212,169,53,.2); }
+  .zg-tl .b b { display:block; font-size:.82rem; color:#2f2208; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .zg-tl .hl .b b { color:#8a5a06; font-weight:900; }
+  .zg-tl .b span { font-size:.62rem; color:#a8895a; }
+  .zg-empty { text-align:center; font-size:.75rem; color:#a8895a; padding:1rem 0; }
+
+  /* ---- 歡迎畫面（黃金版） ---- */
+  .zg-wm { position:relative; border-radius:1.8rem; background:#fffaf0; box-shadow:0 40px 90px -30px rgba(120,80,10,.75), 0 0 46px -8px rgba(232,197,100,.5); }
+  .zg-wm-hero { position:relative; overflow:hidden; padding:1.9rem 1.5rem 1.6rem; color:#f7e9bf;
+    background:radial-gradient(120% 100% at 50% 0%,rgba(244,220,142,.3),transparent 60%), repeating-linear-gradient(135deg,rgba(255,226,150,.03) 0 2px,transparent 2px 8px), linear-gradient(160deg,#0b0804,#201508 55%,#33230a); }
+  .zg-rays { position:absolute; left:50%; top:.3rem; width:17rem; height:17rem; margin-left:-8.5rem; background:repeating-conic-gradient(from 0deg,rgba(244,220,142,.18) 0 6deg,transparent 6deg 18deg); -webkit-mask:radial-gradient(circle,#000 0,transparent 68%); mask:radial-gradient(circle,#000 0,transparent 68%); animation:zgSpin 30s linear infinite; pointer-events:none; }
+  .zg-wm-crown { position:relative; font-size:3.4rem; line-height:1; filter:drop-shadow(0 0 16px rgba(244,220,142,.85)); animation:zgFloat 3s ease-in-out infinite; }
+  .zg-wm-hero .zg-brand { position:relative; margin-top:.8rem; }
+  .zg-wm-title { position:relative; margin-top:.4rem; font-size:1.55rem; font-weight:900; line-height:1.25; word-break:break-word; }
+  .zg-wm-sub { position:relative; margin-top:.45rem; font-size:.74rem; line-height:1.5; color:rgba(247,233,191,.8); }
+  .zg-wm-body { padding:1.3rem 1.4rem 1.5rem; }
+  .zg-wm-ok { font-size:.72rem; font-weight:800; color:#2f7d4f; }
+  .zg-wm-id { margin-top:.55rem; padding:.8rem .5rem; border-radius:.95rem; font-size:1.15rem; font-weight:900; letter-spacing:.08em; word-break:break-all; color:#6b4a0e; background:linear-gradient(135deg,#fff3c9,#fde9a8); border:1px solid #d4a935; box-shadow:0 10px 20px -14px rgba(184,138,46,.9) inset; }
+  .zg-wm-prod { margin-top:.8rem; font-size:.88rem; font-weight:800; color:#2f2208; word-break:break-word; }
+  .zg-wm-price { margin-top:.15rem; font-size:.7rem; color:#a8895a; }
+  .zg-wm-note { margin-top:.9rem; padding:.6rem .75rem; border-radius:.9rem; font-size:.68rem; line-height:1.6; color:#8a5a06; background:#fff4d6; border:1px solid rgba(212,169,53,.4); }
+
+  /* ---- 🔐 登入／註冊閘門 ---- */
+  html.zah-locked, html.zah-locked body { overflow:hidden; }
+  html.has-session #authGate { display:none; }
+  #authGate [hidden] { display:none !important; }
+  .zg-gate { position:fixed; inset:0; z-index:10000; display:flex; align-items:flex-start; justify-content:center; padding:1.2rem; overflow-y:auto; background:radial-gradient(circle at 20% 8%,#33230a 0%,#0b0804 62%); }
+  .zg-gate-card { width:100%; max-width:24rem; margin:auto; text-align:center; padding:1.6rem 1.4rem 1.4rem; }
+  .zg-gate-card .zg-brand, .zg-gate-card .zg-crown, .zg-gate-card .zg-join-title, .zg-gate-card .zg-join-sub { position:relative; z-index:3; }
+  .zg-seg { position:relative; z-index:3; display:grid; grid-template-columns:1fr 1fr; gap:.3rem; margin-top:1.1rem; padding:.25rem; border-radius:9999px; background:rgba(255,236,170,.07); border:1px solid rgba(212,169,53,.3); }
+  .zg-seg button { border:0; cursor:pointer; padding:.5rem 0; border-radius:9999px; font-size:.8rem; font-weight:800; letter-spacing:.1em; color:rgba(247,233,191,.7); background:transparent; transition:all .25s ease; }
+  .zg-seg button.on { color:#2a1a04; background:var(--zg-gold); box-shadow:0 8px 16px -8px rgba(232,197,100,.8); }
+  .zg-gate form { position:relative; z-index:3; display:flex; flex-direction:column; gap:.65rem; margin-top:1rem; text-align:left; }
+  .zg-err { min-height:1.1rem; margin:0; font-size:.72rem; font-weight:700; color:#ffa593; }
+  .zg-gate-foot { position:relative; z-index:3; margin-top:.9rem; font-size:.66rem; line-height:1.6; color:rgba(247,233,191,.55); }
+  .zg-input-l { width:100%; border-radius:.9rem; border:1px solid rgba(212,169,53,.5); background:#fff; color:#3b2808; padding:.75rem .95rem; font-size:.88rem; outline:none; transition:all .25s ease; }
+  .zg-input-l:focus { border-color:#b98a2e; box-shadow:0 0 0 4px rgba(232,197,100,.25); }
+  input.zg-locked { background:#fff8e1 !important; color:#6b4a0e !important; font-weight:800; cursor:not-allowed; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .zg-text, .zg-card::after, .zg-spark, .zg-crest::before, .zg-bar > i::after, .zg-crown, .zg-wm-crown, .zg-rays { animation:none !important; }
+    .zg-spark { opacity:.8; }
+  }
+</style>
+
+<!-- 🧭 分頁切換：主頁／商品區／下單區 -->
+<script id="zah-tabs-js">
+(() => {
+  const NAMES = ['home', 'products', 'order', 'member'];
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const btns = Object.fromEntries(NAMES.map(n => [n, document.querySelector('#zahTabs [data-tab="' + n + '"]')]));
+  const panels = Object.fromEntries(NAMES.map(n => [n, document.getElementById('tab-' + n)]));
+  const anchor = document.getElementById('zahTabsAnchor');
+  let cur = null;
+
+  function apply(name, opts) {
+    if (!NAMES.includes(name)) name = 'home';
+    const changed = name !== cur;
+    cur = name;
+    document.body.dataset.tab = name;
+    NAMES.forEach(n => {
+      panels[n].hidden = n !== name;
+      btns[n].classList.toggle('on', n === name);
+      btns[n].setAttribute('aria-selected', String(n === name));
+    });
+    // 下單區小紅點：已選商品、但人在別的分頁時提醒
+    const pn = document.getElementById('productName');
+    btns.order.classList.toggle('has-dot', name !== 'order' && !!(pn && pn.value.trim()));
+    // 切換分頁時，如果已捲過分頁列，就回到分頁列位置
+    if (changed && !(opts && opts.scroll === false)) {
+      const top = anchor.getBoundingClientRect().top + scrollY - 70;
+      if (scrollY > top) scrollTo({ top: Math.max(0, top), behavior: reduced ? 'auto' : 'smooth' });
+    }
+  }
+
+  window.zahTab = function (name, opts) {
+    if (!NAMES.includes(name)) name = 'home';
+    if (location.hash.slice(1) !== name) { try { history.pushState(null, '', '#' + name); } catch (_) {} }
+    apply(name, opts);
+  };
+
+  document.getElementById('zahTabs').addEventListener('click', e => {
+    const b = e.target.closest('[data-tab]');
+    if (b) window.zahTab(b.dataset.tab);
+  });
+  const fromHash = () => apply(location.hash.slice(1), { scroll: false });
+  addEventListener('popstate', fromHash);
+  addEventListener('hashchange', fromHash);
+  fromHash();
+
+  const form = document.getElementById('orderForm');
+  if (form) {
+    form.addEventListener('input', () => apply(cur, { scroll: false }));
+    form.addEventListener('reset', () => setTimeout(() => apply(cur, { scroll: false }), 0));
+  }
+})();
+</script>
 
 <!-- ✨ 互動動畫控制器（一般腳本，先於 module 載入） -->
 <script>
@@ -421,7 +1207,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore, collection, getDocs, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, addDoc, onSnapshot, query, where, doc, getDoc, setDoc, updateDoc, runTransaction, writeBatch, limit, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
   // 與你原本 index.html / rate.html 相同的 Firebase 專案
   const firebaseConfig = {
@@ -444,6 +1230,10 @@
   let selectedProduct = null;
   let shopViewMode = "hot";
   let lastSaleSig = "";
+  const lsGet = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (_) { return d; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
+  const favs = new Set(lsGet("zahFavs", []));
+  let favOnly = false;
 
   // 舊版購物車資料已不再使用，順手清掉
   try { localStorage.removeItem("zahShopCart"); } catch (_) {}
@@ -511,7 +1301,7 @@
 
     let list = shopProducts.filter(p => {
       const text = `${p.name || ""} ${p.game || ""} ${p.category || ""}`.toLowerCase();
-      return (!search || text.includes(search)) && (cat === "all" || String(p.category || "未分類") === cat);
+      return (!search || text.includes(search)) && (cat === "all" || String(p.category || "未分類") === cat) && (!favOnly || favs.has(p.docId));
     });
 
     if (shopViewMode === "hot") list.sort((a,b) => getSold(b) - getSold(a));
@@ -537,6 +1327,7 @@
         ${i < 3 && sold > 0 && shopViewMode === "hot" ? `<span class="product-hot-badge badge-hot-pulse bg-amber-100 text-amber-700 text-[10px] px-2 py-1 rounded-full font-extrabold">🔥 熱門 #${i+1}</span>` : ""}
         <div class="product-image-wrap h-32 bg-gradient-to-br from-indigo-50 to-slate-100 flex items-center justify-center">
           ${p.image ? `<img src="${esc(p.image)}" class="w-full h-full object-cover" onerror="this.style.display='none'">` : '<span class="text-4xl">📦</span>'}
+          <button type="button" class="fav-btn ${favs.has(p.docId) ? "on" : ""}" data-fav="${esc(p.docId)}" aria-label="收藏商品" aria-pressed="${favs.has(p.docId)}">♥</button>
         </div>
         <div class="p-4">
           <div class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider">${esc(p.game || "精選商品")} ${p.category ? "・" + esc(p.category) : ""}</div>
@@ -651,7 +1442,9 @@
     priceEl.classList.remove("hidden");
     priceEl.classList.remove("price-pop"); void priceEl.offsetWidth; priceEl.classList.add("price-pop");
 
+    qtyEl.value = 1; updateTotal();
     toast("已帶入商品：" + (p.name || ""), "info", 2200);
+    if (window.zahTab) window.zahTab("order", { scroll: false });
     document.getElementById("orderForm").scrollIntoView({ behavior: "smooth", block: "center" });
     setTimeout(() => document.getElementById("customer").focus({ preventScroll: true }), 450);
   };
@@ -676,6 +1469,7 @@
     btn.textContent = "建立訂單中…";
 
     let orderId = "";
+    let welcomeInfo = null;
     try {
       const customer = document.getElementById("customer").value.trim();
       const gameName = document.getElementById("gameName").value.trim();
@@ -688,11 +1482,35 @@
         return;
       }
 
+      // 防刷單：每位會員每天可下單數量有上限（預設 3，店家可在後台調整／設為不限）
+      const quota = await dailyQuota(customer);
+      if (quota.used >= quota.limit) {
+        toast(`今天已達每日下單上限（${quota.limit} 單），請明天再來；如需更多額度請聯絡店家。`, "error", 5200);
+        return;
+      }
+
+      const qty = getQty();
+      const stockNow = selectedProduct ? stockValue(selectedProduct) : null;
+      if (stockNow !== null && qty > stockNow) { toast(`庫存只剩 ${stockNow} 件。`, "error"); return; }
       const saleActive = selectedProduct ? isSaleActive(selectedProduct) : false;
-      const productPrice = selectedProduct
+      if (appliedCoupon) {
+        const chk = await validateCoupon(appliedCoupon.id);
+        if (!chk.ok) { appliedCoupon = null; showCouponMsg(chk.msg, false); updateTotal(); toast(chk.msg, "error"); return; }
+        appliedCoupon = chk.c;
+      }
+      const disc = memberDiscount(customer);
+      const baseAmt = qty * (selectedProduct
         ? Number(saleActive ? selectedProduct.salePrice : (selectedProduct.price || 0))
-        : 0;
-      const productCost = selectedProduct ? Number(selectedProduct.cost || 0) : 0;
+        : 0);
+      const afterMember = Math.round(baseAmt * (1 - disc));
+      const memberOff = Math.round(baseAmt) - afterMember;
+      const cpOff = couponOff(afterMember);
+      if (appliedCoupon && !cpOff && afterMember > 0) { toast(`未達優惠券最低消費 NT$${Number(appliedCoupon.minSpend).toLocaleString()}。`, "error"); return; }
+      const productPrice = afterMember - cpOff;
+      // 💬 沒有從商品區選商品（手動輸入）或金額算不出來 → 先由老闆報價，報價前不會進員工接單大廳
+      const needsQuote = !selectedProduct || baseAmt <= 0;
+      const productCost = qty * (selectedProduct ? Number(selectedProduct.cost || 0) : 0);
+      const productLabel = qty > 1 ? `${productName} ×${qty}` : productName;
 
       orderId = await getNextOrderId();
       const now = new Date();
@@ -706,14 +1524,29 @@
       await addDoc(collection(db, "orders"), {
         id: orderId,
         customer: customer,
-        product: productName,
+        product: productLabel,
         price: productPrice,
         cost: productCost,
         rating: 0,
         status: "未付款",
-        memo: [`遊戲名稱：${gameName}`, `遊戲UID：${gameUid}`, memo].filter(Boolean).join("\n"),
+        coupon: cpOff ? appliedCoupon.id : "",
+        couponOff: cpOff || 0,
+        source: "shop",
+        quoteState: needsQuote ? "pending" : "",
+        memberLevel: disc ? memberLevel().name : "",
+        memberDisc: disc ? Math.round(disc * 100) : 0,
+        memberOff: disc ? memberOff : 0,
+        memo: [`遊戲名稱：${gameName}`, `遊戲UID：${gameUid}`, disc ? `會員折扣：${memberLevel().name} −${Math.round(disc * 100)}%` : "", cpOff ? `優惠券：${appliedCoupon.id} −NT$${cpOff}` : "", memo].filter(Boolean).join("\n"),
         date: date
       });
+      try {
+        welcomeInfo = { name: customer, product: productLabel, price: productPrice, disc, isNew: !memberOrders.length, pending: needsQuote };
+        saveProfile(customer, gameUid);
+        lsSet("zahMyOrders", [{ id: orderId, product: productLabel, date }, ...lsGet("zahMyOrders", []).filter(o => o.id !== orderId)].slice(0, 10));
+        watchMyOrders();
+        if (memberName !== customer) setMemberName(customer);
+        if (appliedCoupon && cpOff) updateDoc(doc(db, "coupons", appliedCoupon.id), { used: increment(1) }).catch(() => {});
+      } catch (_) {}
     } catch (error) {
       console.error(error);
       toast("訂單建立失敗：" + (error && error.message ? error.message : "請稍後再試"), "error", 4500);
@@ -731,16 +1564,17 @@
       idEl.innerHTML = [...orderId].map((ch, i) => `<span class="id-char" style="animation-delay:${0.3 + i * 0.05}s">${esc(ch)}</span>`).join("");
       document.getElementById("rateLink").href = "rate.html?order=" + encodeURIComponent(orderId);
 
-      const modal = document.getElementById("successModal");
-      modal.classList.remove("hidden", "closing");
-      modal.classList.add("flex");
-
       document.getElementById("orderForm").reset();
+      loadProfile();
       selectedProduct = null;
       resetProductLock();
+      appliedCoupon = null; document.getElementById("couponMsg").classList.add("hidden");
+      updateTotal();
+
+      window.showWelcome(orderId, welcomeInfo);
 
       try {
-        const colors = ["#6366f1", "#a5b4fc", "#34d399", "#fbbf24", "#f472b6"];
+        const colors = ["#fbeab0", "#e8c564", "#b98a2e", "#fff6cf", "#d4a935"];
         confetti({ particleCount: 80, spread: 70, origin: { y: 0.62 }, colors });
         setTimeout(() => confetti({ particleCount: 45, angle: 60, spread: 60, origin: { x: 0, y: 0.7 }, colors }), 180);
         setTimeout(() => confetti({ particleCount: 45, angle: 120, spread: 60, origin: { x: 1, y: 0.7 }, colors }), 180);
@@ -770,12 +1604,535 @@
     }, 220);
   };
 
+  // ---------- 下單後：直接跳到會員中心，並顯示歡迎畫面 ----------
+  window.showWelcome = (id, info) => {
+    const el = document.getElementById("welcomeModal");
+    if (!el || !info) {   // 沒有資料時退回原本的成功視窗，確保顧客一定看得到訂單編號
+      const m = document.getElementById("successModal");
+      m.classList.remove("hidden", "closing"); m.classList.add("flex");
+      return;
+    }
+    if (window.zahTab) window.zahTab("member");
+    const set = (k, v) => { document.getElementById(k).textContent = v; };
+    const xp = Math.floor(Number(info.price || 0) / XP_RATE);
+    set("welcomeTitle", (info.isNew ? "歡迎加入，" : "歡迎回來，") + info.name + "！");
+    set("welcomeSub", info.isNew ? "會員中心已為你準備好，可查看等級、折扣與消費紀錄" : "很高興再次見到你，會員資料已為你載入");
+    set("welcomeOrderId", id);
+    set("welcomeProduct", info.product);
+    if (info.pending) {
+      set("welcomePrice", "應付金額：待老闆報價");
+      set("welcomeNote", "💬 這張訂單的價格需要老闆先確認。報價完成後，金額會顯示在下單區的「我的最近訂單」，再依金額付款即可。");
+    } else {
+      set("welcomePrice", "應付金額 NT$" + Number(info.price || 0).toLocaleString() + (info.disc ? `（已套用會員折扣 −${Math.round(info.disc * 100)}%）` : ""));
+      set("welcomeNote", xp > 0 ? `⏳ 訂單目前為「未付款」，付款完成後即可獲得 +${xp} XP。` : "⏳ 訂單目前為「未付款」，付款完成後即可累積經驗值。");
+    }
+    document.getElementById("welcomeRateLink").href = "rate.html?order=" + encodeURIComponent(id);
+    el.classList.remove("hidden", "closing");
+    el.classList.add("flex");
+    setTimeout(() => { try { document.getElementById("welcomeGo").focus({ preventScroll: true }); } catch (_) {} }, 400);
+  };
+
+  window.closeWelcome = () => {
+    const el = document.getElementById("welcomeModal");
+    if (!el || el.classList.contains("hidden")) return;
+    el.classList.add("closing");
+    setTimeout(() => { el.classList.add("hidden"); el.classList.remove("flex", "closing"); }, 220);
+  };
+  document.getElementById("welcomeModal").addEventListener("click", e => { if (e.target.id === "welcomeModal") window.closeWelcome(); });
+
   document.getElementById("successModal").addEventListener("click", e => {
     if (e.target.id === "successModal") window.closeSuccess();
   });
-  document.addEventListener("keydown", e => { if (e.key === "Escape") window.closeSuccess(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") { window.closeSuccess(); window.closeWelcome(); } });
+
+  // ---------- 收藏 ----------
+  document.getElementById("productGrid").addEventListener("click", e => {
+    const b = e.target.closest("[data-fav]"); if (!b) return;
+    const id = b.dataset.fav, on = !favs.has(id);
+    on ? favs.add(id) : favs.delete(id);
+    lsSet("zahFavs", [...favs]);
+    b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on));
+    toast(on ? "已加入收藏" : "已取消收藏", "info", 1400);
+    renderMember();
+    if (favOnly && !on) renderEnhancedProducts(false);
+  });
+  const favBtn = document.getElementById("shopFavOnly");
+  favBtn.addEventListener("click", () => {
+    favOnly = !favOnly;
+    favBtn.classList.toggle("sort-active", favOnly);
+    favBtn.classList.toggle("bg-rose-50", favOnly); favBtn.classList.toggle("text-rose-600", favOnly);
+    renderEnhancedProducts(true);
+  });
+
+  // ---------- 數量與合計 ----------
+  const qtyEl = document.getElementById("qty");
+  const getQty = () => Math.max(1, Math.min(99, parseInt(qtyEl.value, 10) || 1));
+  function updateTotal() {
+    const el = document.getElementById("orderTotal");
+    const qh = document.getElementById("quoteHint"); if (qh) qh.classList.toggle("hidden", !!selectedProduct);
+    updateMemberNote();
+    updateQuotaNote();
+    if (!selectedProduct) { el.classList.add("hidden"); return; }
+    const q = getQty(), unit = displayPrice(selectedProduct), base = unit * q, d = memberDiscount($v("customer"));
+    const afterM = Math.round(base * (1 - d)), cp = couponOff(afterM), fin = afterM - cp, parts = [];
+    if (d) parts.push(`${memberLevel().icon}${memberLevel().name}會員 −${Math.round(d * 100)}%（−NT$${(base - afterM).toLocaleString()}）`);
+    if (cp) parts.push(`優惠券 ${appliedCoupon.id} −NT$${cp.toLocaleString()}`);
+    else if (appliedCoupon) parts.push(`優惠券需滿 NT$${Number(appliedCoupon.minSpend).toLocaleString()} 才可使用`);
+    el.textContent = `合計：NT$${fin.toLocaleString()}（` + (parts.length ? parts.join("，") + `，原價 NT$${base.toLocaleString()}` : `NT$${unit.toLocaleString()} × ${q}`) + `）`;
+    el.classList.remove("hidden", "price-pop"); void el.offsetWidth; el.classList.add("price-pop");
+  }
+  document.getElementById("qtyMinus").addEventListener("click", () => { qtyEl.value = Math.max(1, getQty() - 1); updateTotal(); });
+  document.getElementById("qtyPlus").addEventListener("click", () => {
+    const st = selectedProduct ? stockValue(selectedProduct) : null;
+    const max = st !== null && st > 0 ? Math.min(99, st) : 99;
+    if (getQty() >= max) { toast("已達可購買數量上限", "info", 1600); return; }
+    qtyEl.value = getQty() + 1; updateTotal();
+  });
+  qtyEl.addEventListener("input", updateTotal);
+
+  // ---------- 🛡️ 防刷單：每日下單上限 ----------
+  const DEFAULT_DAILY_ORDERS = 3;
+  const pad2 = n => String(n).padStart(2, "0");
+  const todayStr = () => { const d = new Date(); return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); };
+  // members 文件的 dailyOrderLimit：未設定／null＝預設；-1＝不限；其他數字＝每日上限
+  function dailyLimitOf(md) {
+    const v = md ? md.dailyOrderLimit : null;
+    if (v === null || v === undefined || v === "") return DEFAULT_DAILY_ORDERS;
+    const n = Number(v);
+    if (!Number.isFinite(n)) return DEFAULT_DAILY_ORDERS;
+    return n < 0 ? Infinity : Math.floor(n);
+  }
+  const isTodayShopOrder = o => o && o.source === "shop" && String(o.date || "").startsWith(todayStr());
+  async function dailyQuota(name) {
+    const [ms, os] = await Promise.all([
+      getDoc(doc(db, "members", encodeURIComponent(name))),
+      getDocs(query(collection(db, "orders"), where("customer", "==", name)))
+    ]);
+    return { limit: dailyLimitOf(ms.exists() ? ms.data() : null), used: os.docs.filter(d => isTodayShopOrder(d.data())).length };
+  }
+  function updateQuotaNote() {
+    const el = document.getElementById("orderQuotaNote"); if (!el) return;
+    if (!memberName || !mcalc) { el.classList.add("hidden"); return; }
+    const limit = dailyLimitOf(memberDoc), used = memberOrders.filter(isTodayShopOrder).length;
+    el.classList.remove("hidden");
+    if (limit === Infinity) { el.className = "text-xs font-bold text-center text-emerald-600"; el.textContent = `📅 今日已下 ${used} 單・不限單量`; }
+    else if (used >= limit) { el.className = "text-xs font-bold text-center text-rose-600"; el.textContent = `📅 今日下單額度已用完（${used} / ${limit}），請明天再來或聯絡店家`; }
+    else { el.className = "text-xs font-bold text-center text-slate-500"; el.textContent = `📅 今日已下 ${used} / ${limit} 單`; }
+  }
+
+  // ---------- 記住顧客資料 ----------
+  function loadProfile() {
+    const pr = lsGet("zahProfile", null); if (!pr) return;
+    const c = document.getElementById("customer"), u = document.getElementById("gameUid");
+    if (pr.customer && !c.value) c.value = pr.customer;
+    if (pr.gameUid && !u.value) u.value = pr.gameUid;
+  }
+  function saveProfile(customer, gameUid) {
+    if (document.getElementById("rememberMe").checked) lsSet("zahProfile", { customer, gameUid });
+    else { try { localStorage.removeItem("zahProfile"); } catch (_) {} }
+  }
+  loadProfile();
+
+  // ---------- 我的最近訂單（即時狀態） ----------
+  const statusCls = st => /報價/.test(st) ? "bg-violet-50 text-violet-600" : /完成/.test(st) ? "bg-emerald-50 text-emerald-600" : /取消|退/.test(st) ? "bg-rose-50 text-rose-600" : /未付款/.test(st) ? "bg-amber-50 text-amber-600" : "bg-indigo-50 text-indigo-600";
+  let myLive = {}, unsubMy = null;
+  function renderMyOrders() {
+    const list = lsGet("zahMyOrders", []);
+    document.getElementById("myOrdersPanel").classList.toggle("hidden", !list.length);
+    document.getElementById("myOrdersList").innerHTML = list.map(o => {
+      const live = myLive[o.id] || {}, st = live.quoteState === "pending" ? "待老闆報價" : (live.status || "查詢中…");
+      return `<a href="rate.html?order=${encodeURIComponent(o.id)}" class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 hover:border-indigo-300 transition">
+        <div class="min-w-0 flex-1"><div class="font-extrabold text-sm text-slate-900">${esc(o.id)}</div><div class="text-xs text-slate-400 truncate">${esc(live.product || o.product)}${Number(live.price) > 0 ? "・NT$" + Number(live.price).toLocaleString() : ""}</div></div>
+        <div class="text-right"><div class="inline-block text-[10px] px-2 py-1 rounded-full font-bold ${statusCls(st)}">${esc(st)}</div><div class="text-[10px] text-slate-400 mt-1">${esc(o.date || "")}</div></div></a>`;
+    }).join("");
+  }
+  function watchMyOrders() {
+    const ids = lsGet("zahMyOrders", []).map(o => o.id).slice(0, 10);
+    if (unsubMy) { unsubMy(); unsubMy = null; }
+    renderMyOrders();
+    if (!ids.length) return;
+    unsubMy = onSnapshot(query(collection(db, "orders"), where("id", "in", ids)), snap => {
+      myLive = {}; snap.forEach(d => { const x = d.data(); myLive[x.id] = x; });
+      renderMyOrders();
+    }, err => console.warn("訂單狀態同步失敗", err));
+  }
+  watchMyOrders();
+
+  // ---------- 會員等級・經驗值 ----------
+  // 規則：每消費 NT$10 = 1 XP（已付款／完成的訂單才計算）。折扣、門檻都可在這裡調整。
+  const $v = id => document.getElementById(id).value.trim();
+  const LEVELS = [
+    { min: 0,    name: "新手", icon: "🌱", title: "展商新手", disc: 0,    g: "from-slate-500 to-slate-700" },
+    { min: 500,  name: "菁英", icon: "⚔️", title: "展商菁英", disc: 0.05, g: "from-sky-500 to-indigo-600" },
+    { min: 1500, name: "傳奇", icon: "👑", title: "展商傳奇", disc: 0.08, g: "from-amber-400 to-orange-600" },
+    { min: 4000, name: "至尊", icon: "💎", title: "至尊會員", disc: 0.12, g: "from-fuchsia-500 to-violet-700" }
+  ];
+  const MILES = [
+    { at: 1000,  icon: "🎖️", name: "初試身手", reward: "專屬徽章" },
+    { at: 3000,  icon: "🥉", name: "忠實熟客", reward: "徽章＋稱號「忠實熟客」" },
+    { at: 8000,  icon: "🥈", name: "展商達人", reward: "徽章＋稱號「展商達人」" },
+    { at: 20000, icon: "🏆", name: "傳說顧客", reward: "徽章＋稱號「傳說顧客」" }
+  ];
+  let memberName = lsGet("zahMemberName", ""), memberOrders = [], mcalc = null, unsubMember = null, unsubMemberDoc = null, memberDoc = {}, XP_RATE = 10, appliedCoupon = null;
+  const okStatus = st => !/未付款|取消|退/.test(st || "");
+  const levelOf = xp => [...LEVELS].reverse().find(l => xp >= l.min) || LEVELS[0];
+  const memberLevel = () => levelOf(mcalc ? mcalc.xp : 0);
+  const memberDiscount = name => (name && name === memberName && mcalc && !mcalc.deleted) ? memberLevel().disc : 0;
+
+  // 下單區顧客名稱下方：說明會員折扣有沒有套用到這筆訂單（名稱必須與登入的會員相同）
+  function updateMemberNote() {
+    const el = document.getElementById("memberDiscNote"); if (!el) return;
+    const c = $v("customer");
+    const hide = () => { el.classList.add("hidden"); el.innerHTML = ""; };
+    if (!memberName || (mcalc && mcalc.deleted)) return hide();
+    const show = (cls, html) => { el.className = "mt-2 text-xs font-bold " + cls; el.innerHTML = html; };
+    if (c === memberName) {
+      if (!mcalc) return hide();
+      const L = memberLevel(), i = LEVELS.indexOf(L), N = LEVELS[i + 1];
+      if (L.disc) return show("text-emerald-600", `${esc(L.icon)} ${esc(L.name)}會員折扣 −${Math.round(L.disc * 100)}% 已自動套用到本次訂單`);
+      return show("text-slate-500", N ? `目前「${esc(L.name)}」等級暫無折扣，再 ${N.min - mcalc.xp} XP 升級「${esc(N.name)}」即享 ${Math.round(N.disc * 100)}% 折扣` : "目前等級暫無折扣");
+    }
+    show("text-amber-600", (c ? `名稱與目前登入的會員「${esc(memberName)}」不同，不會套用會員折扣。` : `你目前登入的會員是「${esc(memberName)}」，名稱要與會員相同才會套用折扣。`)
+      + ` <button type="button" data-use="1" class="underline">改用「${esc(memberName)}」</button>`);
+  }
+  document.getElementById("memberDiscNote").addEventListener("click", e => {
+    if (!e.target.closest("[data-use]")) return;
+    const inp = document.getElementById("customer");
+    inp.value = memberName; inp.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+
+  function calcMember() {
+    const ok = memberOrders.filter(o => okStatus(o.status));
+    const spend = ok.reduce((t, o) => t + Number(o.price || 0), 0);
+    const bonus = Number(memberDoc.bonusXp || 0), deleted = !!memberDoc.deleted;
+    const xp = deleted ? 0 : ok.reduce((t, o) => t + Math.floor(Number(o.price || 0) / XP_RATE), 0) + bonus;
+    const base = [
+      ...ok.map(o => { const pr = Number(o.price || 0); return { d: String(o.date || ""), k: "🛒", x: Math.floor(pr / XP_RATE), s: pr, t: `消費 NT$${pr.toLocaleString()}・${o.product}` }; }),
+    ].sort((a, b) => a.d.localeCompare(b.d));
+    let cx = 0, cs = 0, lv = 0, ms = 0; const tl = [];
+    base.forEach(e => {
+      cx += e.x; cs += e.s; tl.push({ ...e, i: e.k });
+      while (lv < LEVELS.length - 1 && cx >= LEVELS[lv + 1].min) { lv++; tl.push({ d: e.d, i: LEVELS[lv].icon, t: `升級為「${LEVELS[lv].name}」`, x: 0, hl: 1 }); }
+      while (ms < MILES.length && cs >= MILES[ms].at) { tl.push({ d: e.d, i: MILES[ms].icon, t: `解鎖里程碑「${MILES[ms].name}」`, x: 0, hl: 1 }); ms++; }
+    });
+    if (bonus) tl.push({ d: "店家", i: "🎁", t: bonus > 0 ? "店家贈送經驗值" : "店家調整經驗值", x: bonus });
+    return { deleted, ok, spend, xp, tl, pending: memberOrders.filter(o => /未付款/.test(o.status || "")).length };
+  }
+
+  function renderMember() {
+    const root = document.getElementById("memberRoot"); if (!root) return;
+    const sparks = '<span class="zg-spark" style="top:12%;left:58%;animation-delay:.1s">✦</span><span class="zg-spark" style="top:30%;left:91%;animation-delay:1.1s;font-size:.55rem">✦</span><span class="zg-spark" style="top:74%;left:78%;animation-delay:2s">✦</span><span class="zg-spark" style="top:86%;left:9%;animation-delay:.7s;font-size:.55rem">✦</span><span class="zg-spark" style="top:20%;left:6%;animation-delay:1.6s">✦</span>';
+    if (!memberName) {
+      root.innerHTML = `<div class="zg-card zg-join" style="--glow:1">${sparks}
+        <div class="zg-brand zg-text">ZAH·SHOP　MEMBERSHIP</div>
+        <div class="zg-crown" aria-hidden="true">👑</div>
+        <h2 class="zg-join-title zg-text">登入展商城會員</h2>
+        <p class="zg-join-sub">登入後消費即可累積經驗值，升級享專屬折扣、徽章與稱號。</p>
+        <div class="zg-join-row" style="justify-content:center"><button type="button" data-act="login" class="zg-btn">登入／註冊</button></div></div>`;
+      return;
+    }
+    const m = mcalc = calcMember();
+    if (m.deleted) {
+      root.innerHTML = `<div class="zg-panel text-center"><div class="text-4xl">🚫</div><h2 class="font-extrabold mt-2" style="color:#3b2808">「${esc(memberName)}」的會員資格已被取消</h2><p class="text-xs mt-2" style="color:#9a7a3a">如有疑問請聯絡店家。你也可以改用其他顧客名稱加入會員。</p><button type="button" data-act="switch" class="zg-ghost mt-4 px-6">登出</button></div>`;
+      return;
+    }
+    const L = levelOf(m.xp), i = LEVELS.indexOf(L), N = LEVELS[i + 1];
+    const pct = N ? Math.min(100, Math.round((m.xp - L.min) / (N.min - L.min) * 100)) : 100;
+    const badges = [...LEVELS.slice(1, i + 1).map(l => l.icon), ...MILES.filter(x => m.spend >= x.at).map(x => x.icon)].map(esc);
+    const stat = (a, b) => `<div class="zg-stat"><b>${a}</b><span>${b}</span></div>`;
+    const miles = MILES.map(x => { const on = m.spend >= x.at; return `<div class="zg-mile ${on ? "on" : "off"}"><span class="e">${esc(x.icon)}</span>
+        <div class="m"><b>${esc(x.name)}</b><span>累積消費 NT$${x.at.toLocaleString()}・獎勵：${esc(x.reward)}</span></div>
+        <span class="s">${on ? "✦ 已解鎖" : "還差 NT$" + (x.at - m.spend).toLocaleString()}</span></div>`; }).join("");
+    const perks = LEVELS.map((l, k) => `<div class="zg-perk ${l === L ? "on" : k > i ? "dim" : ""}"><div class="e">${esc(l.icon)}</div><div class="n">${esc(l.name)}</div><div class="x">${l.min} XP</div><div class="d">${l.disc ? Math.round(l.disc * 100) + "% 折扣" : "無折扣"}</div><div class="t">${esc(l.title)}</div></div>`).join("");
+    const tl = m.tl.length ? m.tl.slice().reverse().slice(0, 30).map(e => `<li class="${e.hl ? "hl" : ""}"><span class="zg-dot">${e.i}</span>
+        <div class="b"><b>${esc(e.t)}</b><span>${esc(e.d)}${e.x ? `・${e.x > 0 ? "+" : ""}${e.x} XP` : ""}</span></div></li>`).join("") : '<li class="zg-empty" style="display:block">還沒有紀錄，下單後就會出現在這裡。</li>';
+    root.innerHTML = `<div class="zg-card" data-lv="${i}" style="--glow:${(0.6 + i * 0.3).toFixed(2)}">${sparks}
+        <div class="zg-top"><span class="zg-brand zg-text">ZAH·SHOP　MEMBER</span><button type="button" data-act="switch" class="zg-switch">登出</button></div>
+        <div class="zg-id"><div class="zg-crest">${esc(L.icon)}</div>
+          <div class="zg-who"><div class="zg-name zg-text">${esc(memberName)}</div><div class="zg-tier">${esc(L.icon)} ${esc(L.title)}・${esc(L.name)}會員</div></div></div>
+        ${badges.length ? `<div class="zg-badges" title="已獲得的徽章">${badges.join(" ")}</div>` : ""}
+        <div class="zg-bar"><i style="width:${pct}%"></i></div>
+        <div class="zg-xp">${N ? `${m.xp} / ${N.min} XP，再 ${N.min - m.xp} XP 升級「${esc(N.name)}」` : `${m.xp} XP・已達最高等級`}</div>
+        <div class="zg-stats">${stat(m.xp.toLocaleString(), "經驗值 XP")}${stat("NT$" + m.spend.toLocaleString(), "累積消費")}${stat(L.disc ? Math.round(L.disc * 100) + "% OFF" : "—", "會員折扣")}</div>
+        ${m.pending ? `<div class="zg-pending">⏳ 有 ${m.pending} 筆未付款訂單，付款後即可獲得經驗值。</div>` : ""}</div>
+      <div class="zg-panel"><h3 class="zg-h">🏅 等級福利</h3><div class="zg-perks">${perks}</div><p class="zg-note">每消費 NT$10 得 1 XP；折扣於下單時使用相同顧客名稱自動套用。</p></div>
+      <div class="zg-panel"><h3 class="zg-h">🎁 消費里程碑</h3><div>${miles}</div></div>
+      <div class="zg-panel"><h3 class="zg-h">📈 我的成長歷程</h3><ul class="zg-tl">${tl}</ul></div>`;
+  }
+
+  function watchMember() {
+    if (unsubMember) { unsubMember(); unsubMember = null; }
+    if (unsubMemberDoc) { unsubMemberDoc(); unsubMemberDoc = null; }
+    memberOrders = []; memberDoc = {}; mcalc = null; renderMember(); updateTotal();
+    if (!memberName) return;
+    unsubMemberDoc = onSnapshot(doc(db, "members", encodeURIComponent(memberName)), sn => { memberDoc = sn.exists() ? sn.data() : {}; renderMember(); updateTotal(); }, err => console.warn("會員資料同步失敗", err));
+    unsubMember = onSnapshot(query(collection(db, "orders"), where("customer", "==", memberName)), snap => {
+      memberOrders = snap.docs.map(d => d.data()); renderMember(); updateTotal();
+    }, err => console.warn("會員資料同步失敗", err));
+  }
+  function setMemberName(n) { memberName = n; lsSet("zahMemberName", n); watchMember(); }
+
+  document.getElementById("memberRoot").addEventListener("click", e => {
+    const act = e.target.closest("[data-act]");
+    if (!act) return;
+    if (act.dataset.act === "switch") window.zahLogout();
+    else if (act.dataset.act === "login") window.zahOpenGate("login");
+  });
+  document.getElementById("customer").addEventListener("input", updateTotal);
+  watchMember();
+  // 店家在後台設定的等級／稱號／里程碑／經驗值比例
+  onSnapshot(doc(db, "siteSettings", "membership"), sn => {
+    if (!sn.exists()) return;
+    const d = sn.data();
+    if (Number(d.rate) > 0) XP_RATE = Number(d.rate);
+    if (Array.isArray(d.levels) && d.levels.length === LEVELS.length) d.levels.forEach((l, i) => Object.assign(LEVELS[i], { name: l.name, icon: l.icon, min: Number(l.min) || 0, disc: Number(l.disc) || 0, title: l.title }));
+    if (Array.isArray(d.miles)) MILES.splice(0, MILES.length, ...d.miles.map(x => ({ at: Number(x.at) || 0, icon: x.icon, name: x.name, reward: x.reward })));
+    renderMember(); updateTotal();
+  }, err => console.warn("會員設定同步失敗", err));
+
+  // ---------- 優惠券 ----------
+  const couponOff = base => {
+    const c = appliedCoupon; if (!c || (c.minSpend && base < c.minSpend)) return 0;
+    return Math.min(base, c.type === "amount" ? Number(c.value) : Math.round(base * Number(c.value) / 100));
+  };
+  function showCouponMsg(msg, ok) {
+    const el = document.getElementById("couponMsg");
+    el.textContent = msg; el.className = "mt-2 text-xs font-bold " + (ok ? "text-emerald-600" : "text-rose-500");
+  }
+  async function validateCoupon(code) {
+    try {
+      const sn = await getDoc(doc(db, "coupons", code));
+      if (!sn.exists()) return { ok: false, msg: "找不到這組優惠券代碼" };
+      const c = { id: sn.id, ...sn.data() }, n = new Date();
+      const today = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, "0")}-${String(n.getDate()).padStart(2, "0")}`;
+      if (!c.active) return { ok: false, msg: "此優惠券已停用" };
+      if (c.expires && c.expires < today) return { ok: false, msg: "此優惠券已過期" };
+      if (c.maxUses > 0 && (c.used || 0) >= c.maxUses) return { ok: false, msg: "此優惠券已被領完" };
+      return { ok: true, c };
+    } catch (_) { return { ok: false, msg: "優惠券查詢失敗，請稍後再試" }; }
+  }
+  document.getElementById("couponApply").addEventListener("click", async () => {
+    const code = document.getElementById("couponCode").value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
+    if (!code) { appliedCoupon = null; showCouponMsg("請先輸入優惠券代碼", false); updateTotal(); return; }
+    const r = await validateCoupon(code);
+    if (!r.ok) { appliedCoupon = null; showCouponMsg(r.msg, false); updateTotal(); return; }
+    appliedCoupon = r.c;
+    const off = r.c.type === "amount" ? `折抵 NT$${Number(r.c.value).toLocaleString()}` : `折 ${r.c.value}%`;
+    showCouponMsg(`已套用「${r.c.id}」：${off}${r.c.minSpend ? `（需消費滿 NT$${r.c.minSpend.toLocaleString()}）` : ""}`, true);
+    updateTotal();
+  });
+  document.getElementById("couponCode").addEventListener("input", () => { if (appliedCoupon) { appliedCoupon = null; document.getElementById("couponMsg").classList.add("hidden"); updateTotal(); } });
 
   lucide.createIcons();
+
+  // ---------- 🔐 會員帳號：註冊／登入（密碼以 PBKDF2-SHA256 加鹽雜湊儲存，無法還原） ----------
+  const ACC_ITER = 120000;
+  const accId = n => encodeURIComponent(n);
+  const hexOf = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+  const unhexOf = h => new Uint8Array((String(h).match(/../g) || []).map(x => parseInt(x, 16)));
+  const randSalt = () => hexOf(crypto.getRandomValues(new Uint8Array(16)));
+  async function pwHash(pw, saltHex, iter) {
+    if (!(window.crypto && crypto.subtle)) throw new Error("NO_CRYPTO");
+    const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveBits"]);
+    return hexOf(await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: unhexOf(saltHex), iterations: iter }, key, 256));
+  }
+  const sameStr = (a, b) => { a = String(a); b = String(b); if (a.length !== b.length) return false; let r = 0; for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i); return r === 0; };
+  const $a = id => document.getElementById(id);
+  const rootEl = document.documentElement;
+  let authMode = "login", pendingAcc = null, authFails = 0, authLockUntil = 0;
+  const authErrMsg = ex => ex && ex.message === "NO_CRYPTO" ? "此瀏覽器無法加密，請改用 https 網址開啟網站"
+    : ex && ex.code === "permission-denied" ? "資料庫尚未開放帳號功能（請管理員檢查 Firestore 規則是否允許 accounts）"
+    : "連線失敗，請稍後再試";
+
+  function setAuthMode(mode, msg) {
+    authMode = mode;
+    const reg = mode === "register", setpw = mode === "setpw";
+    $a("authTabs").hidden = setpw;
+    $a("authName").hidden = setpw;
+    $a("authPw2").hidden = !(reg || setpw);
+    $a("authPw").autocomplete = mode === "login" ? "current-password" : "new-password";
+    $a("authPw").placeholder = setpw ? "新密碼（至少 6 個字元）" : reg ? "密碼（至少 6 個字元）" : "密碼";
+    [...$a("authTabs").children].forEach(b => b.classList.toggle("on", b.dataset.mode === mode));
+    $a("authTitle").textContent = setpw ? "請設定新密碼" : reg ? "加入展商城會員" : "歡迎來到展商城";
+    $a("authSub").textContent = setpw ? "店家已為你重設密碼，請自己設定一組新密碼後再進入。" : reg ? "建立帳號後即可下單，消費累積經驗值升級享折扣。" : "請先登入或註冊會員，才能瀏覽與下單。";
+    $a("authSubmit").textContent = setpw ? "設定新密碼並進入" : reg ? "註冊並進入" : "登入";
+    $a("authErr").textContent = msg || "";
+    $a("authPw").value = ""; $a("authPw2").value = "";
+    setTimeout(() => { try { (setpw ? $a("authPw") : $a("authName")).focus({ preventScroll: true }); } catch (_) {} }, 60);
+  }
+  window.zahOpenGate = (mode, msg) => { rootEl.classList.remove("has-session"); rootEl.classList.add("zah-locked"); setAuthMode(mode || "login", msg); };
+  const closeGate = () => { rootEl.classList.add("has-session"); rootEl.classList.remove("zah-locked"); };
+
+  // 套用登入狀態：會員身分＝帳號名稱，下單的顧客名稱鎖定為帳號名稱
+  function applyAccount(name) {
+    if (memberName !== name) setMemberName(name);
+    const c = $a("customer");
+    c.defaultValue = name; c.value = name; c.readOnly = true; c.classList.add("zg-locked");
+    $a("acctName").textContent = name;
+    $a("acctSecurity").classList.remove("hidden");
+    updateTotal();
+    refreshRenameInfo();
+  }
+  function enterAccount(acc) {
+    lsSet("zahSession", { name: acc.name, v: acc.pwUpdatedAt || "" });
+    pendingAcc = null;
+    applyAccount(acc.name);
+    closeGate();
+    $a("authForm").reset();
+    setAuthMode("login");
+    toast(`歡迎回來，${acc.name}！`, "success");
+  }
+  window.zahLogout = (msg) => {
+    try { localStorage.removeItem("zahSession"); } catch (_) {}
+    const c = $a("customer"); c.readOnly = false; c.classList.remove("zg-locked"); c.defaultValue = ""; c.value = "";
+    $a("acctSecurity").classList.add("hidden");
+    if (memberName) setMemberName("");
+    window.zahOpenGate("login", typeof msg === "string" ? msg : "");
+    if (window.zahTab) window.zahTab("home");
+  };
+
+  $a("authTabs").addEventListener("click", e => { const b = e.target.closest("button[data-mode]"); if (b) setAuthMode(b.dataset.mode); });
+  $a("authForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const err = m => { $a("authErr").textContent = m; };
+    err("");
+    if (Date.now() < authLockUntil) return err(`嘗試次數過多，請 ${Math.ceil((authLockUntil - Date.now()) / 1000)} 秒後再試`);
+    const name = $a("authName").value.trim(), pw = $a("authPw").value, pw2 = $a("authPw2").value;
+    const btn = $a("authSubmit"); btn.disabled = true;
+    try {
+      const now = new Date().toISOString();
+      if (authMode === "register") {
+        if (!name) return err("請輸入帳號名稱");
+        if (pw.length < 6) return err("密碼至少 6 個字元");
+        if (pw !== pw2) return err("兩次輸入的密碼不一致");
+        const salt = randSalt();
+        const rec = { name, salt, hash: await pwHash(pw, salt, ACC_ITER), iter: ACC_ITER, createdAt: now, lastLogin: now, pwUpdatedAt: now, mustChange: false };
+        const ref = doc(db, "accounts", accId(name));
+        await runTransaction(db, async tx => { if ((await tx.get(ref)).exists()) throw new Error("EXISTS"); tx.set(ref, rec); });
+        enterAccount(rec);
+      } else if (authMode === "login") {
+        if (!name || !pw) return err("請輸入帳號名稱與密碼");
+        const ref = doc(db, "accounts", accId(name));
+        const sn = await getDoc(ref), acc = sn.exists() ? sn.data() : null;
+        const ok = acc && sameStr(await pwHash(pw, acc.salt, acc.iter || ACC_ITER), acc.hash);
+        if (!ok) { if (++authFails >= 5) { authFails = 0; authLockUntil = Date.now() + 30000; } return err("帳號或密碼錯誤"); }
+        authFails = 0;
+        if (acc.mustChange) { pendingAcc = acc; setAuthMode("setpw"); return; }
+        updateDoc(ref, { lastLogin: now }).catch(() => {});
+        enterAccount(acc);
+      } else if (authMode === "setpw") {
+        if (!pendingAcc) return setAuthMode("login");
+        if (pw.length < 6) return err("密碼至少 6 個字元");
+        if (pw !== pw2) return err("兩次輸入的密碼不一致");
+        const salt = randSalt();
+        const upd = { salt, hash: await pwHash(pw, salt, ACC_ITER), iter: ACC_ITER, pwUpdatedAt: now, lastLogin: now, mustChange: false };
+        await updateDoc(doc(db, "accounts", accId(pendingAcc.name)), upd);
+        enterAccount({ ...pendingAcc, ...upd });
+      }
+    } catch (ex) {
+      err(ex && ex.message === "EXISTS" ? "這個名稱已被註冊，請換一個名稱，或直接登入。" : authErrMsg(ex));
+    } finally { btn.disabled = false; }
+  });
+
+
+  // ---------- ✏️ 會員自行改名：14 天內最多 3 次 ----------
+  const RENAME_MAX = 3, RENAME_WINDOW = 14 * 86400000;
+  const recentRenames = acc => (acc.renames || []).filter(t => Date.now() - new Date(t).getTime() < RENAME_WINDOW);
+  async function refreshRenameInfo() {
+    const ss = lsGet("zahSession", null), info = $a("renameInfo"); if (!ss || !info) return;
+    try {
+      const sn = await getDoc(doc(db, "accounts", accId(ss.name))); if (!sn.exists()) return;
+      info.textContent = `（14 天內可改 ${RENAME_MAX} 次，還剩 ${Math.max(0, RENAME_MAX - recentRenames(sn.data()).length)} 次）`;
+    } catch (_) {}
+  }
+  $a("renameForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const msg = (m, ok) => { const el = $a("renameMsg"); el.style.color = ok ? "#2f7d4f" : "#b4741a"; el.textContent = m; };
+    msg("");
+    const ss = lsGet("zahSession", null); if (!ss || !ss.name) return;
+    const old = ss.name, nn = $a("renameInput").value.trim();
+    if (!nn) return msg("請輸入新的名稱");
+    if (nn === old) return msg("新名稱和目前名稱相同");
+    const btn = e.submitter || e.target.querySelector("button"); if (btn) btn.disabled = true;
+    try {
+      const accRef = doc(db, "accounts", accId(old)), sn = await getDoc(accRef);
+      if (!sn.exists()) return window.zahLogout("這個帳號已不存在，請重新登入或註冊。");
+      const acc = sn.data(), recent = recentRenames(acc);
+      if (recent.length >= RENAME_MAX) {
+        const next = new Date(Math.min(...recent.map(t => new Date(t).getTime())) + RENAME_WINDOW);
+        return msg(`14 天內最多改名 ${RENAME_MAX} 次，已用完。可在 ${next.toLocaleString("zh-TW", { hour12: false })} 之後再改。`);
+      }
+      const [a2, m2, o2] = await Promise.all([
+        getDoc(doc(db, "accounts", accId(nn))),
+        getDoc(doc(db, "members", accId(nn))),
+        getDocs(query(collection(db, "orders"), where("customer", "==", nn), limit(1)))
+      ]);
+      if (a2.exists() || m2.exists() || !o2.empty) return msg("這個名稱已被使用，請換一個。");
+      if (!confirm(`確定把名稱從「${old}」改為「${nn}」？\n你的訂單、等級與經驗值會一起帶過去。14 天內剩餘改名次數：${RENAME_MAX - recent.length - 1} 次。`)) return;
+
+      const orderRefs = (await getDocs(query(collection(db, "orders"), where("customer", "==", old)))).docs.map(d => d.ref);
+      const mOld = await getDoc(doc(db, "members", accId(old)));
+      const { renames: _r, ...accRest } = acc;
+      const finalOps = wb => {
+        wb.set(doc(db, "accounts", accId(nn)), { ...accRest, name: nn, renames: [...recent, new Date().toISOString()] });
+        wb.delete(accRef);
+        if (mOld.exists()) { wb.set(doc(db, "members", accId(nn)), { ...mOld.data(), name: nn }); wb.delete(doc(db, "members", accId(old))); }
+      };
+      // 訂單分批改名；帳號與會員資料放在最後一批一起搬，盡量一次完成
+      const CH = 400;
+      for (let i = 0; i < orderRefs.length; i += CH) {
+        const wb = writeBatch(db);
+        orderRefs.slice(i, i + CH).forEach(r => wb.update(r, { customer: nn }));
+        if (i + CH >= orderRefs.length) finalOps(wb);
+        await wb.commit();
+      }
+      if (!orderRefs.length) { const wb = writeBatch(db); finalOps(wb); await wb.commit(); }
+
+      lsSet("zahSession", { name: nn, v: acc.pwUpdatedAt || "" });
+      const pr = lsGet("zahProfile", null); if (pr) lsSet("zahProfile", { ...pr, customer: nn });
+      applyAccount(nn);
+      $a("renameInput").value = "";
+      msg(`✅ 已改名為「${nn}」`, true);
+      toast(`名稱已更新為「${nn}」`, "success");
+    } catch (ex) { msg(authErrMsg(ex)); }
+    finally { if (btn) btn.disabled = false; }
+  });
+
+  // 會員頁「帳號安全」：修改密碼／登出
+  $a("logoutBtn").addEventListener("click", () => window.zahLogout());
+  $a("pwChangeForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const msg = m => { $a("pwMsg").style.color = "#b4741a"; $a("pwMsg").textContent = m; };
+    msg("");
+    const ss = lsGet("zahSession", null); if (!ss || !ss.name) return;
+    const oldPw = $a("pwOld").value, nw = $a("pwNew").value, nw2 = $a("pwNew2").value;
+    if (!oldPw) return msg("請輸入目前的密碼");
+    if (nw.length < 6) return msg("新密碼至少 6 個字元");
+    if (nw !== nw2) return msg("兩次輸入的新密碼不一致");
+    try {
+      const ref = doc(db, "accounts", accId(ss.name)), sn = await getDoc(ref);
+      if (!sn.exists()) return window.zahLogout("這個帳號已不存在，請重新登入或註冊");
+      const acc = sn.data();
+      if (!sameStr(await pwHash(oldPw, acc.salt, acc.iter || ACC_ITER), acc.hash)) return msg("目前的密碼不正確");
+      const salt = randSalt(), now = new Date().toISOString();
+      await updateDoc(ref, { salt, hash: await pwHash(nw, salt, ACC_ITER), iter: ACC_ITER, pwUpdatedAt: now, mustChange: false });
+      lsSet("zahSession", { name: ss.name, v: now });
+      $a("pwChangeForm").reset();
+      $a("pwMsg").style.color = "#2f7d4f"; $a("pwMsg").textContent = "✅ 密碼已更新";
+    } catch (ex) { msg(authErrMsg(ex)); }
+  });
+
+  // 開站時：沒有登入就顯示閘門；有登入則核對帳號仍存在、密碼沒被店家重設
+  (async function authInit() {
+    const ss = lsGet("zahSession", null);
+    if (!ss || !ss.name) { window.zahOpenGate("login"); return; }
+    applyAccount(ss.name);
+    try {
+      const sn = await getDoc(doc(db, "accounts", accId(ss.name)));
+      if (!sn.exists()) return window.zahLogout("這個帳號已不存在，請重新登入或註冊。");
+      if ((sn.data().pwUpdatedAt || "") !== (ss.v || "")) return window.zahLogout("你的密碼已被更新，請重新登入。");
+    } catch (_) { /* 離線或暫時連不上：先沿用登入狀態 */ }
+  })();
 </script>
 
   <!-- 🏠 首頁內容同步：只讀取 index.html 儲存的 homepage 設定，不影響原本商城功能 -->
@@ -1013,6 +2370,7 @@
   fab.innerHTML = '<span>🛒</span><span>前往下單</span>';
   document.body.appendChild(fab);
   fab.addEventListener('click', () => {
+    if (window.zahTab) window.zahTab('order', { scroll: false });
     form.scrollIntoView({ behavior: 'smooth', block: 'center' });
     setTimeout(() => { const c = document.getElementById('customer'); c && c.focus({ preventScroll: true }); }, 500);
   });
@@ -1147,19 +2505,6 @@
   ::selection { background: rgba(99,102,241,.25); }
   .shop-feature-panel { background: var(--glass); backdrop-filter: blur(14px) saturate(1.4); }
 
-  /* 玻璃導覽列 */
-  #zahNav { position:fixed; top:3px; left:50%; z-index:85; width:min(64rem, calc(100% - 1.5rem)); display:flex; align-items:center; gap:.75rem; padding:.55rem .6rem .55rem 1rem;
-    border-radius:1.1rem; background:var(--glass); backdrop-filter:blur(18px) saturate(1.6); border:1px solid rgba(226,232,240,.9); box-shadow:0 14px 40px -18px rgba(15,23,42,.35);
-    transform:translate(-50%,-140%); transition:transform .6s var(--ease-out, cubic-bezier(.16,1,.3,1)); margin-top:.5rem; }
-  #zahNav.show { transform:translate(-50%,0); }
-  #zahNav .brand { display:flex; align-items:center; gap:.5rem; font-weight:800; font-size:.9rem; color:var(--ink); margin-right:auto; }
-  #zahNav .brand b { width:26px; height:26px; border-radius:8px; background:linear-gradient(135deg,#4f46e5,#a855f7); display:grid; place-items:center; font-size:.8rem; }
-  #zahNav button.lnk { position:relative; padding:.45rem .8rem; border-radius:.7rem; font-size:.78rem; font-weight:700; color:#475569; background:transparent; border:0; cursor:pointer; transition:background .2s, color .2s; }
-  #zahNav button.lnk:hover { background:rgba(99,102,241,.1); color:var(--brand); }
-  .live-pill { display:flex; align-items:center; gap:.4rem; padding:.35rem .7rem; border-radius:9999px; background:#ecfdf5; color:#047857; font-size:.7rem; font-weight:800; }
-  .live-pill i { width:7px; height:7px; border-radius:50%; background:#10b981; animation:livePing 1.6s ease-out infinite; }
-  @keyframes livePing { 0% { box-shadow:0 0 0 0 rgba(16,185,129,.6) } 100% { box-shadow:0 0 0 9px rgba(16,185,129,0) } }
-
   /* 數據列 */
   #zahStats { display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem; margin-bottom:1.5rem; }
   #zahStats > div { position:relative; overflow:hidden; padding:1rem 1.1rem; border-radius:1.2rem; background:var(--glass); backdrop-filter:blur(12px); border:1px solid rgba(226,232,240,.9);
@@ -1185,9 +2530,8 @@
   #zahSteps .st.act { color:var(--brand); } #zahSteps .st.act b { border-color:#6366f1; color:#4f46e5; transform:scale(1.15); box-shadow:0 0 0 6px rgba(99,102,241,.15); }
   #zahSteps .st.ok { color:#059669; } #zahSteps .st.ok b { background:#10b981; border-color:#10b981; color:#fff; }
 
-  @media (max-width:640px) { #zahNav button.lnk { display:none; } #zahStats strong { font-size:1.3rem; } }
-  @media (prefers-reduced-motion:reduce) { #zahNav { transition:none; } }
-</style>
+  @media (max-width:640px) { #zahStats strong { font-size:1.3rem; } }
+  </style>
 <script id="zah-pro-js">
 (() => {
   const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
@@ -1197,19 +2541,11 @@
     /* 質感顆粒 */
     const g = document.createElement('div'); g.className = 'zah-grain'; document.body.appendChild(g);
 
-    /* 玻璃導覽列 */
-    const nav = document.createElement('nav'); nav.id = 'zahNav';
-    nav.innerHTML = '<div class="brand"><b>🛍️</b>展商城</div><button class="lnk" data-t="p">商品</button><button class="lnk" data-t="o">下單</button><span class="live-pill"><i></i>即時同步</span>';
-    document.body.appendChild(nav);
-    nav.addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; go(b.dataset.t === 'p' ? $('#productGrid') : $('#orderForm'), 'center'); });
-    const navSync = () => nav.classList.toggle('show', scrollY > 160);
-    addEventListener('scroll', navSync, { passive:true }); navSync();
-
     /* 數據列（依商品卡片即時計算，篩選中不更新） */
     const rise = $('.rise');
     const stats = document.createElement('div'); stats.id = 'zahStats';
     stats.innerHTML = ['商品總數','可購買','累計銷量'].map((t, i) => `<div><em>${t}</em><strong data-i="${i}">0</strong></div>`).join('');
-    rise.parentElement.insertBefore(stats, rise.nextElementSibling);
+    (document.getElementById('tab-home') || rise.parentElement).prepend(stats);
     const vals = [0, 0, 0];
     const tween = (el, to, i) => {
       const from = vals[i]; vals[i] = to;
@@ -1244,7 +2580,7 @@
     setInterval(() => {
       const picked = !$('#selectedProductPrice').classList.contains('hidden') || !!$('#productName').value.trim();
       const filled = !!$('#formProgress.done');
-      const m = $('#successModal'), done = m && m.classList.contains('flex') && !m.classList.contains('hidden');
+      const shown = el => el && el.classList.contains('flex') && !el.classList.contains('hidden'), done = shown($('#successModal')) || shown($('#welcomeModal'));
       const n = done ? 3 : filled ? 2 : picked ? 1 : 0;
       if (n === last) return; last = n;
       st.forEach((el, i) => { el.classList.toggle('ok', i < n); el.classList.toggle('act', i === n); });
@@ -1252,6 +2588,119 @@
       if (n === 3) fill.style.width = 'calc(100% - 4.4rem)';
     }, 300);
   } catch (err) { console.warn('zah-pro', err); }
+})();
+</script>
+
+<script id="zad-js">
+(function(){
+  const root=document.getElementById('zahAd'); if(!root) return;
+  const v=document.getElementById('zadVideo'), stage=document.getElementById('zadStage');
+  const fill=document.getElementById('zadFill'), time=document.getElementById('zadTime'), bar=document.getElementById('zadBar');
+  const ring=document.getElementById('zadRing'), num=document.getElementById('zadNum');
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const COUNT=3;
+  let userPaused=false, counting=false, timer=null, started=false, wantSound=true;
+  const fmt=s=>{s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+  function sync(){
+    root.classList.toggle('playing',!v.paused);
+    root.classList.toggle('paused',v.paused);
+    root.classList.toggle('muted',v.muted);
+    root.classList.toggle('ended',v.ended);
+    root.classList.toggle('counting',counting);
+  }
+  // 預設開聲音；若瀏覽器擋住，就退回靜音播放，等使用者第一次互動再自動開聲音
+  function playWithSound(){
+    v.muted=false; sync();
+    const p=v.play();
+    if(p&&p.catch){p.catch(()=>{ v.muted=true; const q=v.play(); if(q&&q.catch)q.catch(()=>{}); sync(); armUnmute(); });}
+  }
+  function armUnmute(){
+    const go=()=>{ if(wantSound && !v.paused) v.muted=false; sync(); off(); };
+    const evs=['pointerdown','touchend','keydown'];
+    const off=()=>evs.forEach(e=>document.removeEventListener(e,go,true));
+    evs.forEach(e=>document.addEventListener(e,go,true));
+  }
+  function tick(n){
+    num.textContent=n;
+    ring.classList.remove('tick'); void ring.offsetWidth; ring.classList.add('tick');
+  }
+  function cancelCount(){
+    if(timer){clearInterval(timer);timer=null}
+    counting=false; sync();
+  }
+  function startCountdown(){
+    if(counting) return;
+    userPaused=false;
+    try{v.pause();v.currentTime=0;}catch(_){}
+    fill.style.width='0%';
+    counting=true; sync();
+    let n=COUNT; tick(n);
+    timer=setInterval(()=>{
+      n--;
+      if(n>0){tick(n);return;}
+      clearInterval(timer);timer=null;counting=false;started=true;
+      playWithSound();
+    },1000);
+  }
+  function userPlay(){
+    if(counting) return;
+    if(v.ended||v.currentTime<0.1) startCountdown();
+    else { userPaused=false; wantSound=true; const p=v.play(); if(p&&p.catch)p.catch(()=>{}); }
+  }
+  function userToggle(){
+    if(counting) return;
+    if(v.paused) userPlay(); else { userPaused=true; v.pause(); }
+  }
+  v.addEventListener('play',()=>root.classList.remove('fresh'));
+  ['play','pause','volumechange','ended'].forEach(e=>v.addEventListener(e,sync));
+  v.addEventListener('timeupdate',()=>{ if(v.duration){fill.style.width=(v.currentTime/v.duration*100)+'%';time.textContent=fmt(v.duration-v.currentTime);} });
+  v.addEventListener('loadedmetadata',()=>{time.textContent=fmt(v.duration)});
+  v.addEventListener('ended',()=>{fill.style.width='100%';});
+  document.getElementById('zadBig').addEventListener('click',e=>{e.stopPropagation();userPlay();});
+  stage.addEventListener('click',e=>{
+    if(e.target.closest('.zad-ctrl'))return;
+    if(counting)return;
+    if(!v.paused && v.muted){v.muted=false;wantSound=true;return;}
+    userToggle();
+  });
+  document.getElementById('zadPlay').addEventListener('click',e=>{e.stopPropagation();userToggle();});
+  document.getElementById('zadMute').addEventListener('click',e=>{e.stopPropagation();v.muted=!v.muted;wantSound=!v.muted;});
+  bar.addEventListener('click',e=>{e.stopPropagation();const r=bar.getBoundingClientRect();if(v.duration)v.currentTime=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width))*v.duration;});
+  document.getElementById('zadFs').addEventListener('click',e=>{
+    e.stopPropagation();
+    const d=document;
+    if(d.fullscreenElement||d.webkitFullscreenElement){(d.exitFullscreen||d.webkitExitFullscreen).call(d);return;}
+    if(stage.requestFullscreen)stage.requestFullscreen();
+    else if(v.webkitEnterFullscreen)v.webkitEnterFullscreen();
+    else if(stage.webkitRequestFullscreen)stage.webkitRequestFullscreen();
+  });
+  const fold=document.getElementById('zadFold');
+  fold.addEventListener('click',()=>{
+    const closed=root.classList.toggle('is-closed');
+    fold.textContent=closed?'展開':'收合';
+    fold.setAttribute('aria-expanded',String(!closed));
+    if(closed){cancelCount();v.pause();}
+    try{sessionStorage.setItem('zad_closed',closed?'1':'0')}catch(_){}
+  });
+  try{ if(sessionStorage.getItem('zad_closed')==='1'){root.classList.add('is-closed');fold.textContent='展開';fold.setAttribute('aria-expanded','false');} }catch(_){}
+  // 捲動到畫面中 → 倒數 3 秒後播放；離開畫面 → 取消倒數／暫停
+  function visibleOK(){return !reduce && !userPaused && !root.classList.contains('is-closed');}
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(es=>es.forEach(en=>{
+      if(en.isIntersecting){
+        root.classList.add('in');
+        if(en.intersectionRatio>=.5 && visibleOK() && !counting){
+          if(!started && !v.ended) startCountdown();
+          else if(v.paused && !v.ended && v.currentTime>0.1) playWithSound();
+        }
+      }else{
+        if(counting) cancelCount();
+        if(!v.paused) v.pause();
+      }
+    }),{threshold:[0,.5]}).observe(root);
+  }else{ root.classList.add('in'); }
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden){ if(counting)cancelCount(); if(!v.paused)v.pause(); } });
+  sync();
 })();
 </script>
 
