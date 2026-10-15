@@ -323,7 +323,7 @@
   header{height:auto!important;flex-wrap:wrap;gap:.45rem .5rem;padding:max(.5rem,env(safe-area-inset-top)) .75rem .5rem!important}
   header::before{display:none!important}
   header>div:nth-child(1){order:1;flex:1;min-width:0}
-  header>div:nth-child(3){order:2;gap:.4rem!important;margin:0!important}
+  header>div:nth-child(3){order:2;gap:.4rem!important;margin:0!important;flex-wrap:wrap;justify-content:flex-end}
   header>div:nth-child(2){order:3;width:100%;margin:0!important;padding:0 0 .15rem!important;border:0!important;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   header>div:nth-child(2)::-webkit-scrollbar{display:none}
   header>div:nth-child(2)>button{flex:none;white-space:nowrap}
@@ -458,6 +458,7 @@
                 <button onclick="copyRateLink()" class="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition shadow-xs">
                     <i data-lucide="copy" class="w-3.5 h-3.5"></i> 複製顧客評價網址
                 </button>
+                <a href="employee.html" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition shadow-xs whitespace-nowrap">👷 員工接單</a>
                 <a href="shop.html" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition shadow-xs whitespace-nowrap">🛒 開啟商城</a>
                 <a href="rate.html" target="_blank" class="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i> 預覽顧客頁面
