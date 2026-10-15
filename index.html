@@ -317,6 +317,15 @@
 <style id="mobilecss">
 /* ===== 手機版（老闆後台）===== */
 .h-screen{height:100vh;height:100dvh}
+#zah-bottom{display:none}
+@media(max-width:768px){
+  #zah-bottom{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;gap:.5rem;padding:.5rem .75rem calc(.5rem + env(safe-area-inset-bottom));background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid #e2e8f0;box-shadow:0 -10px 30px -18px rgba(15,23,42,.45)}
+  #zah-bottom a{flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.7rem .5rem;border-radius:.9rem;font-weight:800;font-size:14px;color:#fff;text-decoration:none;background:linear-gradient(135deg,#10b981,#047857)}
+  #zah-bottom a:nth-child(2){background:linear-gradient(135deg,#6366f1,#4338ca)}
+  #zah-bottom b{font-weight:400}
+}
+@media(max-width:768px){main.flex-1.overflow-y-auto{padding-bottom:calc(5rem + env(safe-area-inset-bottom))!important}}
+
 @media(max-width:768px){
   html,body{-webkit-text-size-adjust:100%}
   input,select,textarea{font-size:16px!important}
@@ -2987,6 +2996,7 @@
             } catch (err) { alert('操作失敗：' + err.message); }
         };
     </script>
+<nav id="zah-bottom" aria-label="快捷"><a href="shop.html" target="_blank" rel="noopener"><b>🛒</b><span>開啟商城</span></a><a href="employee.html" target="_blank" rel="noopener"><b>👷</b><span>員工接單</span></a></nav>
 <script src="pwa.js" defer></script>
 </body>
 </html>
