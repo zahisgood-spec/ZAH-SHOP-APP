@@ -1,0 +1,33 @@
+{
+  "id": "./employee.html",
+  "name": "展商城 員工接單站",
+  "short_name": "展商城接單",
+  "description": "展商城 ZAH-SHOP",
+  "lang": "zh-TW",
+  "start_url": "./employee.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1a1a5e",
+  "theme_color": "#1a1a5e",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

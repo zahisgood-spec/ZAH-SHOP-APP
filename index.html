@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#4f46e5">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="ZAH-SHOP">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-    <title>商務版營運與訂單管理總覽 (太空戰艦警報與電玩賽車旗艦版)</title>
+<meta name="theme-color" content="#4f46e5">
+<link rel="manifest" href="manifest-admin.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="展商城後台">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+    <title>商務</title>
     <link rel="icon" type="image/png" href="my-logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -313,76 +313,58 @@
         /* 減少動畫時保留功能 */
         @media (prefers-reduced-motion: reduce) { body#main-body-container::before,body#main-body-container::after { display:none; } }
 
-        /* 📱 手機 / PWA 適配 */
-        .app-h { height: 100vh; height: 100dvh; }
-        html { -webkit-text-size-adjust: 100%; }
-        body { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent; }
-        button, a, select { touch-action: manipulation; }
-        #login-gate { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
-        @media (max-width: 767px) {
-            input, select, textarea { font-size: 16px !important; } /* 避免 iOS 聚焦時自動放大 */
-            #productModal > div, #editAmountModal > div, #orderModal > div, #memoModal > div { max-height: calc(100dvh - 2rem); overflow-y: auto; }
-            #filter-bar { flex-wrap: nowrap !important; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-            #filter-bar::-webkit-scrollbar { display: none; }
-            #filter-bar button { white-space: nowrap; flex-shrink: 0; }
-            #chart-bars-container { gap: 2px; }
-            #chart-bars-container > div:nth-child(even) > span { visibility: hidden; }
-
-            /* ===== 訂單卡片（手機）：每筆訂單變成一張質感卡片 ===== */
-            .orders-scroll-wrap { overflow-x: visible !important; }
-            #orders-table { border-collapse: separate !important; border-spacing: 0; }
-            #orders-table thead { display: none; }
-            #orders-table, #orders-table tbody { display: block; width: 100%; }
-            #orders-table tbody { padding: .9rem .75rem 1.1rem; display: flex; flex-direction: column; gap: .75rem; background: #f8fafc; }
-            #orders-table tr {
-                display: flex; flex-wrap: wrap; align-items: center; gap: .55rem .75rem;
-                background: #fff; border: 1px solid #e6eaf1; border-radius: 1.15rem;
-                padding: .95rem 1rem 1rem; box-shadow: 0 1px 2px rgba(15,23,42,.03), 0 10px 24px -20px rgba(15,23,42,.35);
-                position: relative;
-            }
-            #orders-table td { display: block; padding: 0 !important; text-align: left; border: none !important; min-width: 0; }
-            #orders-table td[data-label]::before { content: attr(data-label); display: block; font-size: .62rem; font-weight: 700; color: #a1acc0; text-transform: uppercase; letter-spacing: .04em; margin-bottom: .2rem; }
-
-            /* 選取框：卡片左上角小圖示 */
-            #orders-table td[data-label="選取"] { order: 1; flex: 0 0 auto; }
-            #orders-table td[data-label="選取"] input { width: 1.15rem; height: 1.15rem; }
-
-            /* 狀態徽章：卡片右上角 */
-            #orders-table td[data-label="狀態"] { order: 2; flex: 1 1 auto; display: flex; justify-content: flex-end; }
-            #orders-table td[data-label="狀態"] span { font-size: .68rem; padding: .3rem .7rem; }
-
-            /* 訂單編號：小行，緊接在第一列下方 */
-            #orders-table td[data-label="訂單編號"] { order: 3; flex: 0 0 100%; font-size: .68rem !important; color: #94a3b8 !important; margin-top: -.2rem; }
-            #orders-table td[data-label="訂單編號"]::before { content: none; }
-
-            /* 買家 + 商品：卡片主標題區塊 */
-            #orders-table td[data-label="買家"] { order: 4; flex: 0 0 100%; font-size: 1.02rem !important; }
-            #orders-table td[data-label="買家"]::before { content: none; }
-            #orders-table td[data-label="商品"] { order: 5; flex: 0 0 100%; font-size: .82rem !important; color: #64748b !important; margin-top: -.3rem; padding-bottom: .15rem !important; border-bottom: 1px dashed #eef1f6; }
-            #orders-table td[data-label="商品"]::before { content: none; }
-
-            /* 金額區：兩欄並排、用淺色底突顯 */
-            #orders-table td[data-label="售價 / 成本"] { order: 6; flex: 1 1 0; background: #f8fafc; border-radius: .8rem; padding: .5rem .65rem !important; }
-            #orders-table td[data-label="毛利"] { order: 7; flex: 1 1 0; background: #ecfdf5; border-radius: .8rem; padding: .5rem .65rem !important; }
-            #orders-table td[data-label="評分"] { order: 8; flex: 1 1 0; background: #fffbeb; border-radius: .8rem; padding: .5rem .65rem !important; display: flex; flex-direction: column; justify-content: center; }
-
-            /* 備忘錄：獨立一行 */
-            #orders-table td[data-label="備忘"] { order: 9; flex: 0 0 100%; }
-            #orders-table td[data-label="備忘"] button { width: 100%; max-width: none !important; justify-content: flex-start; }
-
-            /* 操作區：底部分隔線 + 自動換行的按鈕列 */
-            #orders-table td[data-label="操作"] {
-                order: 10; flex: 0 0 100%; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem;
-                margin-top: .35rem; padding-top: .8rem !important; border-top: 1px dashed #e6eaf1; text-align: right;
-            }
-            #orders-table td[data-label="操作"]::before { display: none; }
-            #orders-table td[data-label="操作"] > * { margin: 0 !important; }
-            #orders-table td[data-label="操作"] button { padding: .5rem .85rem !important; font-size: .78rem !important; }
-            #orders-table td button.truncate { max-width: 60vw !important; }
-        }
     </style>
+<style id="mobilecss">
+/* ===== 手機版（老闆後台）===== */
+.h-screen{height:100vh;height:100dvh}
+@media(max-width:768px){
+  html,body{-webkit-text-size-adjust:100%}
+  input,select,textarea{font-size:16px!important}
+  header{height:auto!important;flex-wrap:wrap;gap:.45rem .5rem;padding:max(.5rem,env(safe-area-inset-top)) .75rem .5rem!important}
+  header::before{display:none!important}
+  header>div:nth-child(1){order:1;flex:1;min-width:0}
+  header>div:nth-child(3){order:2;gap:.4rem!important;margin:0!important}
+  header>div:nth-child(2){order:3;width:100%;margin:0!important;padding:0 0 .15rem!important;border:0!important;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  header>div:nth-child(2)::-webkit-scrollbar{display:none}
+  header>div:nth-child(2)>button{flex:none;white-space:nowrap}
+  header h1{font-size:.85rem!important;line-height:1.2}
+  header h1 span{display:none}
+  header p{display:none}
+  header [onclick*="copyRateLink"],header a[href="rate.html"]{display:none!important}
+  header [onclick*="openModal"]{padding:.5rem .75rem!important;font-size:12px!important;white-space:nowrap}
+  main.flex-1.overflow-y-auto{padding:.75rem!important;padding-bottom:calc(.75rem + env(safe-area-inset-bottom))!important}
+  .admin-tab-panel .p-6{padding:1rem!important}
+  #ticker-container{top:5.5rem!important;left:.5rem;right:.5rem!important}
+  #batch-action-bar{padding:.6rem .75rem!important;flex-wrap:wrap;gap:.5rem}
+  /* 彈窗：不超出螢幕、可捲動 */
+  .fixed.inset-0>div[class*="max-w"],.fixed.inset-0>div[id$="Box"]{max-height:92vh;max-height:92dvh;overflow-y:auto;width:100%}
+  /* 一般表格：橫向捲動 */
+  .overflow-x-auto>table:not(.zah-ordtbl){min-width:640px}
+  /* 訂單表格：改成卡片 */
+  .zah-ordtbl,.zah-ordtbl tbody{display:block;width:100%}
+  .zah-ordtbl thead{display:none}
+  .zah-ordtbl tbody tr{display:block;margin:.65rem;padding:.7rem .9rem;border:1px solid #e2e8f0!important;border-radius:1rem;background:#fff;box-shadow:0 8px 20px -16px rgba(15,23,42,.4)}
+  .zah-ordtbl tbody td{display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem;padding:.4rem 0!important;text-align:right;border:0;min-width:0}
+  .zah-ordtbl tbody td::before{flex:none;font-size:11px;font-weight:700;color:#94a3b8;text-align:left;padding-top:.15rem}
+  .zah-ordtbl tbody td:nth-child(1){justify-content:flex-start;padding-bottom:.1rem!important}
+  .zah-ordtbl tbody td:nth-child(2)::before{content:"訂單編號"}
+  .zah-ordtbl tbody td:nth-child(3)::before{content:"買家"}
+  .zah-ordtbl tbody td:nth-child(4)::before{content:"負責員工"}
+  .zah-ordtbl tbody td:nth-child(5)::before{content:"商品"}
+  .zah-ordtbl tbody td:nth-child(6)::before{content:"實收 / 成本"}
+  .zah-ordtbl tbody td:nth-child(7)::before{content:"淨利"}
+  .zah-ordtbl tbody td:nth-child(8)::before{content:"評分"}
+  .zah-ordtbl tbody td:nth-child(9)::before{content:"狀態"}
+  .zah-ordtbl tbody td:nth-child(10)::before{content:"備忘錄"}
+  .zah-ordtbl tbody td:nth-child(11){display:flex;flex-wrap:wrap;justify-content:flex-start;gap:.3rem;border-top:1px dashed #e2e8f0;margin-top:.3rem;padding-top:.6rem!important;text-align:left}
+  .zah-ordtbl tbody td:nth-child(11)::before{display:none}
+  .zah-ordtbl tbody td:nth-child(11)>*{margin:0!important}
+  .zah-ordtbl tbody td button,.zah-ordtbl tbody td a{min-height:34px}
+  #payPanelList>div,#quotePanelList>div,#salaryPanelList>div{padding-left:1rem!important;padding-right:1rem!important}
+}
+</style>
 </head>
-<body id="main-body-container" class="bg-slate-50 text-slate-800 flex app-h overflow-hidden transition-all duration-300">
+<body id="main-body-container" class="bg-slate-50 text-slate-800 flex h-screen overflow-hidden transition-all duration-300">
     <!-- 🔐 密碼登入閘門 -->
     <div id="login-gate" class="fixed inset-0 z-[9999] bg-slate-950 flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl p-8 space-y-5 text-center">
@@ -435,58 +417,65 @@
 
 
     <!-- 🎮 右上角 Twitch 風格即時實況彈幕容器 -->
-    <div id="ticker-container" class="fixed top-24 right-3 left-3 sm:left-auto sm:right-6 sm:top-20 z-50 flex flex-col gap-2 pointer-events-none"></div>
+    <div id="ticker-container" class="fixed top-20 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <main class="flex-1 min-w-0 flex flex-col app-h overflow-hidden">
+    <main class="flex-1 flex flex-col h-screen overflow-hidden">
         
         <!-- 頂部導覽列 -->
-        <header class="bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-3 sm:px-6 py-2 lg:py-0 lg:h-16 shrink-0 shadow-xs">
-            <div class="flex items-center gap-3 min-w-0">
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 shadow-xs">
+            <div class="flex items-center gap-3">
                 <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-md shadow-indigo-200 relative">
                     <i data-lucide="store" class="w-5 h-5"></i>
                     <!-- 即時待辦呼吸燈紅點 -->
                     <span id="header-nav-badge" class="absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full border-2 border-white hidden pulse-badge"></span>
                 </div>
                 <div>
-                    <h1 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-                        展商城 ZAH-SHOP<span class="hidden sm:inline">營運管理系統</span>
+                    <h1 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        展商城 ZAH-SHOP 營運管理系統
                         <span id="header-pending-pill" class="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold hidden">待辦 0</span>
                     </h1>
-                    <p class="hidden xl:block text-xs text-indigo-600 font-medium">✨ 支援太空戰艦大單警報、電玩實況彈幕、全螢幕彩帶與雲端管理</p>
+                    <p class="text-xs text-indigo-600 font-medium">✨ 支援太空戰艦大單警報、電玩實況彈幕、全螢幕彩帶與雲端管理</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2 w-full order-last lg:order-none lg:w-auto lg:mr-2 lg:border-r lg:border-slate-200 lg:pr-3">
-                <button id="tab-dashboard" onclick="switchAdminTab('dashboard')" class="admin-tab-btn active flex-1 lg:flex-none justify-center" type="button">
+            <div class="flex items-center gap-2 mr-2 border-r border-slate-200 pr-3">
+                <button id="tab-dashboard" onclick="switchAdminTab('dashboard')" class="admin-tab-btn active" type="button">
                     <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> 主頁
                 </button>
-                <button id="tab-shop" onclick="switchAdminTab('shop')" class="admin-tab-btn flex-1 lg:flex-none justify-center" type="button">
+                <button id="tab-shop" onclick="switchAdminTab('shop')" class="admin-tab-btn" type="button">
                     <i data-lucide="store" class="w-3.5 h-3.5"></i> Shop 網站設定
                 </button>
-            </div>
-            <div class="flex items-center gap-2 lg:gap-3">
-                <button id="install-btn" type="button" class="hidden items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-sm">📲 安裝</button>
-                <a href="shop.html" target="_blank" title="開啟商店" class="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-white bg-slate-800 hover:bg-slate-900 rounded-xl transition"><i data-lucide="store" class="w-4 h-4"></i><span class="hidden lg:inline">開啟商店</span></a>
-                <button onclick="copyShopLink()" title="複製商店網址" class="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition"><i data-lucide="link" class="w-4 h-4"></i><span class="hidden lg:inline">複製商店網址</span></button>
-                <button onclick="copyRateLink()" class="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition shadow-xs">
-                    <i data-lucide="copy" class="w-4 h-4"></i><span class="hidden lg:inline">複製顧客評價網址</span>
+                <button id="tab-members" onclick="switchAdminTab('members')" class="admin-tab-btn" type="button">
+                    <i data-lucide="users" class="w-3.5 h-3.5"></i> 會員管理
                 </button>
-                <a href="rate.html" target="_blank" title="預覽顧客頁面" class="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
-                    <i data-lucide="external-link" class="w-4 h-4"></i><span class="hidden lg:inline">預覽顧客頁面</span>
+                <button id="tab-coupons" onclick="switchAdminTab('coupons')" class="admin-tab-btn" type="button">
+                    <i data-lucide="ticket" class="w-3.5 h-3.5"></i> 優惠券
+                </button>
+                <button id="tab-staff" onclick="switchAdminTab('staff')" class="admin-tab-btn" type="button">
+                    <i data-lucide="user-cog" class="w-3.5 h-3.5"></i> 員工管理
+                </button>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="copyRateLink()" class="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition shadow-xs">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i> 複製顧客評價網址
+                </button>
+                <a href="shop.html" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition shadow-xs whitespace-nowrap">🛒 開啟商城</a>
+                <a href="rate.html" target="_blank" class="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i> 預覽顧客頁面
                 </a>
                 <button onclick="openModal()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-md shadow-indigo-200 transition active:scale-95">
-                    <i data-lucide="plus" class="w-4 h-4"></i><span class="hidden lg:inline">手動建立訂單</span><span class="lg:hidden">新增</span>
+                    <i data-lucide="plus" class="w-4 h-4"></i> 手動建立訂單
                 </button>
             </div>
         </header>
 
         <!-- 後台主內容 -->
-        <div id="app-scroll" class="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6" style="padding-bottom: calc(env(safe-area-inset-bottom) + 1rem)">
+        <main class="flex-1 overflow-y-auto p-6 space-y-6">
 
             <section id="admin-tab-panel-dashboard" class="admin-tab-panel">
             <!-- 🤖 AI 智能營運健檢報告卡片 -->
-            <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-4 sm:p-6 shadow-xl border border-indigo-900/50 relative overflow-hidden">
+            <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-6 shadow-xl border border-indigo-900/50 relative overflow-hidden">
                 <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
-                <div class="flex items-center justify-between gap-2 mb-3">
+                <div class="flex items-center justify-between mb-3">
                     <div class="flex items-center gap-2.5">
                         <div class="bg-indigo-500/20 text-indigo-400 p-2 rounded-xl border border-indigo-500/30">
                             <i data-lucide="bot" class="w-5 h-5"></i>
@@ -496,7 +485,7 @@
                             <p class="text-[10px] text-slate-400">即時雲端數據分析與決策建議</p>
                         </div>
                     </div>
-                    <span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1 shrink-0 whitespace-nowrap">
+                    <span class="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> AI 運作中
                     </span>
                 </div>
@@ -506,71 +495,72 @@
             </div>
 
             <!-- 營運概況 8宮格 -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between transition hover:shadow-md">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between transition hover:shadow-md">
                     <div>
                         <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">總訂單數</p>
-                        <h3 id="card-total-orders" class="text-xl sm:text-3xl font-extrabold text-slate-900 mt-2 transition-all duration-300">0</h3>
+                        <h3 id="card-total-orders" class="text-3xl font-extrabold text-slate-900 mt-2 transition-all duration-300">0</h3>
                     </div>
                     <div class="mt-4 flex items-center text-xs text-emerald-600 bg-emerald-50 w-fit px-2 py-1 rounded-full font-medium">
                         <i data-lucide="trending-up" class="w-3.5 h-3.5 mr-1"></i> 雲端累計
                     </div>
                 </div>
 
-                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between transition hover:shadow-md">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between transition hover:shadow-md">
                     <div>
                         <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">今日訂單</p>
-                        <h3 id="card-today-orders" class="text-xl sm:text-3xl font-extrabold text-indigo-600 mt-2 transition-all duration-300">0</h3>
+                        <h3 id="card-today-orders" class="text-3xl font-extrabold text-indigo-600 mt-2 transition-all duration-300">0</h3>
                     </div>
                     <p class="text-xs text-slate-400 mt-4">今日新增</p>
                 </div>
 
-                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between transition hover:shadow-md">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between transition hover:shadow-md">
                     <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">總營業額 (已完成發貨)</p>
-                        <h3 id="card-revenue" class="text-xl sm:text-3xl font-extrabold text-slate-900 mt-2 transition-all duration-300">NT$0</h3>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">實收營業額 (已完成發貨)</p>
+                        <h3 id="card-revenue" class="text-3xl font-extrabold text-slate-900 mt-2 transition-all duration-300">NT$0</h3>
                     </div>
                     <div class="w-full bg-slate-100 h-1.5 rounded-full mt-4 overflow-hidden">
                         <div id="revenue-bar" class="bg-amber-500 h-full rounded-full transition-all duration-700" style="width: 0%"></div>
                     </div>
+                    <p id="card-coupon-total" class="text-[11px] text-slate-400 mt-2">營業額為折後實收</p>
                 </div>
 
-                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between transition hover:shadow-md">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between transition hover:shadow-md">
                     <div>
                         <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">總淨利 (毛利總額)</p>
-                        <h3 id="card-net-income" class="text-xl sm:text-3xl font-extrabold text-emerald-600 mt-2 transition-all duration-300">NT$0</h3>
+                        <h3 id="card-net-income" class="text-3xl font-extrabold text-emerald-600 mt-2 transition-all duration-300">NT$0</h3>
                     </div>
                     <p id="card-total-cost" class="text-xs text-slate-400 mt-4">總成本: NT$0</p>
                 </div>
 
-                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between transition hover:shadow-md">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between transition hover:shadow-md">
                     <div>
                         <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">本月淨利</p>
-                        <h3 id="card-month-income" class="text-xl sm:text-3xl font-extrabold text-indigo-600 mt-2 transition-all duration-300">NT$0</h3>
+                        <h3 id="card-month-income" class="text-3xl font-extrabold text-indigo-600 mt-2 transition-all duration-300">NT$0</h3>
                     </div>
                     <p class="text-xs text-slate-400 mt-4">扣除成本後實際收益</p>
                 </div>
 
-                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between transition hover:shadow-md">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between transition hover:shadow-md">
                     <div>
                         <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">顧客滿意度平均</p>
                         <div class="flex items-baseline gap-2 mt-2">
-                            <h3 id="card-avg-rating" class="text-xl sm:text-3xl font-extrabold text-amber-500 transition-all duration-300">0.0</h3>
+                            <h3 id="card-avg-rating" class="text-3xl font-extrabold text-amber-500 transition-all duration-300">0.0</h3>
                             <div id="star-container" class="flex text-amber-400 text-sm">☆</div>
                         </div>
                     </div>
                     <p id="card-rating-count" class="text-xs text-slate-400 mt-4">基於 0 筆評價</p>
                 </div>
 
-                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between transition hover:shadow-md">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between transition hover:shadow-md">
                     <div>
                         <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">今日營業額 (已完成)</p>
-                        <h3 id="card-today-revenue" class="text-xl sm:text-3xl font-extrabold text-pink-600 mt-2 transition-all duration-300">NT$0</h3>
+                        <h3 id="card-today-revenue" class="text-3xl font-extrabold text-pink-600 mt-2 transition-all duration-300">NT$0</h3>
                     </div>
                     <p id="card-today-profit" class="text-xs text-slate-400 mt-4">今日淨利: NT$0</p>
                 </div>
 
-                <div class="col-span-2 lg:col-span-1 bg-gradient-to-br from-indigo-50 to-white p-4 sm:p-5 rounded-2xl border border-indigo-100 shadow-sm flex flex-col justify-between relative overflow-hidden transition hover:shadow-md">
+                <div class="bg-gradient-to-br from-indigo-50 to-white p-5 rounded-2xl border border-indigo-100 shadow-sm flex flex-col justify-between relative overflow-hidden transition hover:shadow-md">
                     <div>
                         <div class="flex justify-between items-start">
                             <p class="text-xs font-semibold text-indigo-500 uppercase tracking-wider">本月評級</p>
@@ -589,13 +579,13 @@
             </div>
 
             <!-- 營收與淨利走勢圖 -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 relative">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 relative">
                 <div class="flex justify-between items-center mb-6">
                     <div>
                         <h3 class="text-base font-bold text-slate-900">營收與淨利走勢分析</h3>
                         <p class="text-xs text-slate-400">最近 14 天的雲端已完成發貨營業額統計</p>
                     </div>
-                    <span class="shrink-0 ml-2 bg-indigo-50 text-indigo-600 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-100">即時雲端連線</span>
+                    <span class="bg-indigo-50 text-indigo-600 text-xs font-semibold px-3 py-1 rounded-full border border-indigo-100">即時雲端連線</span>
                 </div>
 
                 <div id="chart-bars-container" class="h-44 flex items-end justify-between gap-2 pt-6 px-2">
@@ -658,14 +648,46 @@
             </section>
 
             <section id="admin-orders-panel" class="admin-tab-panel dashboard-only-panel">
+            <!-- 💬 待報價訂單：顧客手動輸入商品、價格未知 → 老闆先報價，再選擇自己接或發放給員工 -->
+            <div id="quotePanel" class="hidden mb-6 rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 to-white shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-violet-100">
+                    <h3 class="font-bold text-violet-900 flex items-center gap-2">💬 待報價訂單 <span id="quotePanelCount" class="px-2 py-0.5 rounded-full bg-violet-600 text-white text-[11px] font-bold">0</span></h3>
+                    <p class="text-xs text-violet-500 mt-1">這些訂單是顧客手動輸入商品、價格未知。先填好金額，才能選擇「自己接單」或「發放到員工網站」；報價前員工看不到這些訂單。</p>
+                </div>
+                <div id="quotePanelList" class="divide-y divide-violet-100"></div>
+            </div>
+
+            <!-- 💰 待發薪水：員工完成的訂單還沒付薪水 → 一鍵跳到發薪區 -->
+            <div id="salaryPanel" class="hidden mb-6 rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-amber-100">
+                    <h3 class="font-bold text-amber-900 flex items-center gap-2">💰 待發薪水 <span id="salaryPanelCount" class="px-2 py-0.5 rounded-full bg-amber-500 text-white text-[11px] font-bold">0</span></h3>
+                    <p class="text-xs text-amber-600 mt-1">這些員工已完成訂單，薪水還沒發。按「前往發薪」會跳到「員工管理」的薪水發放區，確認金額、勾選後即可發薪。</p>
+                </div>
+                <div id="salaryPanelList" class="divide-y divide-amber-100"></div>
+            </div>
+
+            <!-- 💰 待確認收款：員工回報「已付款」→ 老闆確認有收到錢，才會放回給員工 -->
+            <div id="payPanel" class="hidden mb-6 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-emerald-100">
+                    <h3 class="font-bold text-emerald-900 flex items-center gap-2">💰 待確認收款 <span id="payPanelCount" class="px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[11px] font-bold">0</span></h3>
+                    <p class="text-xs text-emerald-600 mt-1">員工回報訂單已付款。請先確認帳戶真的有收到錢，再按「確認收款」；確認後訂單才會回到員工手上繼續處理。沒收到就按「退回」。</p>
+                </div>
+                <div id="payPanelList" class="divide-y divide-emerald-100"></div>
+            </div>
+
             <!-- 訂單表格區 -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="p-4 border-b border-slate-200 flex flex-wrap gap-3 justify-between items-center">
                     <input type="text" id="searchInput" oninput="renderTable()" placeholder="搜尋訂單編號 (OD-001)、買家名稱或商品名稱..." class="w-full sm:w-80 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
                     
-                    <button type="button" onclick="mobileSelectAll()" class="md:hidden px-3 py-2 text-xs font-semibold text-indigo-600 bg-indigo-50 rounded-xl">全選 / 取消全選</button>
-                    <div id="filter-bar" class="flex flex-wrap gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-medium w-full sm:w-auto">
+                    <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-medium">
                         <button onclick="setFilter('all')" id="filter-all" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white transition shadow-sm">全部訂單</button>
+                        <button onclick="setFilter('待報價')" id="filter-待報價" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-white transition flex items-center gap-1.5">
+                            待報價 <span id="quote-filter-count" class="hidden px-1.5 py-0.5 rounded-full bg-violet-600 text-white text-[10px] font-bold">0</span>
+                        </button>
+                        <button onclick="setFilter('待確認收款')" id="filter-待確認收款" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-white transition flex items-center gap-1.5">
+                            待確認收款 <span id="pay-filter-count" class="hidden px-1.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold">0</span>
+                        </button>
                         <button onclick="setFilter('未付款')" id="filter-未付款" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-white transition">未付款</button>
                         <button onclick="setFilter('已付款(未出貨)')" id="filter-已付款(未出貨)" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-white transition">已付款(未出貨)</button>
                         <button onclick="setFilter('待發貨')" id="filter-待發貨" class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-white transition flex items-center gap-1.5">
@@ -676,7 +698,7 @@
                 </div>
 
                 <!-- 🚀 批次操作快捷工具列 -->
-                <div id="batch-action-bar" class="bg-indigo-50 px-4 sm:px-6 py-3 border-b border-indigo-100 flex flex-wrap gap-2 items-center justify-between hidden transition-all duration-300">
+                <div id="batch-action-bar" class="bg-indigo-50 px-6 py-3 border-b border-indigo-100 flex items-center justify-between hidden transition-all duration-300">
                     <div class="flex items-center gap-2 text-xs font-semibold text-indigo-900">
                         <i data-lucide="check-square" class="w-4 h-4 text-indigo-600"></i>
                         已選取 <span id="selected-count-badge" class="bg-indigo-600 text-white px-2 py-0.5 rounded-full font-bold">0</span> 筆訂單
@@ -691,8 +713,8 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto orders-scroll-wrap">
-                    <table id="orders-table" class="w-full text-left border-collapse">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse zah-ordtbl">
                         <thead>
                             <tr class="bg-slate-50/75 text-slate-400 text-xs font-semibold uppercase border-b border-slate-200">
                                 <th class="py-3.5 pl-6 pr-2 w-10">
@@ -700,9 +722,10 @@
                                 </th>
                                 <th class="py-3.5 px-4">訂單編號</th>
                                 <th class="py-3.5 px-6">買家名稱</th>
+                                <th class="py-3.5 px-6">負責員工</th>
                                 <th class="py-3.5 px-6">購買商品</th>
-                                <th class="py-3.5 px-6">售價 / 成本</th>
-                                <th class="py-3.5 px-6">毛利 (淨利)</th>
+                                <th class="py-3.5 px-6">實收價 / 成本</th>
+                                <th class="py-3.5 px-6">最終淨利</th>
                                 <th class="py-3.5 px-6">買家評分</th>
                                 <th class="py-3.5 px-6">訂單狀態</th>
                                 <th class="py-3.5 px-6">內部備忘錄</th>
@@ -713,7 +736,7 @@
                     </table>
                 </div>
 
-                <div class="p-4 border-t border-slate-100 flex flex-wrap gap-2 justify-between items-center text-xs text-slate-400">
+                <div class="p-4 border-t border-slate-100 flex justify-between items-center text-xs text-slate-400">
                     <span id="table-count-info">顯示 0 筆訂單</span>
                     <span class="flex items-center text-indigo-600 font-medium"><i data-lucide="cloud-sync" class="w-4 h-4 mr-1"></i> Firebase Firestore 即時連線</span>
                 </div>
@@ -721,12 +744,66 @@
 
             </section>
 
-        </div>
+            <!-- 👥 會員管理 -->
+            <section id="admin-tab-panel-members" class="admin-tab-panel hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                        <div><h2 class="text-base font-bold text-slate-900">👥 會員管理</h2><p class="text-xs text-slate-400 mt-1">會員由顧客名稱自動建立；顧客註冊的登入帳號也會列在這裡。可贈送／扣除經驗值、改名、刪除、重設密碼，並可調整每位會員的每日下單上限（預設 3 單）。</p></div>
+                        <input id="mb-search" placeholder="搜尋會員名稱…" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-xs text-slate-400 border-b border-slate-100"><th class="py-2">會員</th><th>登入帳號</th><th>等級／稱號</th><th class="text-right">XP</th><th class="text-right">消費</th><th class="text-right">贈送XP</th><th class="text-right">操作</th></tr></thead><tbody id="mb-rows"></tbody></table></div>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6" id="mb-config"></div>
+            </section>
+
+            <!-- 🎟️ 優惠券 -->
+            <section id="admin-tab-panel-coupons" class="admin-tab-panel hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6">
+                    <h2 class="text-base font-bold text-slate-900">🎟️ <span id="cp-title">新增優惠券</span></h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+                        <label class="text-xs font-semibold text-slate-500">代碼<input id="cp-code" maxlength="30" placeholder="例如 WELCOME10" class="mt-1 w-full uppercase px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></label>
+                        <label class="text-xs font-semibold text-slate-500">折扣方式<select id="cp-type" class="mt-1 w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"><option value="percent">百分比折扣 (%)</option><option value="amount">固定折抵 (NT$)</option></select></label>
+                        <label class="text-xs font-semibold text-slate-500">折扣數值<input id="cp-value" type="number" min="1" placeholder="10 = 折 10%" class="mt-1 w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></label>
+                        <label class="text-xs font-semibold text-slate-500">最低消費 NT$<input id="cp-min" type="number" min="0" value="0" class="mt-1 w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></label>
+                        <label class="text-xs font-semibold text-slate-500">可使用次數 (0=不限)<input id="cp-max" type="number" min="0" value="0" class="mt-1 w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></label>
+                        <label class="text-xs font-semibold text-slate-500">到期日 (空白=不限)<input id="cp-exp" type="date" class="mt-1 w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></label>
+                        <label class="text-xs font-semibold text-slate-500 md:col-span-2">備註<input id="cp-note" maxlength="60" placeholder="例如：新客專屬" class="mt-1 w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></label>
+                    </div>
+                    <div class="flex gap-2 mt-4"><button id="cp-save" type="button" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold">儲存優惠券</button><button id="cp-reset" type="button" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm font-bold">清空／取消編輯</button></div>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6">
+                    <h2 class="text-base font-bold text-slate-900 mb-3">優惠券列表</h2>
+                    <div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="text-left text-xs text-slate-400 border-b border-slate-100"><th class="py-2">代碼</th><th>折扣</th><th>門檻</th><th>使用</th><th>實際折抵</th><th>到期</th><th>狀態</th><th class="text-right">操作</th></tr></thead><tbody id="cp-rows"></tbody></table></div>
+                </div>
+            </section>
+            <section id="admin-tab-panel-staff" class="admin-tab-panel hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6">
+                    <h2 class="text-base font-bold text-slate-900">👷 新增員工帳號</h2>
+                    <p class="text-xs text-slate-400 mt-1">員工用這組帳號密碼登入 employee.html 接單。密碼只存加鹽雜湊，之後只能重設、無法查看。</p>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-4">
+                        <input id="st-user" placeholder="登入帳號（英數字）" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm">
+                        <input id="st-name" placeholder="顯示名稱（例：小明）" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm">
+                        <input id="st-pw" placeholder="初始密碼（至少 6 碼）" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm">
+                        <button id="st-add" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold">建立員工</button>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6">
+                    <div class="flex items-center justify-between"><h2 class="text-base font-bold text-slate-900">員工名單</h2><a href="employee.html" target="_blank" class="text-xs font-bold text-indigo-600">開啟員工接單站 ↗</a></div>
+                    <div id="st-list" class="mt-4 divide-y divide-slate-100 text-sm"></div>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6">
+                    <h2 class="text-base font-bold text-slate-900">💰 薪水發放</h2>
+                    <p class="text-xs text-slate-400 mt-1">員工完成的訂單會列在這裡。確認每張的薪水金額、勾選後按「發薪」，員工端會移到「已付薪水」並計入他的薪水報表。可在員工名單用「設定抽成」自動預填金額。</p>
+                    <div id="pay-list" class="mt-4 space-y-4"></div>
+                </div>
+            </section>
+
+        </main>
     </main>
 
     <!-- 🚨 太空戰艦大單降臨全息警報彈窗 -->
     <div id="dreadnoughtModal" class="fixed inset-0 bg-slate-950/80 hidden items-center justify-center z-50 p-4 backdrop-blur-md transition-opacity duration-300">
-        <div class="bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-900 border-2 border-rose-500 w-full max-w-lg rounded-3xl shadow-2xl p-5 sm:p-8 space-y-4 sm:space-y-6 text-white transform transition-all duration-300 scale-95 opacity-0 relative overflow-hidden" id="dreadnoughtModalBox">
+        <div class="bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-900 border-2 border-rose-500 w-full max-w-lg rounded-3xl shadow-2xl p-8 space-y-6 text-white transform transition-all duration-300 scale-95 opacity-0 relative overflow-hidden" id="dreadnoughtModalBox">
             <div class="absolute -right-16 -top-16 w-48 h-48 bg-rose-500/20 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -785,6 +862,7 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">買家名稱</label>
                     <input type="text" id="inputCustomer" required placeholder="例如: Alex#1234" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                    <p id="adminMemberHint" class="hidden mt-1.5 text-[11px] font-bold"></p>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">購買商品名稱</label>
@@ -814,6 +892,31 @@
                     <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-medium shadow-md shadow-indigo-200 transition active:scale-95">確認建立</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- 報價並派單彈窗 -->
+    <div id="quoteModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 space-y-5 max-h-[92vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div><h3 class="font-bold text-slate-900 text-lg">💬 報價並派單</h3><p id="quoteOrderTitle" class="text-xs text-slate-400 mt-1">OD-001</p></div>
+                <button onclick="closeQuoteModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="rounded-xl bg-slate-50 border border-slate-200 p-3 space-y-1.5">
+                <div class="text-[10px] font-bold text-slate-400">顧客想買的商品</div>
+                <div id="quoteProduct" class="text-sm font-bold text-slate-900 break-words"></div>
+                <pre id="quoteMemo" class="text-xs text-slate-500 whitespace-pre-wrap break-words font-sans"></pre>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div><label class="block text-xs font-semibold text-slate-600 mb-1">成交金額 / 售價 (NT$)</label><input type="number" min="0" id="quotePrice" oninput="updateQuoteButtons()" placeholder="必填" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"></div>
+                <div><label class="block text-xs font-semibold text-slate-600 mb-1">成本 (NT$)</label><input type="number" min="0" id="quoteCost" placeholder="可留 0" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"></div>
+            </div>
+            <p id="quoteHintText" class="text-xs font-bold text-rose-500">請先輸入大於 0 的金額，才能選擇下面的接單方式。</p>
+            <div class="grid grid-cols-1 gap-2">
+                <button type="button" id="quoteSelfBtn" onclick="confirmQuote('self')" disabled class="px-4 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold shadow-sm transition disabled:opacity-40 disabled:cursor-not-allowed">👑 自己接單</button>
+                <button type="button" id="quoteStaffBtn" onclick="confirmQuote('staff')" disabled class="px-4 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-sm transition disabled:opacity-40 disabled:cursor-not-allowed">📤 發放到員工網站</button>
+                <button type="button" onclick="closeQuoteModal()" class="px-4 py-2.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-sm font-medium text-slate-600">稍後再處理</button>
+            </div>
         </div>
     </div>
 
@@ -986,22 +1089,13 @@
 
     <script>
         window.switchAdminTab = function(tab) {
-            const dashboardPanel = document.getElementById('admin-tab-panel-dashboard');
-            const shopPanel = document.getElementById('admin-tab-panel-shop');
-            const ordersPanel = document.getElementById('admin-orders-panel');
-            const dashboardBtn = document.getElementById('tab-dashboard');
-            const shopBtn = document.getElementById('tab-shop');
-
-            const isShop = tab === 'shop';
-            dashboardPanel?.classList.toggle('hidden', isShop);
-            shopPanel?.classList.toggle('hidden', !isShop);
-            ordersPanel?.classList.toggle('hidden', isShop);
-
-            dashboardBtn?.classList.toggle('active', !isShop);
-            shopBtn?.classList.toggle('active', isShop);
-
+            ['dashboard', 'shop', 'members', 'coupons', 'staff'].forEach(n => {
+                document.getElementById('admin-tab-panel-' + n)?.classList.toggle('hidden', n !== tab);
+                document.getElementById('tab-' + n)?.classList.toggle('active', n === tab);
+            });
+            document.getElementById('admin-orders-panel')?.classList.toggle('hidden', tab !== 'dashboard');
             if (window.lucide) lucide.createIcons();
-            document.getElementById('app-scroll')?.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
     </script>
 
@@ -1242,6 +1336,7 @@
                 });
                 incomingOrders.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
+                const prevPay = new Map(orders.map(o => [o.docId, !!o.payRequest]));
                 orders = incomingOrders;
 
                 const validDocIds = new Set(orders.map(o => o.docId));
@@ -1253,6 +1348,14 @@
 
                 if (ordersRealtimeReady) {
                     querySnapshot.docChanges().forEach((change) => {
+                        if (change.type === 'modified') {
+                            const d = change.doc.data();
+                            if (d.payRequest && !prevPay.get(change.doc.id)) {
+                                playSound('alarm');
+                                showLiveTicker(`💰 ${d.assigneeName || '員工'} 回報 ${d.id || ''}（${d.customer || ''}）已付款，請確認有收到錢！`, 'info');
+                            }
+                            return;
+                        }
                         if (change.type !== 'added') return;
                         if (locallyCreatedOrderIds.has(change.doc.id)) {
                             locallyCreatedOrderIds.delete(change.doc.id);
@@ -1260,7 +1363,9 @@
                         }
                         const newOrder = { docId: change.doc.id, ...change.doc.data() };
                         playSound('action');
-                        showLiveTicker(`✨ 新訂單 ${newOrder.id || ''}（${newOrder.customer || '新客戶'}）已自動同步！`, 'info');
+                        showLiveTicker(newOrder.quoteState === 'pending'
+                            ? `💬 新訂單 ${newOrder.id || ''}（${newOrder.customer || '新客戶'}）需要報價，請到「待報價訂單」處理！`
+                            : `✨ 新訂單 ${newOrder.id || ''}（${newOrder.customer || '新客戶'}）已自動同步！`, 'info');
                     });
                 }
 
@@ -1280,14 +1385,6 @@
                 }
             });
             return 'OD-' + String(maxNum + 1).padStart(3, '0');
-        };
-
-        window.copyShopLink = function() {
-            const loc = window.location.href;
-            const shopUrl = loc.substring(0, loc.lastIndexOf('/') + 1) + 'shop.html';
-            navigator.clipboard.writeText(shopUrl).then(() => {
-                alert('已成功複製商店網址：\n' + shopUrl);
-            });
         };
 
         window.copyRateLink = function() {
@@ -1380,6 +1477,69 @@
             });
         };
 
+        // 從訂單取出使用的優惠券：優先讀 coupon / couponOff 欄位，舊訂單則解析備忘錄裡的「優惠券：代碼 −NT$金額」
+        window.zahCouponOf = function(o) {
+            if (!o) return null;
+            const code = String(o.coupon || '').trim();
+            if (code) return { code, off: Number(o.couponOff) || 0 };
+            const m = String(o.memo || '').match(/優惠券[：:]\s*([A-Za-z0-9_-]+)\s*[−\-–]\s*NT\$\s*([\d,]+)/);
+            return m ? { code: m[1], off: Number(m[2].replace(/,/g, '')) || 0 } : null;
+        };
+        window.zahEsc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        // 會員折扣：優先讀 memberDisc / memberOff 欄位，舊訂單則解析備忘錄「會員折扣：等級 −N%」並由實收價反推折抵金額
+        window.zahMemberDiscOf = function(o) {
+            if (!o) return null;
+            const cp = window.zahCouponOf(o);
+            const after = (Number(o.price) || 0) + (cp ? cp.off : 0);
+            const derive = p => Math.round(after / (1 - p / 100)) - after;
+            const pct = Number(o.memberDisc) || 0;
+            if (pct > 0 && pct < 100) return { level: String(o.memberLevel || ''), pct, off: Number(o.memberOff) || derive(pct) };
+            const m = String(o.memo || '').match(/會員折扣[：:]\s*(.+?)\s*[−\-–]\s*(\d+(?:\.\d+)?)\s*%/);
+            if (!m) return null;
+            const p = Number(m[2]);
+            if (!(p > 0 && p < 100)) return null;
+            return { level: m[1].replace(/會員$/, ''), pct: p, off: derive(p) };
+        };
+        // 訂單列「實收價」欄下方的折扣標籤：優惠券 + 會員折扣 + 原價
+        window.zahDiscHtml = function(o, price) {
+            const cp = window.zahCouponOf(o), mb = window.zahMemberDiscOf(o);
+            if (!cp && !mb) return '';
+            const tag = (cls, t) => `<div class="mt-1"><span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${cls}">${t}</span></div>`;
+            let h = '';
+            if (mb) h += tag('bg-indigo-50 text-indigo-600 border border-indigo-100', `🏅 ${zahEsc(mb.level)}會員 −${mb.pct}%${mb.off ? `（−NT$${mb.off.toLocaleString()}）` : ''}`);
+            if (cp) h += tag('bg-rose-50 text-rose-600 border border-rose-100', `🎟️ ${zahEsc(cp.code)}${cp.off ? ` −NT$${cp.off.toLocaleString()}` : ''}`);
+            const orig = price + (cp ? cp.off : 0) + (mb ? mb.off : 0);
+            return h + `<div class="text-[10px] text-slate-400">原價 NT$${orig.toLocaleString()}</div>`;
+        };
+        // 手動建立訂單：買家若是會員，顯示折扣並可一鍵套用到售價
+        window.zahAdminMember = null;
+        function zahAdminMemberRefresh() {
+            const el = document.getElementById('adminMemberHint'); if (!el) return;
+            window.zahAdminMember = null;
+            const name = document.getElementById('inputCustomer').value.trim();
+            const info = name && window.zahMemberDiscFor ? window.zahMemberDiscFor(name) : null;
+            if (!info) { el.classList.add('hidden'); el.innerHTML = ''; return; }
+            el.className = 'mt-1.5 text-[11px] font-bold text-indigo-600';
+            el.innerHTML = `🏅 會員「${zahEsc(name)}」${zahEsc(info.level)}・享 ${Math.round(info.disc * 100)}% 折扣 <button type="button" data-apply="1" class="underline">套用到售價</button>`;
+        }
+        (function () {
+            const cust = document.getElementById('inputCustomer'), hint = document.getElementById('adminMemberHint');
+            if (!cust || !hint) return;
+            cust.addEventListener('input', zahAdminMemberRefresh);
+            cust.closest('form').addEventListener('reset', () => setTimeout(zahAdminMemberRefresh, 0));
+            hint.addEventListener('click', e => {
+                if (!e.target.closest('[data-apply]')) return;
+                const name = cust.value.trim(), info = window.zahMemberDiscFor ? window.zahMemberDiscFor(name) : null;
+                const priceEl = document.getElementById('inputPrice'), p = Number(priceEl.value);
+                if (!info) return;
+                if (!(p > 0)) { alert('請先填入原價，再套用會員折扣。'); return; }
+                const after = Math.round(p * (1 - info.disc)), pct = Math.round(info.disc * 100);
+                priceEl.value = after;
+                window.zahAdminMember = { forName: name, level: info.level, pct, off: p - after, finalPrice: after };
+                hint.innerHTML = `✅ 已套用 ${zahEsc(info.level)} 會員 −${pct}%（−NT$${(p - after).toLocaleString()}），實收 NT$${after.toLocaleString()}`;
+            });
+        })();
+
         window.updateUI = function() {
             const totalOrders = orders.length;
             const todayStr = new Date().toISOString().split('T')[0];
@@ -1387,6 +1547,10 @@
             let totalRevenue = 0;
             let totalCost = 0;
             let totalNetProfit = 0;
+            let couponTotal = 0;
+            let couponCount = 0;
+            let memberTotal = 0;
+            let memberCount = 0;
             let todayRevenue = 0;
             let todayProfit = 0;
             let totalRatingSum = 0;
@@ -1409,6 +1573,10 @@
                     totalRevenue += price;
                     totalCost += cost;
                     totalNetProfit += profit;
+                    const cp = zahCouponOf(o);
+                    if (cp) { couponTotal += cp.off; couponCount++; }
+                    const mb = zahMemberDiscOf(o);
+                    if (mb) { memberTotal += mb.off; memberCount++; }
                     if (dateOnly === todayStr) {
                         todayRevenue += price;
                         todayProfit += profit;
@@ -1448,6 +1616,10 @@
             animateValue('card-total-orders', 0, totalOrders, 600);
             animateValue('card-today-orders', 0, todayOrdersCount, 600);
             animateValue('card-revenue', 0, totalRevenue, 800, 'NT$');
+            const discParts = [];
+            if (couponCount) discParts.push(`優惠券 NT$${couponTotal.toLocaleString()}（${couponCount} 筆）`);
+            if (memberCount) discParts.push(`會員折扣 NT$${memberTotal.toLocaleString()}（${memberCount} 筆）`);
+            document.getElementById('card-coupon-total').innerText = discParts.length ? `已折抵：${discParts.join('・')}・營業額為折後實收` : '營業額為折後實收（尚無折扣訂單）';
             document.getElementById('revenue-bar').style.width = `${Math.min(100, (totalRevenue / 50000) * 100)}%`;
             
             animateValue('card-net-income', 0, totalNetProfit, 800, 'NT$');
@@ -1481,6 +1653,8 @@
             generateAIInsight(totalOrders, totalRevenue, totalNetProfit, pendingShipmentCount, unpaidCount, avgRating);
 
             renderChart();
+            renderQuotePanel();
+            renderPayPanel();
             renderTable();
             updateBatchBar();
             lucide.createIcons();
@@ -1489,7 +1663,7 @@
         window.setFilter = function(status) {
             playSound('action');
             currentFilter = status;
-            ['all', '未付款', '已付款(未出貨)', '待發貨', '已完成發貨'].forEach(s => {
+            ['all', '待報價', '待確認收款', '未付款', '已付款(未出貨)', '待發貨', '已完成發貨'].forEach(s => {
                 const btn = document.getElementById(`filter-${s}`);
                 if (btn) btn.className = (s === status) ? "px-3 py-1.5 rounded-lg bg-slate-900 text-white transition shadow-sm" : "px-3 py-1.5 rounded-lg text-slate-600 hover:bg-white transition";
             });
@@ -1502,7 +1676,7 @@
                 const matchSearch = (o.customer && o.customer.toLowerCase().includes(search)) || 
                                     (o.product && o.product.toLowerCase().includes(search)) || 
                                     (o.id && o.id.toLowerCase().includes(search));
-                const matchStatus = currentFilter === 'all' || o.status === currentFilter;
+                const matchStatus = currentFilter === 'all' || (currentFilter === '待報價' ? o.quoteState === 'pending' : (currentFilter === '待確認收款' ? !!o.payRequest : o.status === currentFilter));
                 return matchSearch && matchStatus;
             });
         };
@@ -1517,12 +1691,6 @@
             }
             renderTable();
             updateBatchBar();
-        };
-
-        window.mobileSelectAll = function() {
-            const f = getFilteredOrders();
-            const allSel = f.length > 0 && f.every(o => selectedOrderIds.has(o.docId));
-            toggleSelectAll({ checked: !allSel });
         };
 
         window.toggleSelectOne = function(checkbox, docId) {
@@ -1557,14 +1725,17 @@
             }
         };
 
+        // 👑 老闆在後台動過、且還沒有員工接的訂單 → 標記為「老闆接的」
+        const bossTag = (docId, force) => { const o = orders.find(x => x.docId === docId); return (o && (force || !o.assignee) && o.assignee !== '__boss__') ? { assignee: '__boss__', assigneeName: '老闆', claimedAt: new Date().toISOString() } : {}; };
         window.batchUpdateStatus = async function(newStatus) {
             if (selectedOrderIds.size === 0) return;
+            if (orders.some(o => selectedOrderIds.has(o.docId) && o.quoteState === 'pending')) { alert('選取的訂單裡有「待報價」訂單，請先完成報價，再批次更新狀態。'); return; }
             if (!confirm(`確定要將選取的 ${selectedOrderIds.size} 筆訂單狀態更新為「${newStatus}」嗎？`)) return;
 
             try {
                 const promises = Array.from(selectedOrderIds).map(docId => {
                     const orderRef = doc(db, "orders", docId);
-                    return updateDoc(orderRef, { status: newStatus });
+                    return updateDoc(orderRef, { status: newStatus, ...bossTag(docId, true) });
                 });
                 await Promise.all(promises);
 
@@ -1632,7 +1803,7 @@
 
             try {
                 const orderRef = doc(db, "orders", currentEditingMemoDocId);
-                await updateDoc(orderRef, { memo: memoContent });
+                await updateDoc(orderRef, { memo: memoContent, ...bossTag(currentEditingMemoDocId) });
                 
                 playSound('action');
                 closeMemoModal();
@@ -1649,7 +1820,7 @@
             const filtered = getFilteredOrders();
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-12 text-slate-400">目前雲端沒有符合的訂單記錄！</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="11" class="text-center py-12 text-slate-400">目前雲端沒有符合的訂單記錄！</td></tr>`;
                 document.getElementById('table-count-info').innerText = `顯示 0 筆訂單`;
                 updateBatchBar();
                 return;
@@ -1680,27 +1851,30 @@
                 else if (o.status === '待發貨') actionBtn = `<button onclick="changeStatus('${o.docId}', '已完成發貨')" class="text-xs bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-2.5 py-1 rounded-lg transition font-medium">完成發貨</button>`;
                 else if (o.status === '已完成發貨') actionBtn = `<button onclick="openInvoice('${o.id}', '${encodeURIComponent(o.customer)}', '${encodeURIComponent(o.product)}', ${price}, '${o.date}')" class="text-xs bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-2.5 py-1 rounded-lg transition font-medium flex items-center gap-1"><i data-lucide="receipt" class="w-3 h-3"></i> 發票</button>`;
 
+                if (o.quoteState === 'pending') actionBtn = `<button onclick="openQuoteModal('${o.docId}')" class="text-xs bg-violet-600 text-white hover:bg-violet-700 px-2.5 py-1 rounded-lg transition font-bold">💬 報價 / 派單</button>`;
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50/80 transition">
-                        <td data-label="選取" class="py-3.5 pl-6 pr-2">
+                        <td class="py-3.5 pl-6 pr-2">
                             <input type="checkbox" onclick="toggleSelectOne(this, '${o.docId}')" ${isChecked} class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 cursor-pointer">
                         </td>
-                        <td data-label="訂單編號" class="py-3.5 px-4 font-mono text-xs text-slate-500 font-medium">${o.id}</td>
-                        <td data-label="買家" class="py-3.5 px-6 font-semibold text-slate-900">${o.customer}</td>
-                        <td data-label="商品" class="py-3.5 px-6 text-slate-600">${o.product}</td>
-                        <td data-label="售價 / 成本" class="py-3.5 px-6">
-                            <div class="font-bold text-slate-900">NT$${price.toLocaleString()}</div>
+                        <td class="py-3.5 px-4 font-mono text-xs text-slate-500 font-medium">${o.id}</td>
+                        <td class="py-3.5 px-6 font-semibold text-slate-900">${o.customer}</td>
+                        <td class="py-3.5 px-6">${(o.assignee || o.status === '已完成發貨') ? `<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full ${(o.assignee === '__boss__' || !o.assignee) ? 'bg-amber-100 text-amber-700' : 'bg-indigo-50 text-indigo-700'} text-xs font-bold">${(o.assignee === '__boss__' || !o.assignee) ? '👑' : '👷'} ${String(o.assigneeName || '老闆').replace(/[<>&]/g, '')}</div><div class="text-[10px] text-slate-400 mt-1">${o.claimedAt ? new Date(o.claimedAt).toLocaleString('zh-TW', { hour12: false, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}${(o.staffNotes || []).length ? ' · 💬' + o.staffNotes.length + ' 則備註' : ''}</div>` : (o.quoteState === 'pending' ? '<span class="text-[11px] text-violet-500 font-bold">💬 待報價</span>' : (o.dispatched ? '<span class="text-[11px] text-indigo-500 font-bold">📤 已發放・待接單</span>' : '<span class="text-[11px] text-amber-500 font-bold">⏳ 待接單</span>'))}</td>
+                        <td class="py-3.5 px-6 text-slate-600">${o.product}</td>
+                        <td class="py-3.5 px-6">
+                            ${o.quoteState === 'pending' ? '<div class="font-bold text-violet-600">💬 待報價</div>' : `<div class="font-bold text-slate-900">NT$${price.toLocaleString()}</div>`}
                             <div class="text-xs text-slate-400">成本: NT$${cost.toLocaleString()}</div>
+                            ${zahDiscHtml(o, price)}
                         </td>
-                        <td data-label="毛利" class="py-3.5 px-6">
+                        <td class="py-3.5 px-6">
                             <div class="font-bold text-emerald-600">NT$${profit.toLocaleString()}</div>
-                            <div class="text-[10px] text-slate-400">淨利</div>
+                            <div class="text-[10px] text-slate-400">實收 − 成本</div>
                         </td>
-                        <td data-label="評分" class="py-3.5 px-6">${(o.rating && o.rating > 0) ? `<span class="text-amber-400 text-xs">${'★'.repeat(o.rating)}</span>` : `<span class="text-xs text-slate-400">未評分</span>`}</td>
-                        <td data-label="狀態" class="py-3.5 px-6"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">${o.status}</span></td>
-                        <td data-label="備忘" class="py-3.5 px-6">${memoBtnHtml}</td>
-                        <td data-label="操作" class="py-3.5 px-6 text-right space-x-1">
-                            <button onclick="openEditAmountModal('${o.docId}')" class="text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 px-2.5 py-1 rounded-lg transition font-medium">編輯金額</button>
+                        <td class="py-3.5 px-6">${(o.rating && o.rating > 0) ? `<span class="text-amber-400 text-xs">${'★'.repeat(o.rating)}</span>` : `<span class="text-xs text-slate-400">未評分</span>`}</td>
+                        <td class="py-3.5 px-6"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">${o.status}</span>${o.quoteState === 'pending' ? '<div class="mt-1 text-[10px] font-bold text-violet-600">💬 等待老闆報價</div>' : ''}${o.payRequest ? '<div class="mt-1 text-[10px] font-bold text-emerald-600">💰 員工回報已付款・待確認</div>' : ''}</td>
+                        <td class="py-3.5 px-6">${memoBtnHtml}</td>
+                        <td class="py-3.5 px-6 text-right space-x-1">
+                            ${o.quoteState === 'pending' ? '' : `<button onclick="openEditAmountModal('${o.docId}')" class="text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 px-2.5 py-1 rounded-lg transition font-medium">編輯金額</button>`}
                             ${actionBtn}
                             <button onclick="deleteOrder('${o.docId}')" class="text-xs text-rose-500 hover:bg-rose-50 px-2 py-1 rounded-lg transition">刪除</button>
                         </td>
@@ -1766,6 +1940,143 @@
                 closeEditAmountModal();
                 await fetchOrdersFromFirebase();
             } catch (err) { alert('儲存金額失敗：' + err.message); }
+        };
+
+        window.zahQEsc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+        // 💰 待確認收款面板（員工回報已付款 → 老闆確認收到錢）
+        const zahPEsc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        window.renderPayPanel = function() {
+            const pend = orders.filter(o => o.payRequest);
+            const badge = document.getElementById('pay-filter-count');
+            if (badge) { badge.textContent = pend.length; badge.classList.toggle('hidden', !pend.length); }
+            const panel = document.getElementById('payPanel');
+            if (!panel) return;
+            panel.classList.toggle('hidden', !pend.length);
+            if (!pend.length) return;
+            document.getElementById('payPanelCount').textContent = pend.length;
+            document.getElementById('payPanelList').innerHTML = pend.map(o => {
+                const r = o.payRequest || {};
+                const at = r.at ? new Date(r.at).toLocaleString('zh-TW', { hour12: false, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+                return `<div class="px-5 py-3.5 flex flex-wrap items-center gap-3 justify-between">
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2 flex-wrap"><span class="font-mono text-xs font-bold text-emerald-600">${zahPEsc(o.id)}</span><span class="font-bold text-slate-900 text-sm">${zahPEsc(o.customer)}</span><span class="text-sm font-black text-emerald-700">NT$${(Number(o.price) || 0).toLocaleString()}</span></div>
+                        <div class="text-sm text-slate-700 mt-0.5 truncate">🛒 ${zahPEsc(o.product)}</div>
+                        <div class="text-[11px] text-slate-500 mt-0.5">👷 ${zahPEsc(r.byName || o.assigneeName || '員工')} 回報已付款 · ${zahPEsc(at)}${r.note ? ' · 備註：' + zahPEsc(r.note) : ''}</div>
+                    </div>
+                    <div class="shrink-0 flex gap-2">
+                        <button onclick="rejectPay('${o.docId}')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-500 text-xs font-bold transition active:scale-95">❌ 退回</button>
+                        <button onclick="confirmPay('${o.docId}')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition active:scale-95">✅ 確認收款</button>
+                    </div>
+                </div>`;
+            }).join('');
+        };
+        window.confirmPay = async function(docId) {
+            const o = orders.find(x => x.docId === docId);
+            if (!o || !o.payRequest) return;
+            if (!confirm(`確認「${o.customer}」的款項 NT$${(Number(o.price) || 0).toLocaleString()} 已經入帳了嗎？\n確認後訂單會回到員工手上繼續處理。`)) return;
+            try {
+                await updateDoc(doc(db, 'orders', docId), {
+                    status: o.payRequest.to || '已付款(未出貨)',
+                    payRequest: null, payRejectNote: null,
+                    payConfirmedAt: new Date().toISOString(), payConfirmedBy: '老闆',
+                    lastStaff: '老闆'
+                });
+                playSound('action');
+                showLiveTicker(`✅ 已確認 ${o.id}（${o.customer}）收款，訂單已放回給 ${o.payRequest.byName || '員工'}`, 'success');
+                fetchOrdersFromFirebase();
+            } catch (err) { alert('確認收款失敗：' + err.message); }
+        };
+        window.rejectPay = async function(docId) {
+            const o = orders.find(x => x.docId === docId);
+            if (!o || !o.payRequest) return;
+            const why = prompt('退回原因（員工會看到）：', '尚未收到款項');
+            if (why === null) return;
+            try {
+                await updateDoc(doc(db, 'orders', docId), { payRequest: null, payRejectNote: (why || '').trim() || '尚未收到款項', lastStaff: '老闆' });
+                playSound('action');
+                showLiveTicker(`↩ 已退回 ${o.id} 的付款回報`, 'info');
+                fetchOrdersFromFirebase();
+            } catch (err) { alert('退回失敗：' + err.message); }
+        };
+
+        // 💬 待報價訂單面板（有資料才顯示）
+        window.renderQuotePanel = function() {
+            const pending = orders.filter(o => o.quoteState === 'pending');
+            const badge = document.getElementById('quote-filter-count');
+            if (badge) { badge.textContent = pending.length; badge.classList.toggle('hidden', !pending.length); }
+            const panel = document.getElementById('quotePanel');
+            if (!panel) return;
+            panel.classList.toggle('hidden', !pending.length);
+            if (!pending.length) return;
+            document.getElementById('quotePanelCount').textContent = pending.length;
+            document.getElementById('quotePanelList').innerHTML = pending.map(o => {
+                const memo = String(o.memo || '').split('\n').slice(0, 3).join(' ｜ ');
+                return `<div class="px-5 py-3.5 flex flex-wrap items-center gap-3 justify-between">
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2 flex-wrap"><span class="font-mono text-xs font-bold text-violet-600">${zahQEsc(o.id)}</span><span class="font-bold text-slate-900 text-sm">${zahQEsc(o.customer)}</span><span class="text-[10px] text-slate-400">${zahQEsc(o.date)}</span></div>
+                        <div class="text-sm text-slate-700 mt-0.5 truncate">🛒 ${zahQEsc(o.product)}</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5 truncate">${zahQEsc(memo)}</div>
+                    </div>
+                    <button onclick="openQuoteModal('${o.docId}')" class="shrink-0 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold shadow-sm transition active:scale-95">報價 / 派單</button>
+                </div>`;
+            }).join('');
+        };
+
+        // 💬 報價並派單：金額填好之後，才能選「自己接單」或「發放到員工網站」
+        let currentQuoteDocId = null;
+        window.updateQuoteButtons = function() {
+            const p = Number(document.getElementById('quotePrice').value);
+            const ok = document.getElementById('quotePrice').value !== '' && Number.isFinite(p) && p > 0;
+            document.getElementById('quoteSelfBtn').disabled = !ok;
+            document.getElementById('quoteStaffBtn').disabled = !ok;
+            document.getElementById('quoteHintText').classList.toggle('hidden', ok);
+        };
+        window.openQuoteModal = function(docId) {
+            const order = orders.find(o => o.docId === docId);
+            if (!order) return;
+            currentQuoteDocId = docId;
+            document.getElementById('quoteOrderTitle').innerText = `${order.id || ''} · ${order.customer || ''}`;
+            document.getElementById('quoteProduct').innerText = order.product || '';
+            document.getElementById('quoteMemo').innerText = order.memo || '';
+            document.getElementById('quotePrice').value = Number(order.price) > 0 ? Number(order.price) : '';
+            document.getElementById('quoteCost').value = Number(order.cost) > 0 ? Number(order.cost) : '';
+            updateQuoteButtons();
+            const modal = document.getElementById('quoteModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            lucide.createIcons();
+            setTimeout(() => document.getElementById('quotePrice').focus(), 50);
+        };
+        window.closeQuoteModal = function() {
+            const modal = document.getElementById('quoteModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            currentQuoteDocId = null;
+        };
+        window.confirmQuote = async function(mode) {
+            if (!currentQuoteDocId) return;
+            const order = orders.find(o => o.docId === currentQuoteDocId);
+            if (!order) return;
+            const price = Number(document.getElementById('quotePrice').value);
+            const costRaw = document.getElementById('quoteCost').value;
+            const cost = costRaw === '' ? 0 : Number(costRaw);
+            if (!Number.isFinite(price) || price <= 0) { alert('請先輸入大於 0 的成交金額。'); return; }
+            if (!Number.isFinite(cost) || cost < 0) { alert('成本請輸入 0 或以上的數字。'); return; }
+            const nowIso = new Date().toISOString();
+            const base = { price, cost, quoteState: 'quoted', quotedAt: nowIso };
+            const patch = mode === 'self'
+                ? { ...base, dispatched: false, assignee: '__boss__', assigneeName: '老闆', claimedAt: nowIso }
+                : { ...base, dispatched: true, dispatchedAt: nowIso, assignee: null, assigneeName: null, claimedAt: null };
+            try {
+                await updateDoc(doc(db, 'orders', currentQuoteDocId), patch);
+                playSound('success');
+                showLiveTicker(mode === 'self'
+                    ? `👑 已報價 NT$${price.toLocaleString()}，${order.id || ''} 由老闆自己接單！`
+                    : `📤 已報價 NT$${price.toLocaleString()}，${order.id || ''} 已發放到員工接單大廳！`, 'success');
+                closeQuoteModal();
+                await fetchOrdersFromFirebase();
+            } catch (err) { alert('報價失敗：' + err.message); }
         };
 
         window.openInvoice = function(id, customerEnc, productEnc, price, date) {
@@ -1841,8 +2152,14 @@
                 rating: 0,
                 status: statusVal,
                 memo: '',
-                date: dateStr
+                date: dateStr,
+                assignee: '__boss__', assigneeName: '老闆', claimedAt: now.toISOString()
             };
+            const am = window.zahAdminMember;
+            if (am && am.forName === customerName.trim() && am.finalPrice === priceVal) {
+                newOrder.memberLevel = am.level; newOrder.memberDisc = am.pct; newOrder.memberOff = am.off;
+                newOrder.memo = `會員折扣：${am.level} −${am.pct}%`;
+            }
 
             try {
                 const docRef = await addDoc(collection(db, "orders"), newOrder);
@@ -1872,8 +2189,9 @@
         window.changeStatus = async function(docId, newStatus) {
             try {
                 const targetOrder = orders.find(o => o.docId === docId);
+                if (targetOrder && targetOrder.quoteState === 'pending') { alert('這張訂單還沒報價，請先填好金額，再選擇自己接單或發放到員工網站。'); openQuoteModal(docId); return; }
                 const orderRef = doc(db, "orders", docId);
-                await updateDoc(orderRef, { status: newStatus });
+                await updateDoc(orderRef, { status: newStatus, payRequest: null, ...bossTag(docId, true), lastStaff: '老闆' });
                 
                 const price = targetOrder ? Number(targetOrder.price) : 0;
                 if (newStatus === '已完成發貨' && price >= 2000) {
@@ -2375,39 +2693,299 @@
     })();
     </script>
 
+    <script type="module">
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, increment, writeBatch, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        const app = getApps().length ? getApp() : initializeApp({ apiKey: "AIzaSyBjpZ8i-lsWHjrn9wHAOqTFlxKKUWkdZyQ", authDomain: "project-1584313366507677848.firebaseapp.com", projectId: "project-1584313366507677848", storageBucket: "project-1584313366507677848.firebasestorage.app", messagingSenderId: "486873849194", appId: "1:486873849194:web:3eb6181053f070bda05913" });
+        const db = getFirestore(app);
+        const $ = id => document.getElementById(id);
+        const E = v => String(v ?? '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
+        const mid = n => encodeURIComponent(n);
+        const clone = o => JSON.parse(JSON.stringify(o));
+        const fail = (m, e) => alert(m + (e && e.message ? '：' + e.message : ''));
 
-    <!-- 📲 PWA：Service Worker 註冊 + 安裝提示 -->
-    <script>
-    (function () {
-        if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
-            window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(e => console.warn('SW 註冊失敗', e)));
-        }
-        const btn = document.getElementById('install-btn');
-        let deferred = null;
-        const hideBtn = () => { btn.classList.add('hidden'); btn.classList.remove('flex'); };
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); deferred = e;
-            btn.classList.remove('hidden'); btn.classList.add('flex');
-        });
-        btn.addEventListener('click', async () => {
-            if (!deferred) return;
-            deferred.prompt(); await deferred.userChoice; deferred = null; hideBtn();
-        });
-        window.addEventListener('appinstalled', hideBtn);
+        // ===== 會員設定（與前台 shop.html 共用，預設值需與前台一致） =====
+        const DEF = { rate: 10,
+          levels: [{ name: '新手', icon: '🌱', min: 0, disc: 0, title: '展商新手' }, { name: '菁英', icon: '⚔️', min: 500, disc: .05, title: '展商菁英' }, { name: '傳奇', icon: '👑', min: 1500, disc: .08, title: '展商傳奇' }, { name: '至尊', icon: '💎', min: 4000, disc: .12, title: '至尊會員' }],
+          miles: [{ at: 1000, icon: '🎖️', name: '初試身手', reward: '專屬徽章' }, { at: 3000, icon: '🥉', name: '忠實熟客', reward: '徽章＋稱號「忠實熟客」' }, { at: 8000, icon: '🥈', name: '展商達人', reward: '徽章＋稱號「展商達人」' }, { at: 20000, icon: '🏆', name: '傳說顧客', reward: '徽章＋稱號「傳說顧客」' }] };
+        let cfg = clone(DEF), draft = clone(DEF), orders = [], mdocs = {}, coupons = {}, accts = {}, editingCode = null;
+        const lvOf = xp => [...cfg.levels].sort((a, b) => b.min - a.min).find(l => xp >= l.min) || cfg.levels[0];
 
-        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-        let dismissed = false;
-        try { dismissed = !!localStorage.getItem('ios-install-dismissed'); } catch (e) {}
-        if (isIOS && !standalone && !dismissed) {
-            const tip = document.createElement('div');
-            tip.className = 'fixed left-3 right-3 z-40 bg-slate-900 text-white text-xs rounded-2xl shadow-2xl p-4 flex items-start gap-3';
-            tip.style.bottom = 'calc(env(safe-area-inset-bottom) + .75rem)';
-            tip.innerHTML = '<div class="flex-1 leading-relaxed">📲 安裝到主畫面：點下方 Safari 的 <b>分享</b> 按鈕，再選 <b>「加入主畫面」</b>。</div><button type="button" class="text-slate-400 text-base leading-none" aria-label="關閉">✕</button>';
-            tip.querySelector('button').onclick = () => { tip.remove(); try { localStorage.setItem('ios-install-dismissed', '1'); } catch (e) {} };
-            document.body.appendChild(tip);
+        onSnapshot(doc(db, 'siteSettings', 'membership'), s => {
+            if (s.exists()) { const d = s.data(); cfg = { rate: Number(d.rate) || 10, levels: (d.levels && d.levels.length === 4) ? d.levels : DEF.levels, miles: d.miles || DEF.miles }; }
+            draft = clone(cfg); renderCfg(); renderMembers();
+        }, e => console.warn(e));
+        onSnapshot(collection(db, 'members'), s => { mdocs = {}; s.forEach(d => mdocs[d.id] = { id: d.id, ...d.data() }); renderMembers(); });
+        onSnapshot(collection(db, 'orders'), s => { orders = s.docs.map(d => ({ docId: d.id, ...d.data() })); renderMembers(); renderCoupons(); });
+        onSnapshot(collection(db, 'accounts'), s => { accts = {}; s.forEach(d => accts[d.id] = { id: d.id, ...d.data() }); renderMembers(); }, e => console.warn('帳號資料讀取失敗', e));
+        // 密碼只存「加鹽雜湊」（PBKDF2-SHA256），與前台 shop.html 相同參數；後台只能重設，無法查看原密碼
+        const ACC_ITER = 120000;
+        const hexOf = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+        const unhexOf = h => new Uint8Array((String(h).match(/../g) || []).map(x => parseInt(x, 16)));
+        async function pwHash(pw, saltHex, iter) {
+            const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveBits']);
+            return hexOf(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: unhexOf(saltHex), iterations: iter }, key, 256));
         }
-    })();
+        onSnapshot(collection(db, 'coupons'), s => { coupons = {}; s.forEach(d => coupons[d.id] = { id: d.id, ...d.data() }); renderCoupons(); });
+
+        window.zahMemberDiscFor = name => { const m = aggregate().find(x => x.name === name); if (!m || m.deleted || !m.lv || !(m.lv.disc > 0)) return null; return { level: m.lv.name, disc: Number(m.lv.disc) }; };
+
+        // ===== 會員列表 =====
+        function aggregate() {
+            const map = {};
+            const get = n => map[n] || (map[n] = { name: n, spend: 0, count: 0 });
+            orders.forEach(o => { const n = String(o.customer || '').trim(); if (!n) return; const m = get(n); if (/未付款|取消|退/.test(o.status || '')) return; m.spend += Number(o.price || 0); m.count++; });
+            Object.values(mdocs).forEach(d => { if (d.name) get(d.name); });
+            Object.values(accts).forEach(a => { if (a.name) get(a.name); });
+            return Object.values(map).map(m => { const d = mdocs[mid(m.name)] || {}; m.bonus = Number(d.bonusXp || 0); m.deleted = !!d.deleted; m.xp = m.deleted ? 0 : Math.floor(m.spend / cfg.rate) + m.bonus; m.lv = lvOf(m.xp); return m; })
+                .sort((a, b) => b.xp - a.xp);
+        }
+        // 每日下單上限標籤（預設 3；dailyOrderLimit：數字＝上限、-1＝不限、空＝預設）
+        const DEFAULT_DAILY = 3;
+        const qlTag = m => {
+            const v = (mdocs[mid(m.name)] || {}).dailyOrderLimit;
+            if (v === null || v === undefined || v === '' || !Number.isFinite(Number(v))) return `<div class="text-[10px] font-bold text-slate-400">📅 每日下單 ${DEFAULT_DAILY} 單（預設）</div>`;
+            return Number(v) < 0 ? '<div class="text-[10px] font-bold text-indigo-500">📅 每日下單：不限單量（已調整）</div>' : `<div class="text-[10px] font-bold text-indigo-500">📅 每日下單 ${Math.floor(Number(v))} 單（已調整）</div>`;
+        };
+        function renderMembers() {
+            const tb = $('mb-rows'); if (!tb) return;
+            const q = ($('mb-search').value || '').trim().toLowerCase();
+            const list = aggregate().filter(m => !q || m.name.toLowerCase().includes(q));
+            tb.innerHTML = list.length ? list.map(m => `<tr class="border-b border-slate-50 ${m.deleted ? 'opacity-50' : ''}">
+                <td class="py-3 font-bold text-slate-800">${E(m.name)}${m.deleted ? ' <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-rose-50 text-rose-500">已刪除</span>' : ''}<div class="text-[10px] font-normal text-slate-400">${m.count} 筆有效訂單</div>${qlTag(m)}</td>
+                ${(() => { const a = accts[mid(m.name)]; if (!a) return '<td><span class="text-[10px] text-slate-400">尚未註冊帳號</span></td>'; const f = t => t ? new Date(t).toLocaleString('zh-TW', { hour12: false }) : '—'; return `<td class="text-xs"><div class="font-mono font-bold text-slate-700">${E(a.name)}</div><div class="text-[10px] font-bold text-emerald-600">🔒 密碼已加密儲存${a.mustChange ? '・待顧客改密碼' : ''}</div><div class="text-[10px] text-slate-400">註冊 ${f(a.createdAt)}<br>最近登入 ${f(a.lastLogin)}</div></td>`; })()}
+                <td>${m.deleted ? '—' : `${E(m.lv.icon)} ${E(m.lv.name)}<div class="text-[10px] text-slate-400">${E(m.lv.title)}</div>`}</td>
+                <td class="text-right font-bold text-indigo-600">${m.xp.toLocaleString()}</td><td class="text-right">NT$${m.spend.toLocaleString()}</td><td class="text-right text-slate-500">${m.bonus > 0 ? '+' : ''}${m.bonus}</td>
+                <td class="text-right whitespace-nowrap text-xs font-bold">
+                    <button data-xp="${E(m.name)}" class="px-2 py-1 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100">± XP</button>
+                    <button data-rn="${E(m.name)}" class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200">改名</button>
+                    <button data-ql="${E(m.name)}" class="px-2 py-1 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100">下單額度</button>
+                    ${accts[mid(m.name)] ? `<button data-pw="${E(m.name)}" class="px-2 py-1 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100">重設密碼</button><button data-acdel="${E(m.name)}" class="px-2 py-1 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-100">刪帳號</button>` : ''}
+                    ${m.deleted ? `<button data-rs="${E(m.name)}" class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100">恢復</button>` : `<button data-del="${E(m.name)}" class="px-2 py-1 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-100">刪除</button>`}
+                </td></tr>`).join('') : '<tr><td colspan="7" class="py-8 text-center text-xs text-slate-400">還沒有會員（顧客下單後會自動出現）。</td></tr>';
+        }
+        $('mb-search').addEventListener('input', renderMembers);
+        $('mb-rows').addEventListener('click', async e => {
+            const b = e.target.closest('button'); if (!b) return;
+            try {
+                if (b.dataset.xp) {
+                    const n = Number(prompt(`為「${b.dataset.xp}」增減經驗值（負數＝扣除）：`, '100'));
+                    if (!Number.isFinite(n) || !n) return;
+                    await setDoc(doc(db, 'members', mid(b.dataset.xp)), { name: b.dataset.xp, bonusXp: increment(Math.round(n)) }, { merge: true });
+                } else if (b.dataset.rn) {
+                    const old = b.dataset.rn, nn = (prompt(`把「${old}」改名為：`, old) || '').trim();
+                    if (!nn || nn === old) return;
+                    if (aggregate().some(m => m.name === nn)) { alert('已有同名會員，請換一個名稱。'); return; }
+                    const snap = await getDocs(query(collection(db, 'orders'), where('customer', '==', old)));
+                    const refs = snap.docs.map(d => d.ref);
+                    for (let i = 0; i < refs.length; i += 400) { const wb = writeBatch(db); refs.slice(i, i + 400).forEach(r => wb.update(r, { customer: nn })); await wb.commit(); }
+                    const od = mdocs[mid(old)] || {}, wb = writeBatch(db);
+                    wb.set(doc(db, 'members', mid(nn)), { name: nn, bonusXp: Number(od.bonusXp || 0), deleted: !!od.deleted, dailyOrderLimit: od.dailyOrderLimit ?? null });
+                    if (mdocs[mid(old)]) wb.delete(doc(db, 'members', mid(old)));
+                    const ac = accts[mid(old)];
+                    if (ac) { const { id: _id, ...rest } = ac; wb.set(doc(db, 'accounts', mid(nn)), { ...rest, name: nn }); wb.delete(doc(db, 'accounts', mid(old))); }
+                    await wb.commit();
+                    alert(`已改名，並同步更新 ${refs.length} 筆訂單的顧客名稱。`);
+                } else if (b.dataset.ql) {
+                    const nm = b.dataset.ql, cur = (mdocs[mid(nm)] || {}).dailyOrderLimit;
+                    const ans = prompt(`設定「${nm}」每天最多可下幾單？（預設 ${DEFAULT_DAILY} 單）\n\n・輸入數字：每日上限\n・輸入「無限」（或 -1）：不限單量\n・留空：恢復預設`, cur === -1 ? '無限' : (cur === null || cur === undefined ? '' : String(cur)));
+                    if (ans === null) return;
+                    const t = ans.trim();
+                    let v;
+                    if (t === '') v = null;
+                    else if (/^(無限|不限|unlimited|inf|-1)$/i.test(t)) v = -1;
+                    else { v = Math.floor(Number(t)); if (!Number.isFinite(v) || v < 0) { alert('請輸入 0 以上的整數，或「無限」。'); return; } }
+                    await setDoc(doc(db, 'members', mid(nm)), { name: nm, dailyOrderLimit: v }, { merge: true });
+                } else if (b.dataset.pw) {
+                    const nm = b.dataset.pw;
+                    const typed = prompt(`為「${nm}」設定新的臨時密碼（至少 6 個字元；留空＝自動產生）：`, '');
+                    if (typed === null) return;
+                    let pw = typed.trim();
+                    if (!pw) { const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789'; pw = Array.from(crypto.getRandomValues(new Uint8Array(10)), v => abc[v % abc.length]).join(''); }
+                    if (pw.length < 6) { alert('密碼至少 6 個字元。'); return; }
+                    const salt = hexOf(crypto.getRandomValues(new Uint8Array(16)));
+                    await setDoc(doc(db, 'accounts', mid(nm)), { salt, hash: await pwHash(pw, salt, ACC_ITER), iter: ACC_ITER, pwUpdatedAt: new Date().toISOString(), mustChange: true }, { merge: true });
+                    alert(`已重設「${nm}」的密碼。\n\n臨時密碼：${pw}\n\n請私下告知顧客；對方登入時會被要求自己設定新密碼。\n關閉這個視窗後就無法再查看這組密碼。`);
+                } else if (b.dataset.acdel) {
+                    if (!confirm(`確定刪除「${b.dataset.acdel}」的登入帳號？\n訂單紀錄、會員等級與經驗值都會保留；對方需要重新註冊才能再登入。`)) return;
+                    await deleteDoc(doc(db, 'accounts', mid(b.dataset.acdel)));
+                } else if (b.dataset.del) {
+                    if (!confirm(`確定刪除會員「${b.dataset.del}」？\n訂單紀錄會保留，但經驗值、等級與折扣都會被取消（可隨時按「恢復」）。`)) return;
+                    await setDoc(doc(db, 'members', mid(b.dataset.del)), { name: b.dataset.del, bonusXp: 0, deleted: true }, { merge: true });
+                } else if (b.dataset.rs) {
+                    await setDoc(doc(db, 'members', mid(b.dataset.rs)), { name: b.dataset.rs, deleted: false }, { merge: true });
+                }
+            } catch (err) { fail('操作失敗', err); }
+        });
+
+        // ===== 等級／稱號／里程碑設定 =====
+        const IN = 'w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500';
+        function renderCfg() {
+            const box = $('mb-config'); if (!box) return;
+            const lv = draft.levels.map((l, i) => `<tr><td class="py-1.5 pr-2"><input data-k="levels" data-i="${i}" data-f="icon" value="${E(l.icon)}" class="${IN} w-14 text-center"></td>
+                <td class="pr-2"><input data-k="levels" data-i="${i}" data-f="name" value="${E(l.name)}" class="${IN}"></td><td class="pr-2"><input data-k="levels" data-i="${i}" data-f="min" type="number" min="0" value="${l.min}" class="${IN}"></td>
+                <td class="pr-2"><input data-k="levels" data-i="${i}" data-f="disc" type="number" min="0" max="90" value="${Math.round(l.disc * 100)}" class="${IN}"></td><td><input data-k="levels" data-i="${i}" data-f="title" value="${E(l.title)}" class="${IN}"></td></tr>`).join('');
+            const ms = draft.miles.map((m, i) => `<tr><td class="py-1.5 pr-2"><input data-k="miles" data-i="${i}" data-f="icon" value="${E(m.icon)}" class="${IN} w-14 text-center"></td>
+                <td class="pr-2"><input data-k="miles" data-i="${i}" data-f="at" type="number" min="1" value="${m.at}" class="${IN}"></td><td class="pr-2"><input data-k="miles" data-i="${i}" data-f="name" value="${E(m.name)}" class="${IN}"></td>
+                <td class="pr-2"><input data-k="miles" data-i="${i}" data-f="reward" value="${E(m.reward)}" class="${IN}"></td><td><button data-rmm="${i}" class="text-xs font-bold text-rose-500">刪除</button></td></tr>`).join('');
+            box.innerHTML = `<h2 class="text-base font-bold text-slate-900">🏅 等級・稱號・里程碑設定</h2>
+                <p class="text-xs text-slate-400 mt-1">改完按最下方「儲存設定」，前台會員中心會即時套用。</p>
+                <label class="block mt-4 text-xs font-semibold text-slate-500">每消費多少 NT$ = 1 XP <input data-k="rate" type="number" min="1" value="${draft.rate}" class="${IN} !w-24 ml-2"></label>
+                <table class="w-full mt-4"><thead><tr class="text-left text-[10px] text-slate-400"><th>圖示</th><th>等級名稱</th><th>所需 XP</th><th>折扣 %</th><th>會員稱號</th></tr></thead><tbody>${lv}</tbody></table>
+                <h3 class="text-sm font-bold text-slate-900 mt-6">🎁 消費里程碑（消費滿多少送…）</h3>
+                <table class="w-full mt-2"><thead><tr class="text-left text-[10px] text-slate-400"><th>圖示</th><th>累積消費 NT$</th><th>名稱</th><th>獎勵說明</th><th></th></tr></thead><tbody>${ms}</tbody></table>
+                <div class="flex gap-2 mt-4"><button id="mb-addm" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold text-slate-600">＋ 新增里程碑</button><button id="mb-savecfg" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold">儲存設定</button><button id="mb-defcfg" class="px-3 py-2 text-xs font-bold text-slate-400 hover:text-slate-600">還原預設</button></div>`;
+        }
+        $('mb-config').addEventListener('input', e => {
+            const t = e.target, k = t.dataset.k; if (!k) return;
+            if (k === 'rate') { draft.rate = Number(t.value) || 10; return; }
+            const f = t.dataset.f, o = draft[k][+t.dataset.i];
+            o[f] = (f === 'min' || f === 'at') ? Number(t.value) || 0 : f === 'disc' ? Math.min(.9, Math.max(0, (Number(t.value) || 0) / 100)) : t.value;
+        });
+        $('mb-config').addEventListener('click', async e => {
+            const b = e.target.closest('button'); if (!b) return;
+            if (b.dataset.rmm) { draft.miles.splice(+b.dataset.rmm, 1); renderCfg(); }
+            else if (b.id === 'mb-addm') { draft.miles.push({ at: 1000, icon: '🎁', name: '新里程碑', reward: '專屬獎勵' }); renderCfg(); }
+            else if (b.id === 'mb-defcfg') { if (confirm('還原成預設設定？（需再按儲存才會套用）')) { draft = clone(DEF); renderCfg(); } }
+            else if (b.id === 'mb-savecfg') {
+                const lv = [...draft.levels].sort((a, b) => a.min - b.min); lv[0].min = 0;
+                try { await setDoc(doc(db, 'siteSettings', 'membership'), { rate: draft.rate, levels: lv, miles: [...draft.miles].sort((a, b) => a.at - b.at) }); alert('會員設定已儲存。'); } catch (err) { fail('儲存失敗', err); }
+            }
+        });
+
+        // ===== 優惠券 =====
+        const cpv = id => $(id).value.trim();
+        function resetCp() { editingCode = null; $('cp-title').textContent = '新增優惠券'; $('cp-code').disabled = false; ['cp-code', 'cp-value', 'cp-exp', 'cp-note'].forEach(i => $(i).value = ''); $('cp-min').value = 0; $('cp-max').value = 0; $('cp-type').value = 'percent'; }
+        function renderCoupons() {
+            const tb = $('cp-rows'); if (!tb) return;
+            const list = Object.values(coupons).sort((a, b) => a.id.localeCompare(b.id));
+            const cpUse = {};
+            orders.forEach(o => { if (/未付款|取消|退/.test(o.status || '')) return; const cp = window.zahCouponOf && window.zahCouponOf(o); if (!cp) return; const u = cpUse[cp.code] || (cpUse[cp.code] = { n: 0, off: 0 }); u.n++; u.off += cp.off; });
+            tb.innerHTML = list.length ? list.map(c => {
+                const off = c.type === 'amount' ? `−NT$${Number(c.value).toLocaleString()}` : `−${c.value}%`;
+                const expired = c.expires && c.expires < new Date().toISOString().slice(0, 10), full = c.maxUses > 0 && (c.used || 0) >= c.maxUses;
+                const st = !c.active ? ['停用', 'bg-slate-100 text-slate-500'] : expired ? ['已過期', 'bg-rose-50 text-rose-500'] : full ? ['已用完', 'bg-amber-50 text-amber-600'] : ['啟用中', 'bg-emerald-50 text-emerald-600'];
+                return `<tr class="border-b border-slate-50"><td class="py-3 font-extrabold tracking-wider text-slate-800">${E(c.id)}<div class="text-[10px] font-normal text-slate-400">${E(c.note || '')}</div></td><td class="font-bold text-rose-500">${off}</td><td>${c.minSpend ? 'NT$' + c.minSpend : '無'}</td><td>${c.used || 0} / ${c.maxUses > 0 ? c.maxUses : '∞'}</td><td class="font-bold text-slate-700">${cpUse[c.id] ? 'NT$' + cpUse[c.id].off.toLocaleString() + '<div class="text-[10px] font-normal text-slate-400">' + cpUse[c.id].n + ' 筆已付款訂單</div>' : '<span class="text-xs font-normal text-slate-400">—</span>'}</td><td>${E(c.expires || '不限')}</td>
+                    <td><span class="text-[10px] px-2 py-1 rounded-full font-bold ${st[1]}">${st[0]}</span></td>
+                    <td class="text-right whitespace-nowrap text-xs font-bold"><button data-tg="${E(c.id)}" class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200">${c.active ? '停用' : '啟用'}</button> <button data-ed="${E(c.id)}" class="px-2 py-1 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100">編輯</button> <button data-dl="${E(c.id)}" class="px-2 py-1 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-100">刪除</button></td></tr>`;
+            }).join('') : '<tr><td colspan="8" class="py-8 text-center text-xs text-slate-400">還沒有優惠券，在上方新增一組代碼吧。</td></tr>';
+        }
+        $('cp-reset').addEventListener('click', resetCp);
+        $('cp-save').addEventListener('click', async () => {
+            const code = cpv('cp-code').toUpperCase().replace(/[^A-Z0-9_-]/g, ''), type = $('cp-type').value, value = Number(cpv('cp-value'));
+            if (!code) { alert('請輸入優惠券代碼（英文、數字、- 、_）。'); return; }
+            if (!Number.isFinite(value) || value <= 0 || (type === 'percent' && value > 99)) { alert(type === 'percent' ? '百分比折扣請輸入 1～99。' : '請輸入大於 0 的折抵金額。'); return; }
+            if (!editingCode && coupons[code]) { alert('這個代碼已存在，請按該券的「編輯」修改。'); return; }
+            const data = { code, type, value, minSpend: Number(cpv('cp-min')) || 0, maxUses: Number(cpv('cp-max')) || 0, expires: cpv('cp-exp'), note: cpv('cp-note') };
+            if (!editingCode) { data.used = 0; data.active = true; }
+            try { await setDoc(doc(db, 'coupons', code), data, { merge: true }); resetCp(); } catch (err) { fail('儲存失敗', err); }
+        });
+        $('cp-rows').addEventListener('click', async e => {
+            const b = e.target.closest('button'); if (!b) return;
+            try {
+                if (b.dataset.tg) { const c = coupons[b.dataset.tg]; await setDoc(doc(db, 'coupons', c.id), { active: !c.active }, { merge: true }); }
+                else if (b.dataset.dl) { if (confirm(`刪除優惠券「${b.dataset.dl}」？`)) await deleteDoc(doc(db, 'coupons', b.dataset.dl)); }
+                else if (b.dataset.ed) {
+                    const c = coupons[b.dataset.ed]; editingCode = c.id; $('cp-title').textContent = `編輯優惠券：${c.id}`;
+                    $('cp-code').value = c.id; $('cp-code').disabled = true; $('cp-type').value = c.type || 'percent'; $('cp-value').value = c.value; $('cp-min').value = c.minSpend || 0; $('cp-max').value = c.maxUses || 0; $('cp-exp').value = c.expires || ''; $('cp-note').value = c.note || '';
+                    $('cp-code').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } catch (err) { fail('操作失敗', err); }
+        });
+        renderCfg(); renderMembers(); renderCoupons();
     </script>
+
+
+    <script type="module">
+        import { getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        const db = getFirestore(getApp());
+        const $ = id => document.getElementById(id);
+        const E = v => String(v ?? '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
+        const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+        async function mk(pw) {
+            const salt = hex(crypto.getRandomValues(new Uint8Array(16)));
+            const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveBits']);
+            const h = hex(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new Uint8Array(salt.match(/../g).map(x => parseInt(x, 16))), iterations: 120000 }, key, 256));
+            return { salt, hash: h, iter: 120000 };
+        }
+        let staff = [], orders = [];
+        const fmtT = v => { const d = new Date(v); if (isNaN(d)) return ''; const p = n => String(n).padStart(2, '0'); return `${d.getMonth() + 1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`; };
+        const renderSalaryPanel = () => {
+            const panel = $('salaryPanel'); if (!panel) return;
+            const rows = staff.map(s => {
+                const un = orders.filter(o => o.assignee === s.id && o.status === '已完成發貨' && !o.salaryPaid), r = Number(s.payRate || 0);
+                return { s, n: un.length, est: r ? un.reduce((a, o) => a + Math.round(Number(o.price || 0) * r / 100), 0) : null };
+            }).filter(x => x.n);
+            panel.classList.toggle('hidden', !rows.length);
+            if (!rows.length) return;
+            $('salaryPanelCount').textContent = rows.reduce((a, x) => a + x.n, 0);
+            $('salaryPanelList').innerHTML = rows.map(x => `<div class="px-5 py-3.5 flex flex-wrap items-center gap-3 justify-between"><div class="min-w-0 flex-1"><div class="font-bold text-slate-900 text-sm">👷 ${E(x.s.displayName)}</div><div class="text-xs text-slate-500 mt-0.5">已完成未付薪水 ${x.n} 張${x.est !== null ? ' · 依抽成預估 NT$' + x.est.toLocaleString() : ''}</div></div><button data-gopay="${x.s.id}" class="shrink-0 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm transition active:scale-95">前往發薪 →</button></div>`).join('');
+        };
+        document.addEventListener('click', e => {
+            const g = e.target.closest('[data-gopay]'); if (!g) return;
+            window.switchAdminTab('staff');
+            setTimeout(() => { const t = document.querySelector(`#pay-list [data-staff="${g.dataset.gopay}"]`) || $('pay-list'); t.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 120);
+        });
+        const renderPay = () => {
+            renderSalaryPanel();
+            const box = $('pay-list'); if (!box || (box.contains(document.activeElement) && document.activeElement.tagName === 'INPUT')) return;
+            box.innerHTML = staff.map(s => {
+                const done = orders.filter(o => o.assignee === s.id && o.status === '已完成發貨'), un = done.filter(o => !o.salaryPaid), pd = done.filter(o => o.salaryPaid), r = Number(s.payRate || 0);
+                if (!done.length) return '';
+                return `<div class="border border-slate-200 rounded-2xl p-4" data-staff="${s.id}">
+                <div class="flex flex-wrap items-center justify-between gap-2"><div class="font-bold">${E(s.displayName)} <span class="text-xs font-normal text-slate-400">未付 ${un.length} 張 · 已付 NT$${pd.reduce((a, o) => a + Number(o.salary || 0), 0).toLocaleString()}</span></div>${un.length ? `<button data-payall="${s.id}" class="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-bold">💰 發薪（勾選的）</button>` : ''}</div>
+                ${un.map(o => `<div class="pay-row flex items-center gap-3 py-2 border-t border-slate-100 text-xs" data-doc="${o.docId}"><input type="checkbox" class="pay-ck" checked><span class="font-mono text-slate-500">#${E(o.id)}</span><span class="flex-1 min-w-0 truncate">${E(o.product)}</span><span class="text-slate-400">訂單 NT$${Number(o.price || 0).toLocaleString()}</span><span>薪水 NT$</span><input type="number" min="0" class="pay-amt w-24 px-2 py-1 border border-slate-200 rounded-lg" value="${r ? Math.round(Number(o.price || 0) * r / 100) : ''}" placeholder="金額"></div>`).join('')}
+                ${pd.length ? `<details class="mt-2 text-xs"><summary class="cursor-pointer text-slate-500 font-bold">已付薪水 ${pd.length} 張</summary>${pd.map(o => `<div class="flex items-center gap-3 py-1.5 border-t border-slate-100"><span class="font-mono text-slate-500">#${E(o.id)}</span><span class="flex-1 truncate">${E(o.product)}</span><span class="font-bold text-emerald-600">NT$${Number(o.salary || 0).toLocaleString()}</span><span class="text-slate-400">${fmtT(o.paidAt)}</span><button data-unpay="${o.docId}" class="px-2 py-1 rounded bg-rose-50 text-rose-600 font-bold">撤銷</button></div>`).join('')}</details>` : ''}
+                </div>`;
+            }).join('') || '<div class="text-center text-slate-400 py-6 text-sm">目前沒有員工完成的訂單</div>';
+        };
+        $('pay-list').onclick = async e => {
+            const b = e.target.closest('button'); if (!b) return; const d = b.dataset;
+            try {
+                if (d.payall) {
+                    const ls = [...b.closest('[data-staff]').querySelectorAll('.pay-row')].filter(r => r.querySelector('.pay-ck').checked).map(r => ({ id: r.dataset.doc, amt: Number(r.querySelector('.pay-amt').value) }));
+                    if (!ls.length) return alert('請先勾選要發薪的訂單');
+                    if (ls.some(r => !(r.amt > 0))) return alert('請填寫每張訂單的薪水金額（大於 0）');
+                    if (!confirm(`確定發放 ${ls.length} 張訂單，共 NT$${ls.reduce((a, r) => a + r.amt, 0).toLocaleString()}？`)) return;
+                    const bt = writeBatch(db), at = new Date().toISOString();
+                    ls.forEach(r => bt.update(doc(db, 'orders', r.id), { salary: r.amt, salaryPaid: true, paidAt: at, paidBy: '老闆' }));
+                    await bt.commit(); alert('已發薪');
+                }
+                if (d.unpay && confirm('撤銷這筆薪水？')) await updateDoc(doc(db, 'orders', d.unpay), { salary: null, salaryPaid: false, paidAt: null });
+            } catch (err) { alert('操作失敗：' + err.message); }
+        };
+        const rows = () => {
+            $('st-list').innerHTML = staff.length ? staff.map(s => {
+                const n = orders.filter(o => o.assignee === s.id && o.status !== '已完成發貨').length, d = orders.filter(o => o.assignee === s.id && o.status === '已完成發貨').length;
+                return `<div class="py-3 flex flex-wrap items-center gap-3"><div class="flex-1 min-w-[160px]"><div class="font-bold">${E(s.displayName)} <span class="font-mono text-xs text-slate-400">${E(decodeURIComponent(s.id))}</span></div><div class="text-xs text-slate-400">處理中 ${n} 張 · 已完成 ${d} 張 · 抽成 ${s.payRate || 0}%</div></div>
+                <span class="text-xs font-bold ${s.active === false ? 'text-rose-500' : 'text-emerald-600'}">${s.active === false ? '已停用' : '啟用中'}</span>
+                <button data-tg="${s.id}" class="text-xs px-3 py-1.5 rounded-lg bg-slate-100 font-bold">${s.active === false ? '啟用' : '停用'}</button>
+                <button data-rate="${s.id}" class="text-xs px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 font-bold">設定抽成</button>
+                <button data-pw="${s.id}" class="text-xs px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-600 font-bold">重設密碼</button>
+                <button data-dl="${s.id}" class="text-xs px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 font-bold">刪除</button></div>`;
+            }).join('') : '<div class="py-8 text-center text-slate-400">還沒有員工帳號</div>';
+            renderPay();
+        };
+        onSnapshot(collection(db, 'staff'), s => { staff = s.docs.map(d => ({ id: d.id, ...d.data() })); rows(); });
+        onSnapshot(collection(db, 'orders'), s => { orders = s.docs.map(d => ({ docId: d.id, ...d.data() })); rows(); });
+        $('st-add').onclick = async () => {
+            const u = $('st-user').value.trim().toLowerCase(), n = $('st-name').value.trim() || u, p = $('st-pw').value;
+            if (!/^[a-z0-9_.-]+$/.test(u)) return alert('帳號請用英數字（可含 _ . -）');
+            if (p.length < 6) return alert('密碼至少 6 碼');
+            if (staff.some(s => s.id === encodeURIComponent(u))) return alert('這個帳號已存在');
+            try { await setDoc(doc(db, 'staff', encodeURIComponent(u)), { displayName: n, active: true, createdAt: new Date().toISOString(), ...(await mk(p)) }); ['st-user', 'st-name', 'st-pw'].forEach(i => $(i).value = ''); alert('已建立員工：' + n); } catch (e) { alert('建立失敗：' + e.message); }
+        };
+        $('st-list').onclick = async e => {
+            const b = e.target.closest('button'); if (!b) return; const d = b.dataset;
+            try {
+                if (d.tg) { const s = staff.find(x => x.id === d.tg); await setDoc(doc(db, 'staff', d.tg), { active: s.active === false }, { merge: true }); }
+                if (d.pw) { const p = prompt('輸入新密碼（至少 6 碼）'); if (p && p.length >= 6) { await setDoc(doc(db, 'staff', d.pw), await mk(p), { merge: true }); alert('密碼已重設'); } }
+                if (d.rate) { const v = prompt('抽成比例 %（例：10 = 訂單金額的 10%；0 = 不預填，發薪時手動輸入）'); if (v !== null && v.trim() !== '' && !isNaN(v) && +v >= 0 && +v <= 100) await setDoc(doc(db, 'staff', d.rate), { payRate: +v }, { merge: true }); }
+                if (d.dl && confirm('刪除這位員工帳號？（他接的訂單不會被刪）')) await deleteDoc(doc(db, 'staff', d.dl));
+            } catch (err) { alert('操作失敗：' + err.message); }
+        };
+    </script>
+<script src="pwa.js" defer></script>
 </body>
 </html>
